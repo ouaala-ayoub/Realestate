@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="OutlinedButtonStyle" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="textAllCaps">false</item>
+        <item name="strokeColor">@color/colorPrimary</item>
+        <item name="strokeWidth">@dimen/button_stroke_size</item>
+    </style>
+
+    <style name="ChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipCornerRadius">9dp</item>
+        <item name="chipBackgroundColor">@color/chip_color_state</item>
+        <item name="android:textColor">@color/text_color_state</item>
+    </style>
+</resources>

@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Real Estate</string>
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
+
+    <!-- main activity -->
+    <string name="rent">Rent</string>
+    <string name="sell">Sell</string>
+    <string name="buy">Buy</string>
+
+    <!--dialog-->
+    <string name="Yes">Yes</string>
+    <string name="Cancel">Cancel</string>
+    <!--post data-->
+    <string name="price"> %1$s Dh </string>
+    <string name="location"> %1$s, %2$s, %3$s </string>
+    <string name="location_icon_description">Location</string>
+    <string name="post_image_description">Propriety image</string>
+
+</resources>

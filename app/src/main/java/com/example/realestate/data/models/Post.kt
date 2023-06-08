@@ -1,0 +1,36 @@
+package com.example.realestate.data.models
+
+import com.google.gson.annotations.SerializedName
+
+data class Post(
+
+    @SerializedName("_id")
+    val id: String? = null,
+
+    @SerializedName("title")
+    val title: String,
+
+    @SerializedName("description")
+    val description: String? = null,
+
+    @SerializedName("media")
+    val media: List<String>,
+
+    @SerializedName("type")
+    val type: String,
+
+    @SerializedName("price")
+    val price: Number,
+
+    @SerializedName("location")
+    val location: Location,
+
+    @SerializedName("ownerId")
+    val ownerId: String,
+
+    @SerializedName("currency")
+    val currency: String,
+
+    @SerializedName("category")
+    val category: String
+)
