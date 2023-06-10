@@ -36,7 +36,11 @@ class PostsAdapter(
                     postClickListener.onClick(currentPost.id!!)
                 }
                 postPrice.text =
-                    context.getString(R.string.price, currentPost.price.toString())
+                    context.getString(
+                        R.string.price,
+                        currentPost.price.toString(),
+                        currentPost.currency
+                    )
                 currentPost.location.apply {
                     postLocation.text =
                         context.getString(

@@ -1,10 +1,14 @@
 package com.example.realestate.data.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class SearchParams(
-    val title: String? = null,
-    val type: String? = null,
-    val category: String? = null,
-    val price: Number? = null,
-    val location: Location? = null,
-    val page: Number? = null
-)
+    var title: String? = null,
+    var type: String? = null,
+    var category: String? = null,
+    var price: Number? = null,
+    var location: Location? = null,
+    var page: Number? = null
+) : Parcelable

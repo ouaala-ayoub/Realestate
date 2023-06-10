@@ -10,4 +10,14 @@
         android:name="com.example.realestate.ui.fragments.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/favouritesFragment"
+        android:name="com.example.realestate.ui.fragments.FavouritesFragment"
+        android:label="fragment_favourites"
+        tools:layout="@layout/fragment_favourites" />
+    <activity
+        android:id="@+id/addPostActivity"
+        android:name="com.example.realestate.ui.activities.AddPostActivity"
+        android:label="activity_add_post"
+        tools:layout="@layout/activity_add_post" />
 </navigation>

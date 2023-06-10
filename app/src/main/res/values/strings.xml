@@ -11,10 +11,31 @@
     <!--dialog-->
     <string name="Yes">Yes</string>
     <string name="Cancel">Cancel</string>
+    <string name="No">No</string>
+    <string name="Leave">Leave ?</string>
     <!--post data-->
-    <string name="price"> %1$s Dh </string>
+    <string name="price"> %1$s %2$s </string>
     <string name="location"> %1$s, %2$s, %3$s </string>
     <string name="location_icon_description">Location</string>
     <string name="post_image_description">Propriety image</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--bottom navigation menu-->
+    <string name="home">Home</string>
+    <string name="favourites">Favourites</string>
+    <string name="add_a_post">Add a Post</string>
+
+    <!--    permission-->
+    <string name="permission_required">Permission required</string>
+    <string name="you_cant">You can\'t choose a image or a video because the App does not have the Permission to access your Gallery</string>
+    <string name="authorise">Authorize</string>
+    <string name="no_thanks">No Thanks</string>
+    <string name="permission">Your permission is necessary to use this service</string>
+    <string name="OK">OK</string>
+
+    <!--    search fragment-->
+    <string name="search">Search</string>
+    <string name="select">Select</string>
 
 </resources>

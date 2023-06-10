@@ -1,26 +1,30 @@
 package com.example.realestate.ui.fragments
 
-import android.R
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.realestate.data.models.Location
-import com.example.realestate.data.models.Post
+import com.example.realestate.R
 import com.example.realestate.data.models.SearchParams
+import com.example.realestate.data.models.Type
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.databinding.FragmentHomeBinding
+import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.adapters.PostsAdapter
 import com.example.realestate.ui.viewmodels.HomeViewModel
+import com.example.realestate.utils.ActivityResultListener
+import com.example.realestate.utils.OnDialogClicked
 import com.example.realestate.utils.OnPostClickListener
+import com.example.realestate.utils.makeDialog
 import com.google.android.material.chip.Chip
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), ActivityResultListener {
 
     companion object {
         private const val TAG = "HomeFragment"
@@ -29,8 +33,8 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewModel: HomeViewModel
     private lateinit var postsAdapter: PostsAdapter
+    private lateinit var searchParams: SearchParams
     private var selectedChipId: Int = 0
-    private var searchParams = SearchParams()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +44,16 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val activity = (requireActivity() as MainActivity)
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+        searchParams = activity.params
+
+
+        Log.d(TAG, "searchParams from home fragment: $searchParams")
+
+        viewModel = HomeViewModel(PostsRepository(Retrofit.getInstance())).also {
+            it.getPosts(searchParams)
+        }
         postsAdapter = PostsAdapter(
             object : OnPostClickListener {
                 override fun onClick(postId: String) {
@@ -48,9 +61,41 @@ class HomeFragment : Fragment() {
                 }
             }
         )
-        viewModel = HomeViewModel(PostsRepository(Retrofit.getInstance())).also {
-            it.getPosts(searchParams)
-        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    //to add a confirmation dialog
+                    makeDialog(
+                        requireContext(),
+                        object : OnDialogClicked {
+                            override fun onPositiveButtonClicked() {
+                                requireActivity().finish()
+                            }
+
+                            override fun onNegativeButtonClicked() {
+                                // nothing
+                            }
+                        },
+                        title = getString(R.string.app_name),
+                        message = getString(R.string.Leave),
+                        negativeText = getString(R.string.No),
+                        positiveText = getString(R.string.Yes)
+                    ).show()
+
+                }
+
+            })
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val activity = (requireActivity() as MainActivity)
+        activity.setActivityResultListener(this)
 
         binding.apply {
 
@@ -59,48 +104,27 @@ class HomeFragment : Fragment() {
             handleChips()
 
             swipeRefreshLayout.setOnRefreshListener {
-                viewModel.getPosts(searchParams)
+                viewModel.getPosts(SearchParams())
             }
 
             postRv.apply {
-                val test = Post(
-                    title = "Dar kbiiira",
-                    category = "category",
-                    currency = "USD",
-                    location = Location(
-                        "Maroc", city = "Salé", street = "Hay karima",
-                    ),
-                    media = listOf(),
-                    ownerId = "ownerId",
-                    price = 120000,
-                    type = "Type"
-                )
-                val list = listOf<Post>(
-                    test,
-                    test,
-                    test,
-                    test,
-                    test,
-                    test,
-                )
                 adapter = postsAdapter
                 layoutManager = LinearLayoutManager(requireContext())
-                postsAdapter.setPostsList(list)
             }
 
             viewModel.postsList.observe(viewLifecycleOwner) { posts ->
+                Log.d(TAG, "postsList: $posts")
                 posts?.apply {
                     postsAdapter.setPostsList(posts)
+                    swipeRefreshLayout.isRefreshing = false
                 }
             }
         }
 
-        return binding.root
     }
 
     private fun onChipClicked(view: View) {
         val chipId = view.id
-
 
         // Unselect previously selected chip if any
         if (selectedChipId != -1) {
@@ -118,19 +142,20 @@ class HomeFragment : Fragment() {
         // Perform actions based on the selected chip
         when (chipId) {
             binding.rent.id -> {
-                // Handle selection of Chip 1
-                // TODO: Add your code here
+                searchParams.type = Type.RENT.value
             }
             binding.sell.id -> {
                 // Handle selection of Chip 2
-                // TODO: Add your code here
+                searchParams.type = Type.SELL.value
             }
             binding.buy.id -> {
                 // Handle selection of Chip 3
-                // TODO: Add your code here
+                searchParams.type = Type.BUY.value
             }
         }
+        viewModel.getPosts(searchParams)
     }
+
 
     private fun handleChips() {
         for (chip in binding.chips.children) {
@@ -143,6 +168,19 @@ class HomeFragment : Fragment() {
                 onChipClicked(it)
             }
         }
+    }
+
+    override fun onResultOk(searchParams: SearchParams) {
+        requestData(searchParams)
+    }
+
+    private fun requestData(params: SearchParams) {
+        Log.d(TAG, "requesting Data with params: $params")
+        viewModel.getPosts(searchParams)
+    }
+
+    override fun onResultCancelled() {
+        Log.d(TAG, "onResultCancelled")
     }
 
 }

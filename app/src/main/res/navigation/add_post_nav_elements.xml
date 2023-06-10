@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/add_post_nav_elements"
+    app:startDestination="@id/imagesSelectFragment">
+
+    <fragment
+        android:id="@+id/imagesSelectFragment"
+        android:name="com.example.realestate.ui.fragments.post_add_steps.ImagesSelectFragment"
+        android:label="fragment_images_select"
+        tools:layout="@layout/fragment_images_select" />
+</navigation>
