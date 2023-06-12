@@ -14,7 +14,7 @@ data class Post(
     val description: String? = null,
 
     @SerializedName("media")
-    val media: List<String>,
+    var media: List<String>,
 
     @SerializedName("type")
     val type: String,
@@ -33,4 +33,20 @@ data class Post(
 
     @SerializedName("category")
     val category: String
-)
+) {
+    companion object {
+        val emptyPost = Post(
+            title = "",
+            type = Type.RENT.value,
+            price = 0,
+            category = "",
+            currency = "",
+            media = listOf(),
+            ownerId = "",
+            location = Location(
+                "",
+                ""
+            )
+        )
+    }
+}

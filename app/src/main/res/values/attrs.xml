@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <declare-styleable name="CustomMaterialEditText">
+        <attr name="customHelperText" format="string" />
+        <attr name="customHint" format="string" />
+    </declare-styleable>
+</resources>

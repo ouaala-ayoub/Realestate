@@ -13,6 +13,9 @@
     <string name="Cancel">Cancel</string>
     <string name="No">No</string>
     <string name="Leave">Leave ?</string>
+    <string name="quit_post_title">Leave ?</string>
+    <string name="quit_post_message">All data will be lost</string>
+
     <!--post data-->
     <string name="price"> %1$s %2$s </string>
     <string name="location"> %1$s, %2$s, %3$s </string>
@@ -37,5 +40,14 @@
     <!--    search fragment-->
     <string name="search">Search</string>
     <string name="select">Select</string>
+
+    <!--    add post activity-->
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+
+    <!--    image select strings-->
+    <string name="remove">Remove</string>
+    <string name="image">Image</string>
+    <string name="show_first">Show First</string>
 
 </resources>

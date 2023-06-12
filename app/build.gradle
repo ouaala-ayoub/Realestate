@@ -30,6 +30,10 @@ android {
         viewBinding true
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -54,7 +58,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
 
     //image loading
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
 
     //sms handling
     implementation 'com.google.android.gms:play-services-auth:20.5.0'

@@ -28,4 +28,7 @@
     <!-- Other Colors -->
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorText">#000000</color>
+
+    <!--    helper text color-->
+    <color name="red">#8b0000</color>
 </resources>

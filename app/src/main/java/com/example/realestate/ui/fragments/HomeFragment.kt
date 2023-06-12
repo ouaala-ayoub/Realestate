@@ -18,10 +18,7 @@ import com.example.realestate.databinding.FragmentHomeBinding
 import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.adapters.PostsAdapter
 import com.example.realestate.ui.viewmodels.HomeViewModel
-import com.example.realestate.utils.ActivityResultListener
-import com.example.realestate.utils.OnDialogClicked
-import com.example.realestate.utils.OnPostClickListener
-import com.example.realestate.utils.makeDialog
+import com.example.realestate.utils.*
 import com.google.android.material.chip.Chip
 
 class HomeFragment : Fragment(), ActivityResultListener {
@@ -67,7 +64,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     //to add a confirmation dialog
-                    makeDialog(
+                    val dialog = makeDialog(
                         requireContext(),
                         object : OnDialogClicked {
                             override fun onPositiveButtonClicked() {
@@ -82,7 +79,11 @@ class HomeFragment : Fragment(), ActivityResultListener {
                         message = getString(R.string.Leave),
                         negativeText = getString(R.string.No),
                         positiveText = getString(R.string.Yes)
-                    ).show()
+                    )
+                    dialog.apply {
+                        show()
+                        separateButtonsBy(10)
+                    }
 
                 }
 

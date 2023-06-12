@@ -1,6 +1,7 @@
 package com.example.realestate.data.remote.network
 
 import com.example.realestate.data.models.IdResponse
+import com.example.realestate.data.models.MessageResponse
 import com.example.realestate.data.models.Post
 import com.example.realestate.data.models.User
 import okhttp3.RequestBody
@@ -21,7 +22,7 @@ interface RetrofitService {
     ): Call<MutableList<Post>>
 
     @POST("posts")
-    fun addPost(post: Post): Call<IdResponse>
+    fun addPost(post: Post): Call<MessageResponse>
 
     @DELETE("posts/{id}")
     fun deletePost(@Path("id") postId: String): Call<IdResponse>

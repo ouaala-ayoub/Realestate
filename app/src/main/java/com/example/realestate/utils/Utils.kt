@@ -5,24 +5,29 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import com.example.realestate.data.models.Error
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.R
+import com.example.realestate.data.models.Error
 import com.example.realestate.data.models.ErrorResponse
+import com.example.realestate.data.models.Post
 import com.example.realestate.data.models.SearchParams
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -31,7 +36,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 const val TAG = "Utils"
+
+interface HandleSubmitInterface {
+    fun onNextClicked(viewPager: ViewPager2, post: Post)
+    fun onBackClicked(viewPager: ViewPager2)
+}
 
 interface OnDialogClicked {
     fun onPositiveButtonClicked()
@@ -60,6 +71,28 @@ interface OnPostClickListener {
 interface AdditionalCode {
     fun <T> onResponse(responseBody: Response<T>)
     fun onFailure()
+}
+
+fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
+    val tmp = this[index1]
+    this[index1] = this[index2]
+    this[index2] = tmp
+}
+
+fun Intent.getContentAsList(): List<Uri> {
+    val data = this
+    var imagesList = mutableListOf<Uri>()
+
+    if (data.data != null) {
+        imagesList = mutableListOf(data.data!!)
+    } else if (data.clipData?.itemCount != null) {
+        val itemCount = data.clipData?.itemCount
+        for (i in 0 until itemCount!!) {
+            imagesList.add(this.clipData?.getItemAt(i)!!.uri)
+        }
+    }
+
+    return imagesList
 }
 
 fun <T> handleApiRequest(
@@ -159,6 +192,16 @@ fun makeDialog(
     return myDialog
 }
 
+fun AlertDialog.separateButtonsBy(margin: Int) {
+    val negButton = this.getButton(AlertDialog.BUTTON_POSITIVE)
+    val params = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+    params.setMargins(margin, 0, 0, 0)
+    negButton.layoutParams = params
+}
+
 fun RecyclerView.handleRefreshWithScrolling(swipeRefresh: SwipeRefreshLayout) {
     this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -170,7 +213,7 @@ fun RecyclerView.handleRefreshWithScrolling(swipeRefresh: SwipeRefreshLayout) {
 }
 
 private fun showInContextUI(context: Context, onDialogClicked: OnDialogClicked) {
-    makeDialog(
+    val dialog = makeDialog(
         context,
         onDialogClicked,
         context.getString(R.string.permission_required),
@@ -178,7 +221,11 @@ private fun showInContextUI(context: Context, onDialogClicked: OnDialogClicked) 
         negativeText = context.getString(R.string.no_thanks),
         positiveText = context.getString(R.string.authorise)
 
-    ).show()
+    )
+    dialog.apply {
+        show()
+        separateButtonsBy(10)
+    }
 }
 
 fun ComponentActivity.requestPermissionLauncher(permissionResult: PermissionResult): ActivityResultLauncher<String> {
@@ -187,20 +234,44 @@ fun ComponentActivity.requestPermissionLauncher(permissionResult: PermissionResu
     ) { isGranted: Boolean ->
         Log.d(TAG, "requestPermissionLauncher isGranted = $isGranted")
         if (isGranted) {
-
             permissionResult.onGranted()
         } else {
-            // Explain to the user that the feature is unavailable because the
-            // features requires a permission that the user has denied. At the
-            // same time, respect the user's decision. Don't link to system
-            // settings in an effort to convince the user to change their
-            // decision.
+            permissionResult.onNonGranted()
+        }
+    }
+}
+
+fun Fragment.requestPermissionLauncher(permissionResult: PermissionResult): ActivityResultLauncher<String> {
+    return this.registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        Log.d(TAG, "requestPermissionLauncher isGranted = $isGranted")
+        if (isGranted) {
+            permissionResult.onGranted()
+        } else {
             permissionResult.onNonGranted()
         }
     }
 }
 
 fun ComponentActivity.startActivityResult(selectionResult: SelectionResult): ActivityResultLauncher<Intent> {
+    return this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+            val data: Intent? = result.data
+
+            if (data != null) {
+                selectionResult.onResultOk(data)
+            } else {
+                selectionResult.onResultFailed()
+            }
+        } else {
+            selectionResult.onResultFailed()
+        }
+    }
+}
+
+fun Fragment.startActivityResult(selectionResult: SelectionResult): ActivityResultLauncher<Intent> {
     return this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             // There are no request codes
@@ -243,18 +314,12 @@ fun Activity.handlePermission(onPermissionChecked: PermissionResult) {
             this,
             Manifest.permission.READ_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED -> {
-            // You can use the API that requires the permission.
-            Log.d(TAG, "handlePermission: ${PackageManager.PERMISSION_GRANTED}")
             onPermissionChecked.onGranted()
         }
         shouldShowRequestPermissionRationale(
             this,
             permission
         ) -> {
-            // In an educational UI, explain to the user why your app requires this
-            // permission for a specific feature to behave as expected. In this UI,
-            // include a "cancel" or "no thanks" button that allows the user to
-            // continue using your app without granting the permission.
             showInContextUI(
                 this,
                 object : OnDialogClicked {
@@ -269,8 +334,6 @@ fun Activity.handlePermission(onPermissionChecked: PermissionResult) {
             )
         }
         else -> {
-            // You can directly ask for the permission.
-            // The registered ActivityResultCallback gets the result of this request.
             onPermissionChecked.onNonGranted()
         }
     }
@@ -279,10 +342,12 @@ fun Activity.handlePermission(onPermissionChecked: PermissionResult) {
 fun ActivityResultLauncher<Intent>.openGallery() {
     val intent = Intent(Intent.ACTION_GET_CONTENT)
     intent.apply {
-        type = "video/*, image/*"
+        type = "image/*, video/*"
+        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
         putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
     }
-    this.launch(intent)
+
+    this.launch(Intent.createChooser(intent, "Select Picture"))
 }
 
 fun makeSnackBar(
