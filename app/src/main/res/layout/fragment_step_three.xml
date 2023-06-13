@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.post_add_steps.StepTwoFragment">
+    tools:context=".ui.fragments.post_add_steps.StepThreeFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,78 +18,69 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/countryTextField"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:hint="@string/title"
-            app:helperText="@string/obligatory"
-            app:helperTextTextColor="@color/red">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/titleEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:lines="1"
-                android:textStyle="bold" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/categoryTextField"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:hint="@string/category"
+            android:hint="@string/country"
             app:helperText="@string/obligatory"
             app:helperTextTextColor="@color/red">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/categoryEditText"
+                android:id="@+id/countryEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
                 android:lines="1"
                 android:textStyle="bold" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/priceTextField"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:id="@+id/cityTextField"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:hint="@string/price_et"
+            android:enabled="false"
+            android:hint="@string/country"
             app:helperText="@string/obligatory"
             app:helperTextTextColor="@color/red">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/priceEditText"
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/cityEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
+                android:inputType="text"
                 android:lines="1"
                 android:textStyle="bold" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textView3"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/streetTextField"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:text="@string/currency"
-            android:textColor="@color/black"
-            android:textStyle="bold" />
+            android:layout_marginBottom="10dp"
+            android:enabled="false"
+            android:hint="@string/street">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/streetEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:lines="1"
+                android:textStyle="bold" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chips"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -102,7 +90,7 @@
             app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/usd"
+                android:id="@+id/rent"
                 style="@style/ChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -112,11 +100,11 @@
                 android:checked="true"
                 android:elevation="2dp"
                 android:gravity="center"
-                android:text="@string/usd"
+                android:text="@string/rent"
                 android:textAlignment="center" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/eu"
+                android:id="@+id/buy"
                 style="@style/ChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -125,11 +113,55 @@
                 android:checkable="true"
                 android:elevation="2dp"
                 android:gravity="center"
-                android:text="@string/eu"
+                android:text="@string/buy"
+                android:textAlignment="center" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/sell"
+                style="@style/ChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:checkable="true"
+                android:elevation="2dp"
+                android:gravity="center"
+                android:text="@string/sell"
                 android:textAlignment="center" />
 
         </com.google.android.material.chip.ChipGroup>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/descriptionTextField"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="@string/description">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/descriptionEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:lines="5"
+                android:textStyle="bold" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

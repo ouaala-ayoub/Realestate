@@ -8,31 +8,31 @@ data class Post(
     val id: String? = null,
 
     @SerializedName("title")
-    val title: String,
+    var title: String,
 
     @SerializedName("description")
-    val description: String? = null,
+    var description: String? = null,
 
     @SerializedName("media")
     var media: List<String>,
 
     @SerializedName("type")
-    val type: String,
+    var type: String,
 
     @SerializedName("price")
-    val price: Number,
+    var price: Number,
 
     @SerializedName("location")
-    val location: Location,
+    var location: Location,
 
     @SerializedName("ownerId")
     val ownerId: String,
 
     @SerializedName("currency")
-    val currency: String,
+    var currency: String,
 
     @SerializedName("category")
-    val category: String
+    var category: String
 ) {
     companion object {
         val emptyPost = Post(

@@ -13,6 +13,7 @@ import com.example.realestate.R
 import com.example.realestate.data.models.FragmentStep
 import com.example.realestate.data.models.Post
 import com.example.realestate.databinding.FragmentImagesSelectBinding
+import com.example.realestate.ui.activities.AddPostActivity
 import com.example.realestate.ui.adapters.ImagesAdapter
 import com.example.realestate.ui.viewmodels.ImagesSelectModel
 import com.example.realestate.utils.*
@@ -29,26 +30,16 @@ class ImagesSelectFragment : FragmentStep() {
     private lateinit var binding: FragmentImagesSelectBinding
     private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
     private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
-    private lateinit var viewModel: ImagesSelectModel
-    private lateinit var imagesAdapter: ImagesAdapter
+    private val viewModel: ImagesSelectModel by lazy {
+        ImagesSelectModel()
+    }
+    private val imagesAdapter: ImagesAdapter by lazy {
+        ImagesAdapter(MAX_INPUT_SIZE, viewModel)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = ImagesSelectModel()
-        imagesAdapter = ImagesAdapter(MAX_INPUT_SIZE, viewModel)
-        imageResultLauncher = startActivityResult(
-            object : SelectionResult {
-                override fun onResultOk(data: Intent) {
-                    imagesAdapter.addImages(data.getContentAsList())
-                }
-
-                override fun onResultFailed() {
-//                    TODO("Not yet implemented")
-                    Log.i(TAG, "imageResultLauncher onResultFailed")
-                }
-            }
-        )
         permissionRequestLauncher = requestPermissionLauncher(
             object : PermissionResult {
                 override fun onGranted() {
@@ -64,6 +55,18 @@ class ImagesSelectFragment : FragmentStep() {
                     snackBar.setAction(R.string.OK) {
                         snackBar.dismiss()
                     }.show()
+                }
+            }
+        )
+        imageResultLauncher = startActivityResult(
+            object : SelectionResult {
+                override fun onResultOk(data: Intent) {
+                    imagesAdapter.addImages(data.getContentAsList())
+                }
+
+                override fun onResultFailed() {
+//                    TODO("Not yet implemented")
+                    Log.i(TAG, "imageResultLauncher onResultFailed")
                 }
             }
         )
@@ -99,6 +102,10 @@ class ImagesSelectFragment : FragmentStep() {
             binding.select.isEnabled = !isFull
         }
 
+        viewModel.isValid.observe(viewLifecycleOwner) { isValid ->
+            (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValid)
+        }
+
         return binding.root
     }
 
@@ -110,26 +117,14 @@ class ImagesSelectFragment : FragmentStep() {
     }
 
     override fun onBackClicked(viewPager: ViewPager2) {
-        showLeaveDialog()
+        showLeaveDialog(requireActivity())
     }
 
-    private fun showLeaveDialog() {
-        val dialog = makeDialog(
-            requireContext(),
-            object : OnDialogClicked {
-                override fun onPositiveButtonClicked() {
-                    requireActivity().finish()
-                }
 
-                override fun onNegativeButtonClicked() {}
-            },
-            getString(R.string.quit_post_title),
-            getString(R.string.quit_post_message)
-        )
-        dialog.apply {
-            show()
-            separateButtonsBy(10)
-        }
+    override fun onResume() {
+        super.onResume()
+        val lastState = viewModel.isValid.value!!
+        (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(lastState)
     }
-
 }
+

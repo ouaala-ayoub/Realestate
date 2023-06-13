@@ -24,7 +24,7 @@ class ImagesAdapter(
     private var imagesList: Images = Images(
         MutableList(imagesNumber) {
             null
-        },
+        }
     )
 
     inner class ImagesHolder(private val binding: SingleImageBinding) :

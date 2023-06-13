@@ -12,8 +12,16 @@ import com.example.realestate.utils.swap
 class ImagesSelectModel : ViewModel() {
 
     private val _isFull = MutableLiveData<Boolean>(false)
+    private val _isValid = MutableLiveData<Boolean>(false)
+
     val isFull: LiveData<Boolean>
         get() = _isFull
+    val isValid: LiveData<Boolean>
+        get() = _isValid
+
+    private fun updateIsValid(images: Images) {
+        _isValid.postValue(images.imageUris.any { it != null })
+    }
 
     private fun updateIsFull(images: Images) {
         _isFull.postValue(!images.imageUris.contains(null))
@@ -44,6 +52,7 @@ class ImagesSelectModel : ViewModel() {
 //            notifyItemChanged(position)
         rv.notifyDataSetChanged()
         updateIsFull(images)
+        updateIsValid(images)
     }
 
     fun addImages(
@@ -61,6 +70,7 @@ class ImagesSelectModel : ViewModel() {
             }
         }
         updateIsFull(images)
+        updateIsValid(images)
     }
 
     fun getResult(images: Images): List<Uri> {

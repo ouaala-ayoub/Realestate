@@ -50,4 +50,19 @@
     <string name="image">Image</string>
     <string name="show_first">Show First</string>
 
+    <!--    step two strings-->
+    <string name="title">Title</string>
+    <string name="category">Select a Category</string>
+    <string name="obligatory">Obligatory</string>
+    <string name="price_et">Price</string>
+    <string name="usd">USD</string>
+    <string name="eu">EU</string>
+    <string name="currency">Currency</string>
+
+    <!--    step three strings-->
+    <string name="description">Description</string>
+    <string name="country">Country</string>
+    <string name="city">City</string>
+    <string name="street">Street</string>
+
 </resources>

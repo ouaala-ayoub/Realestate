@@ -16,12 +16,12 @@ class FragmentsAdapter(fa: FragmentActivity, private val fragmentList: List<Frag
         return fragmentList[position]
     }
 
-    fun onNextClicked(position: Int, viewPager: ViewPager2, post: Post) {
-        fragmentList[position].onNextClicked(viewPager, post)
+    fun onNextClicked(viewPager: ViewPager2, post: Post) {
+        fragmentList[viewPager.currentItem].onNextClicked(viewPager, post)
     }
 
-    fun onBackClicked(position: Int, viewPager: ViewPager2) {
-        fragmentList[position].onBackClicked(viewPager)
+    fun onBackClicked(viewPager: ViewPager2) {
+        fragmentList[viewPager.currentItem].onBackClicked(viewPager)
     }
 
 }

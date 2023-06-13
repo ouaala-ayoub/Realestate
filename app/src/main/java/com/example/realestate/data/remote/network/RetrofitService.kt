@@ -10,6 +10,16 @@ import retrofit2.http.*
 
 interface RetrofitService {
 
+    //locations
+//    @GET("countries")
+//    fun getCountries(): Call<List<String>>
+//
+//    @GET("cities")
+//    fun getCities(): Call<List<String>>
+//
+//    @GET("streets")
+//    fun getStreets(): Call<List<String>>
+
     //posts
     @GET("posts")
     fun getPosts(

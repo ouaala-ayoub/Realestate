@@ -3,10 +3,7 @@ package com.example.realestate.ui.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.realestate.data.models.MessageResponse
-import com.example.realestate.data.models.Post
 import com.example.realestate.data.repositories.PostsRepository
-import com.example.realestate.utils.handleApiRequest
 
 class AddPostModel(private val repository: PostsRepository) : ViewModel() {
 
@@ -14,15 +11,14 @@ class AddPostModel(private val repository: PostsRepository) : ViewModel() {
         const val TAG = "AddPostModel"
     }
 
-    private val _requestResponse = MutableLiveData<MessageResponse?>()
-    private val _loading = MutableLiveData<Boolean>()
+    private val _isValidData = MutableLiveData(true)
 
-    val requestResponse: LiveData<MessageResponse?>
-        get() = _requestResponse
-    val loading: LiveData<Boolean>
-        get() = _loading
+    val isValidData: LiveData<Boolean>
+        get() = _isValidData
 
-    fun addPost(post: Post) {
-        handleApiRequest(repository.addPost(post), _loading, _requestResponse, TAG)
+    fun updateIsValidData(newValue: Boolean) {
+        _isValidData.postValue(newValue)
     }
+
+
 }

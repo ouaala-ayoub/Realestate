@@ -7,8 +7,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -18,7 +22,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
@@ -30,6 +36,7 @@ import com.example.realestate.data.models.ErrorResponse
 import com.example.realestate.data.models.Post
 import com.example.realestate.data.models.SearchParams
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.gson.Gson
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -356,4 +363,65 @@ fun makeSnackBar(
     duration: Int
 ): Snackbar {
     return Snackbar.make(view, message, duration)
+}
+
+fun MaterialAutoCompleteTextView.setWithList(
+    list: List<String>,
+    context: Context
+): ArrayAdapter<String> {
+    val adapter = ArrayAdapter(context, R.layout.list_item, list)
+    this.setAdapter(adapter)
+    return adapter
+}
+
+fun MaterialAutoCompleteTextView.setUpAndHandleSearch(list: List<String>, context: Context): ArrayAdapter<String> {
+    val adapter = setWithList(list, context)
+    addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(
+            s: CharSequence?,
+            start: Int,
+            count: Int,
+            after: Int
+        ) {
+        }
+
+        override fun onTextChanged(
+            s: CharSequence?,
+            start: Int,
+            before: Int,
+            count: Int
+        ) {
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            adapter.filter.filter(s)
+        }
+    })
+    return adapter
+}
+
+
+fun EditText.updateLiveData(liveData: MutableLiveData<String>) {
+    this.doOnTextChanged { text, _, _, _ ->
+        liveData.value = text.toString()
+    }
+}
+
+fun showLeaveDialog(activity: Activity) {
+    val dialog = makeDialog(
+        activity,
+        object : OnDialogClicked {
+            override fun onPositiveButtonClicked() {
+                activity.finish()
+            }
+
+            override fun onNegativeButtonClicked() {}
+        },
+        activity.getString(R.string.quit_post_title),
+        activity.getString(R.string.quit_post_message)
+    )
+    dialog.apply {
+        show()
+        separateButtonsBy(10)
+    }
 }
