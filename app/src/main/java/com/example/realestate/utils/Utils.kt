@@ -37,6 +37,9 @@ import com.example.realestate.data.models.Post
 import com.example.realestate.data.models.SearchParams
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.PhoneAuthCredential
 import com.google.gson.Gson
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -45,6 +48,11 @@ import retrofit2.Response
 
 
 const val TAG = "Utils"
+
+interface Task {
+    fun onSuccess(user: FirebaseUser?)
+    fun onFail(e: Exception?)
+}
 
 interface HandleSubmitInterface {
     fun onNextClicked(viewPager: ViewPager2, post: Post)
@@ -73,6 +81,14 @@ interface ActivityResultListener {
 
 interface OnPostClickListener {
     fun onClick(postId: String)
+}
+
+interface OnVerificationCompleted {
+    fun onCodeSent(verificationId: String)
+
+    fun onCompleted(credential: PhoneAuthCredential) = null
+
+    fun onFail(e: FirebaseException) = null
 }
 
 interface AdditionalCode {
@@ -374,7 +390,10 @@ fun MaterialAutoCompleteTextView.setWithList(
     return adapter
 }
 
-fun MaterialAutoCompleteTextView.setUpAndHandleSearch(list: List<String>, context: Context): ArrayAdapter<String> {
+fun MaterialAutoCompleteTextView.setUpAndHandleSearch(
+    list: List<String>,
+    context: Context
+): ArrayAdapter<String> {
     val adapter = setWithList(list, context)
     addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(
@@ -424,4 +443,9 @@ fun showLeaveDialog(activity: Activity) {
         show()
         separateButtonsBy(10)
     }
+}
+
+inline fun <reified T> goToActivity(context: Context) {
+    val intent = Intent(context, T::class.java)
+    context.startActivity(intent)
 }

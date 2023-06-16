@@ -26,7 +26,7 @@
 
     <!--bottom navigation menu-->
     <string name="home">Home</string>
-    <string name="favourites">Favourites</string>
+    <string name="saved">Saved</string>
     <string name="add_a_post">Add a Post</string>
 
     <!--    permission-->
@@ -64,5 +64,18 @@
     <string name="country">Country</string>
     <string name="city">City</string>
     <string name="street">Street</string>
+    <string name="error">Unexpected Error</string>
+    <string name="finish_dialog_title">Last Step</string>
+    <string name="finish_dialog_message">Are you sure of all the data entered ?</string>
+
+    <!--    sms send strings-->
+    <string name="verify_your_number">Verify Your Number</string>
+    <string name="please_enter_your_country_and_your_phone_number">Please enter your Country and your Phone Number</string>
+    <string name="send">SEND</string>
+    <string name="no_user">No user</string>
+    <string name="logout">Logout</string>
+    <string name="verify">Verify</string>
+    <string name="verification_code">Verification code</string>
+    <string name="add_additional_data_name">Add additional data (name,....)</string>
 
 </resources>

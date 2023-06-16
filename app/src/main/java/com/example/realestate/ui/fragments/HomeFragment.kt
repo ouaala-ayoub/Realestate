@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.realestate.R
 import com.example.realestate.data.models.SearchParams
@@ -54,7 +55,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
         postsAdapter = PostsAdapter(
             object : OnPostClickListener {
                 override fun onClick(postId: String) {
-                    Log.d(TAG, "onClick: $postId")
+                    goToPostFragment(postId)
                 }
             }
         )
@@ -182,6 +183,11 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
     override fun onResultCancelled() {
         Log.d(TAG, "onResultCancelled")
+    }
+
+    private fun goToPostFragment(postId: String) {
+        val action = HomeFragmentDirections.actionHomeFragmentToPostPageFragment2(postId)
+        findNavController().navigate(action)
     }
 
 }

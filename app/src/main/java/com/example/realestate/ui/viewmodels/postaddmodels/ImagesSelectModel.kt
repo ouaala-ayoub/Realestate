@@ -1,4 +1,4 @@
-package com.example.realestate.ui.viewmodels
+package com.example.realestate.ui.viewmodels.postaddmodels
 
 import android.net.Uri
 import androidx.lifecycle.LiveData

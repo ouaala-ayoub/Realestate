@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/verification_steps"
+    app:startDestination="@id/smsSendFragment">
+
+    <fragment
+        android:id="@+id/smsSendFragment"
+        android:name="com.example.realestate.ui.fragments.user_register_steps.SmsSendFragment"
+        android:label="fragment_sms_send"
+        tools:layout="@layout/fragment_sms_send" >
+        <action
+            android:id="@+id/action_smsSendFragment_to_verificationCodeFragment"
+            app:destination="@id/verificationCodeFragment" />
+        <action
+            android:id="@+id/action_smsSendFragment_to_addInfoFragment2"
+            app:destination="@id/addInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/verificationCodeFragment"
+        android:name="com.example.realestate.ui.fragments.user_register_steps.VerificationCodeFragment"
+        android:label="fragment_verification_code"
+        tools:layout="@layout/fragment_verification_code" >
+        <argument
+            android:name="verificationId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_verificationCodeFragment_to_addInfoFragment3"
+            app:destination="@id/addInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addInfoFragment"
+        android:name="com.example.realestate.ui.fragments.user_register_steps.AddInfoFragment"
+        android:label="fragment_add_info"
+        tools:layout="@layout/fragment_add_info" >
+        <argument
+            android:name="phoneNumber"
+            app:argType="string" />
+    </fragment>
+</navigation>

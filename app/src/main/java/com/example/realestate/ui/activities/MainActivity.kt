@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -19,6 +20,8 @@ import com.example.realestate.databinding.ActivityMainBinding
 import com.example.realestate.utils.ActivityResultListener
 import com.example.realestate.utils.SelectionResult
 import com.example.realestate.utils.startActivityResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 class MainActivity : AppCompatActivity(), ActivityResultListener {
 
@@ -43,7 +46,6 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                     params = searchParams
                     backToHomeFragment()
                     resultListener.onResultOk(params)
-
 
                     Log.d(TAG, "searchParams result : $searchParams")
                 }
@@ -110,10 +112,35 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         val navController = navHost.navController
 
         binding.bottomNav.setupWithNavController(navController)
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            // Update the selected item in the bottom navigation bar based on the current destination
-            val destinationId = destination.id
-            binding.bottomNav.menu.findItem(destinationId)?.isChecked = true
+
+        binding.bottomNav.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.addPostActivity -> {
+                    //to change
+                    val userConnected = FirebaseAuth.getInstance().currentUser != null
+                    if (userConnected) {
+                        // User is connected, open PostAddActivity
+                        navController.navigate(R.id.addPostActivity)
+                    } else {
+                        // User is not connected, open UserRegisterActivity
+                        navController.navigate(R.id.userRegisterActivity)
+                    }
+                }
+                // Handle other menu items if needed
+            }
+            true
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Manually set the selected item in the bottom navigation view based on the current destination
+        val navDestination = findNavController(R.id.fragment_container).currentDestination
+        when (navDestination?.id) {
+            R.id.homeFragment -> binding.bottomNav.selectedItemId = R.id.homeNav
+            R.id.postPageFragment -> binding.bottomNav.selectedItemId = R.id.homeNav
+            // Add cases for other destinations if needed
         }
     }
 
@@ -124,7 +151,33 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
+        val view = binding.navView.getHeaderView(0)
+        val phoneTv = view.findViewById<TextView>(R.id.user_phone)
+
+        handleUser(FirebaseAuth.getInstance().currentUser, phoneTv)
+
+        FirebaseAuth.getInstance().addAuthStateListener { auth ->
+            handleUser(auth.currentUser, phoneTv)
+        }
+
+        binding.navView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.logout -> {
+                    logout()
+                }
+            }
+            true
+        }
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun handleUser(user: FirebaseUser?, phoneTv: TextView) {
+        if (user != null) {
+            phoneTv.text = user.phoneNumber
+        } else {
+            phoneTv.text = getString(R.string.no_user)
+        }
     }
 
     private fun handleDrawerLayout(drawerLayout: DrawerLayout) {
@@ -145,6 +198,10 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
     fun setActivityResultListener(listener: ActivityResultListener) {
         resultListener = listener
+    }
+
+    private fun logout() {
+        FirebaseAuth.getInstance().signOut()
     }
 
 }

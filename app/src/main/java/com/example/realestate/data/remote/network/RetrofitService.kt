@@ -34,6 +34,9 @@ interface RetrofitService {
     @POST("posts")
     fun addPost(post: Post): Call<MessageResponse>
 
+    @GET("posts/{id}")
+    fun getPostById(@Path("id") postId: String): Call<Post>
+
     @DELETE("posts/{id}")
     fun deletePost(@Path("id") postId: String): Call<IdResponse>
 

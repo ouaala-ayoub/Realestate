@@ -3,21 +3,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_elements"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/homeNav">
 
-    <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.example.realestate.ui.fragments.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/favouritesFragment"
         android:name="com.example.realestate.ui.fragments.FavouritesFragment"
         android:label="fragment_favourites"
         tools:layout="@layout/fragment_favourites" />
+    <navigation android:id="@+id/homeNav"
+        app:startDestination="@id/homeFragment">
+        <fragment
+            android:id="@+id/homeFragment"
+            android:name="com.example.realestate.ui.fragments.HomeFragment"
+            android:label="fragment_home"
+            tools:layout="@layout/fragment_home" >
+            <action
+                android:id="@+id/action_homeFragment_to_postPageFragment2"
+                app:destination="@id/postPageFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/postPageFragment"
+            android:name="com.example.realestate.ui.fragments.PostPageFragment"
+            android:label="fragment_post_page"
+            tools:layout="@layout/fragment_post_page" >
+            <argument
+                android:name="postId"
+                app:argType="string" />
+        </fragment>
+    </navigation>
     <activity
         android:id="@+id/addPostActivity"
         android:name="com.example.realestate.ui.activities.AddPostActivity"
         android:label="activity_add_post"
         tools:layout="@layout/activity_add_post" />
+    <activity
+        android:id="@+id/userRegisterActivity"
+        android:name="com.example.realestate.ui.activities.UserRegisterActivity"
+        android:label="activity_user_register"
+        tools:layout="@layout/activity_user_register" />
 </navigation>

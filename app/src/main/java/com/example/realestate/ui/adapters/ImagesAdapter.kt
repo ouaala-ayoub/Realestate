@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.realestate.data.models.Images
 import com.example.realestate.databinding.SingleImageBinding
-import com.example.realestate.ui.viewmodels.ImagesSelectModel
+import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
 import com.example.realestate.utils.swap
 
 class ImagesAdapter(

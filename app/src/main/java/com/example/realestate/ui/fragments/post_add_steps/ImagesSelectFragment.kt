@@ -15,7 +15,7 @@ import com.example.realestate.data.models.Post
 import com.example.realestate.databinding.FragmentImagesSelectBinding
 import com.example.realestate.ui.activities.AddPostActivity
 import com.example.realestate.ui.adapters.ImagesAdapter
-import com.example.realestate.ui.viewmodels.ImagesSelectModel
+import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
 import com.example.realestate.utils.*
 import com.google.android.material.snackbar.Snackbar
 

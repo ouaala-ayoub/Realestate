@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/homeFragment"
+        android:id="@+id/homeNav"
         android:icon="@drawable/baseline_home_24"
         android:title="@string/home" />
     <item
         android:id="@+id/favouritesFragment"
-        android:icon="@drawable/baseline_favorite_24"
-        android:title="@string/favourites" />
+        android:icon="@drawable/baseline_bookmark_24"
+        android:title="@string/saved" />
     <item
         android:id="@+id/addPostActivity"
         android:icon="@drawable/baseline_add_business_24"

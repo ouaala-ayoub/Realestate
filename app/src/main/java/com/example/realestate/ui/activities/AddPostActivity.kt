@@ -12,14 +12,14 @@ import com.example.realestate.ui.adapters.FragmentsAdapter
 import com.example.realestate.ui.fragments.post_add_steps.ImagesSelectFragment
 import com.example.realestate.ui.fragments.post_add_steps.StepThreeFragment
 import com.example.realestate.ui.fragments.post_add_steps.StepTwoFragment
-import com.example.realestate.ui.viewmodels.AddPostModel
+import com.example.realestate.ui.viewmodels.postaddmodels.AddPostModel
 import com.example.realestate.utils.showLeaveDialog
 import com.google.android.material.tabs.TabLayoutMediator
 
 class AddPostActivity : AppCompatActivity() {
 
     val addPostModel: AddPostModel by lazy {
-        AddPostModel(PostsRepository(Retrofit.getInstance()))
+        AddPostModel()
     }
     private lateinit var binding: ActivityAddPostBinding
     private val fragmentsList: List<FragmentStep> by lazy {

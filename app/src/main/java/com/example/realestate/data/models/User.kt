@@ -10,7 +10,7 @@ data class User(
     val name: String,
 
     @SerializedName("phone")
-    val phone: String,
+    val phone: Phone,
 
     @SerializedName("isAdmin")
     val isAdmin: Boolean,

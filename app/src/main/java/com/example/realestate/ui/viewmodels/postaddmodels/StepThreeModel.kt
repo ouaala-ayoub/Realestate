@@ -1,4 +1,4 @@
-package com.example.realestate.ui.viewmodels
+package com.example.realestate.ui.viewmodels.postaddmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -10,6 +10,10 @@ import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.utils.handleApiRequest
 
 class StepThreeModel(private val repository: PostsRepository) : ViewModel() {
+
+    companion object {
+        private const val TAG = "StepThreeModel"
+    }
 
     //request related live data
     private val _requestResponse = MutableLiveData<MessageResponse?>()
@@ -77,13 +81,14 @@ class StepThreeModel(private val repository: PostsRepository) : ViewModel() {
         get() = _descriptionLiveData
 
     fun addPost(post: Post) {
-        handleApiRequest(repository.addPost(post), _loading, _requestResponse, AddPostModel.TAG)
+        handleApiRequest(repository.addPost(post), _loading, _requestResponse, TAG)
     }
 
-    fun getCountries(){
+    fun getCountries() {
 //        handleApiRequest()
     }
-    fun getCities(){
+
+    fun getCities() {
 //        handleApiRequest()
     }
 

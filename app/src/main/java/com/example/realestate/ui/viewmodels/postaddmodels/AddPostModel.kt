@@ -1,11 +1,11 @@
-package com.example.realestate.ui.viewmodels
+package com.example.realestate.ui.viewmodels.postaddmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.realestate.data.repositories.PostsRepository
 
-class AddPostModel(private val repository: PostsRepository) : ViewModel() {
+class AddPostModel() : ViewModel() {
 
     companion object {
         const val TAG = "AddPostModel"

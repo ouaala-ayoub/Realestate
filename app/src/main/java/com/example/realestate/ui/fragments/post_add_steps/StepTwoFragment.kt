@@ -10,7 +10,7 @@ import com.example.realestate.data.models.FragmentStep
 import com.example.realestate.data.models.Post
 import com.example.realestate.databinding.FragmentStepTwoBinding
 import com.example.realestate.ui.activities.AddPostActivity
-import com.example.realestate.ui.viewmodels.StepTwoModel
+import com.example.realestate.ui.viewmodels.postaddmodels.StepTwoModel
 import com.example.realestate.utils.setUpAndHandleSearch
 import com.example.realestate.utils.updateLiveData
 
@@ -38,19 +38,15 @@ class StepTwoFragment : FragmentStep() {
         binding = FragmentStepTwoBinding.inflate(inflater, container, false)
 
         stepTwoModel.categories.observe(viewLifecycleOwner) { categories ->
+            binding.categoryEditText.apply {
+                val adapter = setUpAndHandleSearch(categories, requireContext())
 
-        }
-
-        val test = listOf("Dar", "ard", "tomobile", "test")
-        binding.categoryEditText.apply {
-            val adapter = setUpAndHandleSearch(test, requireContext())
-
-            //clear filter after user choose one item
-            setOnItemClickListener { _, view, _, _ ->
-                adapter.filter.filter(null)
+                //clear filter after user choose one item
+                setOnItemClickListener { _, view, _, _ ->
+                    adapter.filter.filter(null)
+                }
             }
         }
-
 
         //validity of the data entered handling
         validateTheData(binding.usd.text.toString())
