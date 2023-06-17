@@ -4,10 +4,10 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.realestate.data.models.Images
 import com.example.realestate.databinding.SingleImageBinding
 import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
+import com.example.realestate.utils.loadImageUri
 import com.example.realestate.utils.swap
 
 class ImagesAdapter(
@@ -48,11 +48,7 @@ class ImagesAdapter(
                 currentImage?.apply {
                     //if not null means image place holder contains a selected images
 //                    selectedImage.setImageURI(this)
-                    Glide
-                        .with(selectedImage)
-                        .load(this)
-                        .fitCenter()
-                        .into(selectedImage)
+                    selectedImage.loadImageUri(this)
                 }
 
                 //to enhance

@@ -9,7 +9,9 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -18,29 +20,110 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5">
 
-        <TextView
-            android:id="@+id/post_name"
+        <!-- Post Title -->
+
+        <!-- Post Images -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/media_vp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/colorStatusBar"
-            android:textSize="25sp" />
+            android:nestedScrollingEnabled="true"/>
+
+
+
+        <!-- Post Category -->
+        <TextView
+            android:id="@+id/titleTextView"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/colorSecondary"
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/price"
+            android:id="@+id/categoryTextView"
+            style="@style/TextAppearance.MaterialComponents.Body2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/colorStatusBar"
-            android:textSize="25sp" />
+            android:layout_marginTop="5dp"
+            android:textSize="18sp"
+            android:textStyle="italic" />
 
+        <!-- Post Price -->
         <TextView
-            android:id="@+id/owner"
+            android:id="@+id/priceTextView"
+            style="@style/TextAppearance.MaterialComponents.Subtitle2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/black"
-            android:textSize="25sp" />
+            android:layout_marginTop="5dp"
+            android:textSize="18sp" />
+
+        <!-- Post Location -->
+        <TextView
+            android:id="@+id/locationTextView"
+            style="@style/TextAppearance.MaterialComponents.Subtitle2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            app:drawableStartCompat="@drawable/baseline_location_on_24"
+            app:drawableTint="@color/colorSecondary"
+            android:layout_marginTop="5dp" />
+
+        <!-- Post Owner -->
+        <TextView
+            android:id="@+id/typeTextView"
+            style="@style/TextAppearance.MaterialComponents.Subtitle2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/ownerTextView"
+                style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/call"
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:text="@string/call" />
+
+                <Button
+                    android:id="@+id/message"
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:text="@string/message" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <!-- Post Type -->
+
     </LinearLayout>
 
     <ProgressBar
@@ -55,5 +138,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

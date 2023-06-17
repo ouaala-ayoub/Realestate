@@ -48,9 +48,10 @@ class ImagesSelectModel : ViewModel() {
         images.imageUris.apply {
             removeAt(position)
             add(null)
+            rv.notifyDataSetChanged()
         }
 //            notifyItemChanged(position)
-        rv.notifyDataSetChanged()
+
         updateIsFull(images)
         updateIsValid(images)
     }

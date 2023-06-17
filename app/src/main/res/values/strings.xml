@@ -78,4 +78,12 @@
     <string name="verification_code">Verification code</string>
     <string name="add_additional_data_name">Add additional data (name,....)</string>
 
+    <!--    post page strings-->
+    <string name="call">Call</string>
+    <string name="message">Message</string>
+    <!--    to modify-->
+    <string name="image_url">https://picsum.photos/%1$s</string>
+    <string name="video_url">video_base_url%1$s</string>
+    <string name="error_loading_image">Error Loading image</string>
+
 </resources>

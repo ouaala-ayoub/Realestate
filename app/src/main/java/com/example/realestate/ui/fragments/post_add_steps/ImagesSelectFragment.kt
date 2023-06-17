@@ -1,6 +1,8 @@
 package com.example.realestate.ui.fragments.post_add_steps
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -87,6 +89,12 @@ class ImagesSelectFragment : FragmentStep() {
 
         binding.select.setOnClickListener {
             //handle permissions and open the gallery
+            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_IMAGES
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+
             requireActivity().handlePermission(object : PermissionResult {
                 override fun onGranted() {
                     imageResultLauncher.openGallery()
@@ -95,7 +103,7 @@ class ImagesSelectFragment : FragmentStep() {
                 override fun onNonGranted() {
                     permissionRequestLauncher.requestStoragePermission()
                 }
-            })
+            }, permission)
         }
 
         viewModel.isFull.observe(viewLifecycleOwner) { isFull ->

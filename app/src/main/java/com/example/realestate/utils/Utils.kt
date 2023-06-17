@@ -11,10 +11,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -24,12 +21,12 @@ import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.example.realestate.R
 import com.example.realestate.data.models.Error
 import com.example.realestate.data.models.ErrorResponse
@@ -180,6 +177,35 @@ fun circularProgressBar(context: Context): CircularProgressDrawable {
     return circularProgressDrawable
 }
 
+fun ImageView.loadImage(imageName: String) {
+    Glide.with(this)
+        .load(context.getString(R.string.image_url, imageName))
+        .placeholder(circularProgressBar(context))
+        .error(R.drawable.baseline_broken_image_24)
+        .into(this)
+}
+
+fun VideoView.loadVideo(videoName: String) {
+    val videoUrl = this.context.getString(R.string.video_url, videoName)
+
+    setVideoPath(videoUrl)
+    setOnClickListener {
+        if (isPlaying) {
+            stopPlayback()
+        } else {
+            start()
+        }
+    }
+}
+
+fun ImageView.loadImageUri(imageUri: Uri) {
+    Glide.with(this)
+        .load(imageUri)
+        .placeholder(circularProgressBar(context))
+        .error(R.drawable.baseline_broken_image_24)
+        .into(this)
+}
+
 fun Context.toast(message: String, length: Int) =
     Toast.makeText(this, message, length).show()
 
@@ -326,16 +352,15 @@ fun ActivityResultLauncher<String>.requestStoragePermission() {
     }
 }
 
-fun Activity.handlePermission(onPermissionChecked: PermissionResult) {
-    val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        Manifest.permission.READ_MEDIA_IMAGES
-    } else {
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    }
+fun ActivityResultLauncher<String>.requestCallPermission() {
+    this.launch(Manifest.permission.CALL_PHONE)
+}
+
+fun Activity.handlePermission(onPermissionChecked: PermissionResult, permission: String) {
     when {
         ContextCompat.checkSelfPermission(
             this,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            permission
         ) == PackageManager.PERMISSION_GRANTED -> {
             onPermissionChecked.onGranted()
         }

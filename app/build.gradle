@@ -4,7 +4,6 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-parcelize")
     id 'com.google.gms.google-services'
-//    id 'com.google.gms.google-services'
 }
 
 android {
@@ -89,7 +88,7 @@ dependencies {
 //    implementation 'com.github.sharish:ShimmerRecyclerView:v1.3'
 //
 //    //image zoom
-//    implementation 'com.github.chrisbanes:PhotoView:2.1.4'
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
 
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
