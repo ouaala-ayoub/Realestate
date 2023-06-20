@@ -67,6 +67,8 @@
     <string name="error">Unexpected Error</string>
     <string name="finish_dialog_title">Last Step</string>
     <string name="finish_dialog_message">Are you sure of all the data entered ?</string>
+    <string name="or">Or</string>
+    <string name="automatically_get_location">Automatically get location</string>
 
     <!--    sms send strings-->
     <string name="verify_your_number">Verify Your Number</string>
@@ -85,5 +87,6 @@
     <string name="image_url">https://picsum.photos/%1$s</string>
     <string name="video_url">video_base_url%1$s</string>
     <string name="error_loading_image">Error Loading image</string>
+    <string name="no_gps">Please Enable Your GPS</string>
 
 </resources>

@@ -103,7 +103,7 @@ class ImagesSelectFragment : FragmentStep() {
                 override fun onNonGranted() {
                     permissionRequestLauncher.requestStoragePermission()
                 }
-            }, permission)
+            }, listOf(permission))
         }
 
         viewModel.isFull.observe(viewLifecycleOwner) { isFull ->

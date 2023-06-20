@@ -16,6 +16,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/colorStatusBar</item>
         <!-- Customize your theme here. -->
+        <item name="textInputOutlinedStyle">@style/MaterialEditTextStyle</item>
 
     </style>
 

@@ -7,9 +7,6 @@ data class Post(
     @SerializedName("_id")
     val id: String? = null,
 
-    @SerializedName("title")
-    var title: String,
-
     @SerializedName("description")
     var description: String? = null,
 
@@ -23,7 +20,7 @@ data class Post(
     var price: Number,
 
     @SerializedName("location")
-    var location: Location,
+    var location: LocationData,
 
     @SerializedName("ownerId")
     val ownerId: String,
@@ -36,14 +33,13 @@ data class Post(
 ) {
     companion object {
         val emptyPost = Post(
-            title = "",
             type = Type.RENT.value,
             price = 0,
             category = "",
             currency = "",
             media = listOf(),
             ownerId = "",
-            location = Location(
+            location = LocationData(
                 "",
                 ""
             )

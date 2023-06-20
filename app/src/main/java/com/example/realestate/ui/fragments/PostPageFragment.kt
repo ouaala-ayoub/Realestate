@@ -97,7 +97,7 @@ class PostPageFragment : Fragment() {
                                     permissionLauncher.requestCallPermission()
                                 }
 
-                            }, android.Manifest.permission.CALL_PHONE)
+                            }, listOf(android.Manifest.permission.CALL_PHONE))
 
                         }
                     }
@@ -111,7 +111,6 @@ class PostPageFragment : Fragment() {
                     getUserById(post.ownerId)
 
                     //bind the data
-                    binding.titleTextView.text = post.title
                     binding.priceTextView.text = post.price.toString()
                     binding.categoryTextView.text = post.category
                     binding.locationTextView.text = getString(
