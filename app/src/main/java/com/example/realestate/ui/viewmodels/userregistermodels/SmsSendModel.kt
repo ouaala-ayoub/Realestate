@@ -19,7 +19,7 @@ class SmsSendModel(private val auth: FirebaseAuth) : LoginModel() {
     private fun getCallBack(
         onComplete: OnVerificationCompleted
     ): PhoneAuthProvider.OnVerificationStateChangedCallbacks {
-        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        return object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 // This callback will be invoked in two situations:
@@ -74,7 +74,6 @@ class SmsSendModel(private val auth: FirebaseAuth) : LoginModel() {
             }
 
         }
-        return callbacks
     }
 
     fun sendVerification(

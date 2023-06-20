@@ -3,7 +3,7 @@
 
     <style name="OutlinedButtonStyle" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="textAllCaps">false</item>
-        <item name="strokeColor">@color/colorPrimary</item>
+        <item name="strokeColor">@color/stroke_button_color</item>
         <item name="strokeWidth">@dimen/button_stroke_size</item>
     </style>
 
@@ -15,5 +15,9 @@
 
     <style name="MyActionBarTitleStyle" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/teal_700</item>
+    </style>
+    
+    <style name="MaterialEditTextStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/edit_text_stroke</item>
     </style>
 </resources>

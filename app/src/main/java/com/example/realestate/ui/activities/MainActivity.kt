@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
@@ -20,6 +21,7 @@ import com.example.realestate.databinding.ActivityMainBinding
 import com.example.realestate.utils.ActivityResultListener
 import com.example.realestate.utils.SelectionResult
 import com.example.realestate.utils.startActivityResult
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
+    lateinit var bottomNavView: BottomNavigationView
     private val searchLauncher = startActivityResult(
         object : SelectionResult {
             override fun onResultOk(data: Intent) {
@@ -63,7 +66,9 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         drawerLayout = binding.drawerLayout
+        bottomNavView = binding.bottomNav
 
         initialiseDrawerLayout(drawerLayout)
         setTheBottomNav()
@@ -126,6 +131,12 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                         navController.navigate(R.id.userRegisterActivity)
                     }
                 }
+                R.id.savedFragment -> {
+                    navController.navigate(R.id.savedFragment)
+                }
+                R.id.homeNav -> {
+                    navController.navigate(R.id.homeNav)
+                }
                 // Handle other menu items if needed
             }
             true
@@ -140,6 +151,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         when (navDestination?.id) {
             R.id.homeFragment -> binding.bottomNav.selectedItemId = R.id.homeNav
             R.id.postPageFragment -> binding.bottomNav.selectedItemId = R.id.homeNav
+            R.id.savedFragment -> binding.bottomNav.selectedItemId = R.id.savedFragment
             // Add cases for other destinations if needed
         }
     }

@@ -1,26 +1,32 @@
 package com.example.realestate.ui.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.AutoCompleteTextView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.realestate.R
+import com.example.realestate.data.models.Post
 import com.example.realestate.data.models.SearchParams
 import com.example.realestate.data.models.Type
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
+import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.FragmentHomeBinding
 import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.adapters.PostsAdapter
 import com.example.realestate.ui.viewmodels.HomeViewModel
 import com.example.realestate.utils.*
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 
 class HomeFragment : Fragment(), ActivityResultListener {
 
@@ -46,10 +52,8 @@ class HomeFragment : Fragment(), ActivityResultListener {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         searchParams = activity.params
 
-
-        Log.d(TAG, "searchParams from home fragment: $searchParams")
-
-        viewModel = HomeViewModel(PostsRepository(Retrofit.getInstance())).also {
+        val retrofit = Retrofit.getInstance()
+        viewModel = HomeViewModel(PostsRepository(retrofit), StaticDataRepository(retrofit)).also {
             it.getPosts(searchParams)
         }
         postsAdapter = PostsAdapter(
@@ -101,8 +105,87 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
         binding.apply {
 
+            val items = listOf("Morocco", "UAE", "Armenia")
+
+//            viewModel.countries.observe(viewLifecycleOwner) { countries ->
+//                if (countries == null) return@observe
+//                countryEditText.apply {
+//                    val adapter = setUpAndHandleSearch(countries, object : OnSelected {
+//                        override fun onSelected(selectedItem: String) {
+//                            searchParams.location?.country = selectedItem
+//                            viewModel.getPosts(searchParams)
+//                        }
+//                    })
+//                    setOnItemClickListener { _, _, _, _ ->
+//                      //remove the filters to get all choices next time
+//                      adapter.filter.filter(null)
+//
+//                    //clear focus and hide keyboard after item selected
+//                    hideKeyboard()
+//                    clearFocus() }
+//                }
+//            }
+            countryEditText.apply {
+                val adapter = setUpAndHandleSearch(items, object : OnSelected {
+                    override fun onSelected(selectedItem: String) {
+                        searchParams.location?.country = selectedItem
+                        viewModel.getPosts(searchParams)
+                    }
+                })
+                setOnItemClickListener { _, _, _, _ ->
+                    //remove the filters to get all choices next time
+                    adapter.filter.filter(null)
+
+                    //clear focus and hide keyboard after item selected
+                    hideKeyboard()
+                    clearFocus()
+                }
+            }
+
+
+//            viewModel.categoriesList.observe(viewLifecycleOwner) { categories ->
+//                if (categories == null) return@observe
+//                categoriesChipGroup.apply {
+//                    fillWith(categories)
+//                    setOnCheckedStateChangeListener { group, checkedId ->
+//                        val selectedChip: Chip? = group.findViewById(checkedId[0])
+//                        val selectedCategory: String? = selectedChip?.text?.toString()
+//
+//                        Log.d(TAG, "selectedCategory: $selectedCategory")
+//
+//                        // Do something with the selected category
+//
+//                        searchParams.category = selectedCategory
+//                        viewModel.getPosts(searchParams)
+//                    }
+//                }
+//            }
+
+            val categoriesList: List<String> = listOf(
+                "dar",
+                "villa",
+                "ard",
+                "blabla",
+                "sheesh",
+                "blabla",
+                "blabla",
+                "blabla",
+                "test"
+            )
+            categoriesChipGroup.fillWith(categoriesList)
+
+            categoriesChipGroup.setOnCheckedStateChangeListener { group, checkedId ->
+                val selectedChip: Chip? = group.findViewById(checkedId[0])
+                val selectedCategory: String? = selectedChip?.text?.toString()
+
+                Log.d(TAG, "selectedCategory: $selectedCategory")
+
+                // Do something with the selected category
+            }
+
             selectedChipId = binding.rent.id
             binding.rent.isEnabled = false
+
             handleChips()
 
             swipeRefreshLayout.setOnRefreshListener {
@@ -114,15 +197,68 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 layoutManager = LinearLayoutManager(requireContext())
             }
 
+            //disable swipe refresh if not on top
+            vAppBar.addOnOffsetChangedListener { _, verticalOffset ->
+                val isAppBarExpanded = verticalOffset == 0
+                swipeRefreshLayout.isEnabled = isAppBarExpanded && !postRv.canScrollVertically(-1)
+            }
+
+
             viewModel.postsList.observe(viewLifecycleOwner) { posts ->
                 Log.d(TAG, "postsList: $posts")
+                handleHomeButton()
+                val test = listOf(
+                    Post.emptyPost,
+                    Post.emptyPost,
+                    Post.emptyPost,
+                    Post.emptyPost,
+                    Post.emptyPost,
+                    Post.emptyPost,
+                    Post.emptyPost,
+                )
                 posts?.apply {
-                    postsAdapter.setPostsList(posts)
+                    postsAdapter.setPostsList(test)
                     swipeRefreshLayout.isRefreshing = false
                 }
             }
         }
 
+    }
+
+
+    private fun AutoCompleteTextView.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    private fun handleHomeButton() {
+        (requireActivity() as MainActivity).bottomNavView.setOnItemReselectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.homeNav -> {
+                    binding.postRv.apply {
+                        if (layoutManager is LinearLayoutManager) {
+                            if ((layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() != 0) {
+                                //scroll to the top if home re clicked
+                                scrollToPosition(0)
+                                binding.vAppBar.setExpanded(true, true)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun ChipGroup.fillWith(categories: List<String>) {
+        for (category in categories) {
+            val chip = Chip(context)
+            chip.apply {
+                text = category
+                isCheckable = true
+            }
+            addView(chip)
+        }
     }
 
     private fun onChipClicked(view: View) {

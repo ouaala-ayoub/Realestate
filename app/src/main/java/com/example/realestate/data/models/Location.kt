@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Location(
+data class LocationData(
     @SerializedName("country")
-    val country: String,
+    var country: String,
 
     @SerializedName("city")
     val city: String,

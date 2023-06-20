@@ -6,7 +6,7 @@
         android:icon="@drawable/baseline_home_24"
         android:title="@string/home" />
     <item
-        android:id="@+id/favouritesFragment"
+        android:id="@+id/savedFragment"
         android:icon="@drawable/baseline_bookmark_24"
         android:title="@string/saved" />
     <item

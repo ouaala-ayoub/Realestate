@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import com.example.realestate.databinding.FragmentVerificationCodeBinding
 import com.example.realestate.ui.viewmodels.userregistermodels.VerificationCodeModel
 import com.example.realestate.utils.Task
+import com.example.realestate.utils.disableBackButton
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.PhoneAuthProvider
 
@@ -32,6 +33,7 @@ class VerificationCodeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "verificationId: $verificationId")
+
     }
 
     override fun onCreateView(
@@ -40,6 +42,7 @@ class VerificationCodeFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentVerificationCodeBinding.inflate(inflater, container, false)
+        requireActivity().disableBackButton(viewLifecycleOwner)
 
         binding.verify.setOnClickListener {
 

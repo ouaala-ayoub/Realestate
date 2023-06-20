@@ -39,7 +39,7 @@ class StepTwoFragment : FragmentStep() {
 
         stepTwoModel.categories.observe(viewLifecycleOwner) { categories ->
             binding.categoryEditText.apply {
-                val adapter = setUpAndHandleSearch(categories, requireContext())
+                val adapter = setUpAndHandleSearch(categories)
 
                 //clear filter after user choose one item
                 setOnItemClickListener { _, view, _, _ ->
@@ -69,7 +69,6 @@ class StepTwoFragment : FragmentStep() {
             wrapper._categoryLiveData.value = "are"
 
             //user input
-            titleEditText.updateLiveData(wrapper._titleLiveData)
             categoryEditText.updateLiveData(wrapper._categoryLiveData)
             priceEditText.updateLiveData(wrapper._priceLiveData)
 
@@ -92,7 +91,6 @@ class StepTwoFragment : FragmentStep() {
 //        add logic
         (requireActivity() as AddPostActivity).post.apply {
             stepTwoModel.liveDataWrapper.apply {
-                title = titleLiveData.value.toString()
                 category = categoryLiveData.value.toString()
                 price = priceLiveData.value!!.toInt()
                 currency = currencyLiveData.value.toString()

@@ -20,28 +20,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5">
 
-        <!-- Post Title -->
 
         <!-- Post Images -->
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/media_vp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="true"/>
-
-
+            android:nestedScrollingEnabled="true" />
 
         <!-- Post Category -->
-        <TextView
-            android:id="@+id/titleTextView"
-            style="@style/TextAppearance.MaterialComponents.Headline6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/colorSecondary"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
         <TextView
             android:id="@+id/categoryTextView"
             style="@style/TextAppearance.MaterialComponents.Body2"
@@ -66,10 +53,10 @@
             style="@style/TextAppearance.MaterialComponents.Subtitle2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:textSize="18sp"
             app:drawableStartCompat="@drawable/baseline_location_on_24"
-            app:drawableTint="@color/colorSecondary"
-            android:layout_marginTop="5dp" />
+            app:drawableTint="@color/colorSecondary" />
 
         <!-- Post Owner -->
         <TextView

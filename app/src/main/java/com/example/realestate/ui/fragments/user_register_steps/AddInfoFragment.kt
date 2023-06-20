@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.navArgs
 import com.example.realestate.databinding.FragmentAddInfoBinding
 
@@ -18,6 +19,7 @@ class AddInfoFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onCreateView(
@@ -26,6 +28,15 @@ class AddInfoFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentAddInfoBinding.inflate(inflater, container, false)
+        //imitate back button from activity behaviour
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    requireActivity().finish()
+                }
+
+            })
 
         binding.phoneAdd.text = phoneNumber
 

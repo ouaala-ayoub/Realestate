@@ -10,6 +10,7 @@
     <color name="night">#FF0D160B</color>
     <!-- Primary Color -->
     <color name="colorPrimary">#0D160B</color>
+    <color name="stroke_button_color">#0D160B</color>
     <!-- Darker Shade -->
     <color name="colorPrimaryDark">#0A1108</color>
     <!-- Lighter Shade -->

@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +22,8 @@ import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
@@ -113,6 +116,17 @@ fun Intent.getContentAsList(): List<Uri> {
     }
 
     return imagesList
+}
+
+fun FragmentActivity.disableBackButton(viewLifecycleOwner: LifecycleOwner) {
+    this.onBackPressedDispatcher.addCallback(
+        viewLifecycleOwner,
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+
+            }
+
+        })
 }
 
 fun <T> handleApiRequest(
@@ -252,11 +266,16 @@ fun AlertDialog.separateButtonsBy(margin: Int) {
 }
 
 fun RecyclerView.handleRefreshWithScrolling(swipeRefresh: SwipeRefreshLayout) {
-    this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-            val isRvDragging = newState == RecyclerView.SCROLL_STATE_DRAGGING
-            swipeRefresh.isEnabled = !isRvDragging
+//    this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//            super.onScrollStateChanged(recyclerView, newState)
+//            val isRvDragging = newState == RecyclerView.SCROLL_STATE_DRAGGING
+//            swipeRefresh.isEnabled = !isRvDragging
+//        }
+//    })
+    addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            swipeRefresh.isEnabled = !recyclerView.canScrollVertically(-1)
         }
     })
 }
@@ -301,6 +320,34 @@ fun Fragment.requestPermissionLauncher(permissionResult: PermissionResult): Acti
             permissionResult.onNonGranted()
         }
     }
+}
+
+fun Fragment.requestMultiplePermissions(permissionResult: LocationPermission): ActivityResultLauncher<Array<String>> {
+    return this.registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+
+        when {
+            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                // Precise location access granted.
+                permissionResult.onGrantedPrecise()
+            }
+            permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                // Only approximate location access granted.
+                permissionResult.onGrantedApproximate()
+            }
+            else -> {
+                // No location access granted.
+                permissionResult.onNonGranted()
+            }
+        }
+    }
+}
+
+interface LocationPermission {
+    fun onGrantedPrecise()
+    fun onGrantedApproximate()
+    fun onNonGranted()
 }
 
 fun ComponentActivity.startActivityResult(selectionResult: SelectionResult): ActivityResultLauncher<Intent> {
@@ -356,18 +403,19 @@ fun ActivityResultLauncher<String>.requestCallPermission() {
     this.launch(Manifest.permission.CALL_PHONE)
 }
 
-fun Activity.handlePermission(onPermissionChecked: PermissionResult, permission: String) {
+fun Activity.handlePermission(onPermissionChecked: PermissionResult, permissions: List<String>) {
+
+    val granted = permissions.all {
+        ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+    }
+    val showRationale = permissions.any {
+        shouldShowRequestPermissionRationale(this, it)
+    }
     when {
-        ContextCompat.checkSelfPermission(
-            this,
-            permission
-        ) == PackageManager.PERMISSION_GRANTED -> {
+        granted -> {
             onPermissionChecked.onGranted()
         }
-        shouldShowRequestPermissionRationale(
-            this,
-            permission
-        ) -> {
+        showRationale -> {
             showInContextUI(
                 this,
                 object : OnDialogClicked {
@@ -385,6 +433,15 @@ fun Activity.handlePermission(onPermissionChecked: PermissionResult, permission:
             onPermissionChecked.onNonGranted()
         }
     }
+}
+
+fun ActivityResultLauncher<Array<String>>.requestLocationPermission() {
+    launch(
+        arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+    )
 }
 
 fun ActivityResultLauncher<Intent>.openGallery() {
@@ -408,18 +465,17 @@ fun makeSnackBar(
 
 fun MaterialAutoCompleteTextView.setWithList(
     list: List<String>,
-    context: Context
 ): ArrayAdapter<String> {
     val adapter = ArrayAdapter(context, R.layout.list_item, list)
-    this.setAdapter(adapter)
+    setAdapter(adapter)
     return adapter
 }
 
 fun MaterialAutoCompleteTextView.setUpAndHandleSearch(
     list: List<String>,
-    context: Context
+    onSelected: OnSelected? = null,
 ): ArrayAdapter<String> {
-    val adapter = setWithList(list, context)
+    val adapter = setWithList(list)
     addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(
             s: CharSequence?,
@@ -438,6 +494,7 @@ fun MaterialAutoCompleteTextView.setUpAndHandleSearch(
         }
 
         override fun afterTextChanged(s: Editable?) {
+            onSelected?.onSelected(s.toString())
             adapter.filter.filter(s)
         }
     })
@@ -473,4 +530,32 @@ fun showLeaveDialog(activity: Activity) {
 inline fun <reified T> goToActivity(context: Context) {
     val intent = Intent(context, T::class.java)
     context.startActivity(intent)
+}
+
+fun Spinner.setWithList(items: List<String>, onSelected: OnSelected) {
+    val spinnerAdapter =
+        ArrayAdapter(context, android.R.layout.simple_spinner_item, items)
+    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+    onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(
+            parent: AdapterView<*>?,
+            view: View?,
+            position: Int,
+            id: Long
+        ) {
+            val selectedItem = items[position]
+            // Do something with the selected item
+            onSelected.onSelected(selectedItem)
+        }
+
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+            // Handle case when no item is selected
+        }
+    }
+    adapter = spinnerAdapter
+}
+
+interface OnSelected {
+    fun onSelected(selectedItem: String)
 }

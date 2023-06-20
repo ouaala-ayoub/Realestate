@@ -4,6 +4,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.realestate.R
 import com.example.realestate.data.models.Images
 import com.example.realestate.databinding.SingleImageBinding
 import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
@@ -32,7 +33,7 @@ class ImagesAdapter(
 
         fun bind(position: Int) {
             val currentImage = imagesList.imageUris[position]
-            val isNull = imagesList.imageUris[position] == null
+            val isNull = currentImage == null
             val isSelected = position == imagesList.selectedPosition
 
             binding.apply {
@@ -43,12 +44,15 @@ class ImagesAdapter(
                 }
 
                 delete.setOnClickListener {
-                    viewModel.deleteImageAt(position, imagesList, this@ImagesAdapter)
+                    if (currentImage != null) {
+                        viewModel.deleteImageAt(position, imagesList, this@ImagesAdapter)
+                    }
                 }
-                currentImage?.apply {
-                    //if not null means image place holder contains a selected images
-//                    selectedImage.setImageURI(this)
-                    selectedImage.loadImageUri(this)
+
+                if (currentImage == null) {
+                    selectedImage.setImageResource(R.drawable.image_cadre)
+                } else {
+                    selectedImage.loadImageUri(currentImage)
                 }
 
                 //to enhance

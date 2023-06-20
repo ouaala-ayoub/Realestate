@@ -13,6 +13,7 @@ import com.example.realestate.databinding.FragmentSmsSendBinding
 import com.example.realestate.ui.viewmodels.userregistermodels.SmsSendModel
 import com.example.realestate.utils.OnVerificationCompleted
 import com.example.realestate.utils.Task
+import com.example.realestate.utils.disableBackButton
 import com.example.realestate.utils.toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -41,8 +42,11 @@ class SmsSendFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentSmsSendBinding.inflate(inflater, container, false)
 
-
         binding.send.setOnClickListener {
+
+            //block back button when user send verification sms
+            requireActivity().disableBackButton(viewLifecycleOwner)
+
             smsSendModel.sendVerification("+212658729171", object : OnVerificationCompleted {
                 override fun onCodeSent(verificationId: String) {
                     goToVerifyCode(verificationId)

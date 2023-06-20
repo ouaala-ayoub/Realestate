@@ -10,7 +10,7 @@
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/post_image_vp"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/post_image_height"
+        android:layout_height="@dimen/post_page_image_height"
         android:contentDescription="@string/post_image_description"
         android:orientation="horizontal"
         android:padding="8dp"

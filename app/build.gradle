@@ -50,6 +50,7 @@ android {
 
 dependencies {
 
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     androidTestImplementation 'androidx.test:rules:1.5.0'
 
     implementation platform('com.google.firebase:firebase-bom:32.1.0')
@@ -58,6 +59,8 @@ dependencies {
 
     androidTestImplementation 'com.google.firebase:firebase-appcheck-debug-testing:17.0.1'
 
+    //location
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
 
     //ui
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'

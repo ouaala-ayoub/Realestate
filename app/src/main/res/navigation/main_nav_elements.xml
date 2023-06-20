@@ -5,11 +5,6 @@
     android:id="@+id/main_nav_elements"
     app:startDestination="@id/homeNav">
 
-    <fragment
-        android:id="@+id/favouritesFragment"
-        android:name="com.example.realestate.ui.fragments.FavouritesFragment"
-        android:label="fragment_favourites"
-        tools:layout="@layout/fragment_favourites" />
     <navigation android:id="@+id/homeNav"
         app:startDestination="@id/homeFragment">
         <fragment
@@ -41,4 +36,9 @@
         android:name="com.example.realestate.ui.activities.UserRegisterActivity"
         android:label="activity_user_register"
         tools:layout="@layout/activity_user_register" />
+    <fragment
+        android:id="@+id/savedFragment"
+        android:name="com.example.realestate.ui.fragments.SavedFragment"
+        android:label="fragment_saved"
+        tools:layout="@layout/fragment_saved" />
 </navigation>
