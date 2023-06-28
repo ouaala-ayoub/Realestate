@@ -9,6 +9,6 @@ data class SearchParams(
     var type: String? = null,
     var category: String? = null,
     var price: Number? = null,
-    var location: LocationData? = LocationData("", ""),
+    var location: LocationData? = LocationData(),
     var page: Number? = null
 ) : Parcelable

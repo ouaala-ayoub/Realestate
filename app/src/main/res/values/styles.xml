@@ -20,4 +20,8 @@
     <style name="MaterialEditTextStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/edit_text_stroke</item>
     </style>
+
+    <style name="CustomCountryPickerStyle" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="android:textColor">@color/colorText</item>
+    </style>
 </resources>

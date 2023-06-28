@@ -7,10 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.data.models.FragmentStep
-import com.example.realestate.data.models.Post
+import com.example.realestate.data.models.Type
+import com.example.realestate.data.remote.network.Retrofit
+import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.FragmentStepTwoBinding
 import com.example.realestate.ui.activities.AddPostActivity
 import com.example.realestate.ui.viewmodels.postaddmodels.StepTwoModel
+import com.example.realestate.utils.doOnFail
 import com.example.realestate.utils.setUpAndHandleSearch
 import com.example.realestate.utils.updateLiveData
 
@@ -22,12 +25,7 @@ class StepTwoFragment : FragmentStep() {
 
     private lateinit var binding: FragmentStepTwoBinding
     private val stepTwoModel: StepTwoModel by lazy {
-        StepTwoModel()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+        StepTwoModel(StaticDataRepository(Retrofit.getInstance()))
     }
 
     override fun onCreateView(
@@ -38,18 +36,25 @@ class StepTwoFragment : FragmentStep() {
         binding = FragmentStepTwoBinding.inflate(inflater, container, false)
 
         stepTwoModel.categories.observe(viewLifecycleOwner) { categories ->
-            binding.categoryEditText.apply {
-                val adapter = setUpAndHandleSearch(categories)
+            if (categories != null) {
+                binding.categoryEditText.apply {
+                    //initial values
+                    setText(categories[0])
 
-                //clear filter after user choose one item
-                setOnItemClickListener { _, view, _, _ ->
-                    adapter.filter.filter(null)
+                    val adapter = setUpAndHandleSearch(categories)
+
+                    //clear filter after user choose one item
+                    setOnItemClickListener { _, _, _, _ ->
+                        adapter.filter.filter(null)
+                    }
                 }
+            } else {
+                doOnFail()
             }
         }
 
         //validity of the data entered handling
-        validateTheData(binding.usd.text.toString())
+        validateTheData(Type.RENT.value)
 
         return binding.root
     }
@@ -60,32 +65,30 @@ class StepTwoFragment : FragmentStep() {
         (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(lastState)
     }
 
-    private fun validateTheData(currencyDefault: String) {
+    private fun validateTheData(typeDefault: String) {
 
         binding.apply {
             val wrapper = stepTwoModel.mutableLiveDataWrapper
-
-            //test purposes
-            wrapper._categoryLiveData.value = "are"
 
             //user input
             categoryEditText.updateLiveData(wrapper._categoryLiveData)
             priceEditText.updateLiveData(wrapper._priceLiveData)
 
             //currencies
-            wrapper._currencyLiveData.value = currencyDefault
-            usd.setOnClickListener { wrapper._currencyLiveData.value = usd.text.toString() }
-            eu.setOnClickListener { wrapper._currencyLiveData.value = eu.text.toString() }
+            wrapper._typeLiveData.value = typeDefault
+            rent.setOnClickListener { wrapper._typeLiveData.value = rent.text.toString() }
+            forSell.setOnClickListener { wrapper._typeLiveData.value = forSell.text.toString() }
 
         }
 
         stepTwoModel.isValidData.observe(viewLifecycleOwner) { isValidData ->
-            Log.d(TAG, "validateTheData: ${stepTwoModel.mutableLiveDataWrapper}")
+            //update the state of the next button
+            Log.d(TAG, "isValidData : $isValidData")
             (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValidData)
         }
     }
 
-    override fun onNextClicked(viewPager: ViewPager2, post: Post) {
+    override fun onNextClicked(viewPager: ViewPager2) {
         viewPager.currentItem++
 
 //        add logic
@@ -93,7 +96,7 @@ class StepTwoFragment : FragmentStep() {
             stepTwoModel.liveDataWrapper.apply {
                 category = categoryLiveData.value.toString()
                 price = priceLiveData.value!!.toInt()
-                currency = currencyLiveData.value.toString()
+                type = typeLiveData.value.toString()
             }
         }
     }

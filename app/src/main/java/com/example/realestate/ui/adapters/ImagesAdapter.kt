@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.R
-import com.example.realestate.data.models.Images
+import com.example.realestate.data.models.Media
 import com.example.realestate.databinding.SingleImageBinding
 import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
 import com.example.realestate.utils.loadImageUri
-import com.example.realestate.utils.swap
 
 class ImagesAdapter(
     imagesNumber: Int,
@@ -19,10 +18,9 @@ class ImagesAdapter(
 
     companion object {
         private const val TAG = "ImagesAdapter"
-        private const val MARGIN_SIZE = 5
     }
 
-    private var imagesList: Images = Images(
+    private var imagesList: Media = Media(
         MutableList(imagesNumber) {
             null
         }
@@ -32,7 +30,7 @@ class ImagesAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(position: Int) {
-            val currentImage = imagesList.imageUris[position]
+            val currentImage = imagesList.uris[position]
             val isNull = currentImage == null
             val isSelected = position == imagesList.selectedPosition
 
@@ -92,7 +90,7 @@ class ImagesAdapter(
         )
     }
 
-    override fun getItemCount() = imagesList.imageUris.size
+    override fun getItemCount() = imagesList.uris.size
 
     override fun onBindViewHolder(holder: ImagesHolder, position: Int) {
         holder.bind(position)
@@ -102,9 +100,20 @@ class ImagesAdapter(
         viewModel.addImages(listToAdd, imagesList, this)
     }
 
-    fun getResult(): List<Uri> {
-        imagesList.imageUris.swap(imagesList.selectedPosition, 0)
-        return imagesList.imageUris.filterNotNull()
+    fun getUploadedMedia(): List<String> {
+        return viewModel.getResult(imagesList.selectedPosition)
+    }
+
+    fun upload(uri: Uri, mimeType: String?) {
+        when {
+            mimeType == null -> return
+            mimeType.contains("image") -> {
+                viewModel.uploadImage(uri, imagesList)
+            }
+            mimeType.contains("video") -> {
+                viewModel.uploadVideo(uri, imagesList)
+            }
+        }
     }
 
 }

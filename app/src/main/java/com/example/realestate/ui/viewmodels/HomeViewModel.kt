@@ -26,38 +26,32 @@ class HomeViewModel(
     val isProgressBarTurning: LiveData<Boolean>
         get() = _isLoading
     val postsList: LiveData<MutableList<Post>?>
-        get() = _postsList
+        get() = getPosts()
     val categoriesList: LiveData<List<String>?>
         get() = _categoriesList
     val countries: LiveData<List<String>?>
         get() = _countries
 
 
-    fun getPosts(searchParams: SearchParams) {
+    // no filters by default
+    fun getPosts(searchParams: SearchParams = SearchParams()): MutableLiveData<MutableList<Post>?> {
         handleApiRequest(
             postsRepository.getPosts(searchParams),
             _isLoading,
             _postsList,
             TAG
         )
+        return _postsList
     }
 
-    fun getCategories() {
-//        handleApiRequest(
-//            staticDataRepository.getCategories(),
-//            _isLoading,
-//            _categoriesList,
-//            TAG
-//        )
-    }
-
-    fun getCountries() {
-        //        handleApiRequest(
-//            staticDataRepository.getCountries(),
-//            _isLoading,
-//            _categoriesList,
-//            TAG
-//        )
+    fun getCategories(): MutableLiveData<List<String>?> {
+        handleApiRequest(
+            staticDataRepository.getCategories(),
+            _isLoading,
+            _categoriesList,
+            TAG
+        )
+        return _categoriesList
     }
 
 }

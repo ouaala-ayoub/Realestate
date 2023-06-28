@@ -35,7 +35,10 @@
         android:label="fragment_add_info"
         tools:layout="@layout/fragment_add_info" >
         <argument
-            android:name="phoneNumber"
+            android:name="userId"
+            app:argType="string" />
+        <argument
+            android:name="tokenId"
             app:argType="string" />
     </fragment>
 </navigation>

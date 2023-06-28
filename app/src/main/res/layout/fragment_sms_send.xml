@@ -26,7 +26,6 @@
             android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="@string/verify_your_number"
-            android:textColor="@color/colorSecondaryDark"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -37,7 +36,6 @@
             android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="@string/please_enter_your_country_and_your_phone_number"
-            android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp" />
 
         <LinearLayout
@@ -46,36 +44,26 @@
             android:baselineAligned="false"
             android:orientation="horizontal">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/codeTextField"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="@dimen/code_edit_size"
+            <com.hbb20.CountryCodePicker
+                android:id="@+id/country_code"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:padding="5dp">
-
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/codeEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:inputType="number"
-                    android:lines="1"
-                    android:maxLength="4"
-                    android:textStyle="bold" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                app:ccp_autoDetectCountry="true"
+                app:ccp_contentColor="@color/stroke_button_color"
+                app:ccpDialog_textColor="@color/stroke_button_color"
+                app:ccp_defaultNameCode="IND"
+                app:ccp_showFlag="true"
+                app:ccp_showFullName="false"
+                app:ccp_showNameCode="false" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/phoneTextField"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:layout_weight="1"
-                android:gravity="start"
-                android:padding="5dp">
+                android:gravity="start">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/phoneEditText"
@@ -84,6 +72,7 @@
                     android:gravity="start"
                     android:inputType="phone"
                     android:lines="1"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -102,5 +91,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/loading"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

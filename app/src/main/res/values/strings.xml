@@ -6,7 +6,6 @@
     <!-- main activity -->
     <string name="rent">Rent</string>
     <string name="sell">Sell</string>
-    <string name="buy">Buy</string>
 
     <!--dialog-->
     <string name="Yes">Yes</string>
@@ -17,7 +16,7 @@
     <string name="quit_post_message">All data will be lost</string>
 
     <!--post data-->
-    <string name="price"> %1$s %2$s </string>
+    <string name="price"> %1$s USD </string>
     <string name="location"> %1$s, %2$s, %3$s </string>
     <string name="location_icon_description">Location</string>
     <string name="post_image_description">Propriety image</string>
@@ -58,9 +57,10 @@
     <string name="usd">USD</string>
     <string name="eu">EU</string>
     <string name="currency">Currency</string>
+    <string name="type">Type</string>
 
     <!--    step three strings-->
-    <string name="description">Description</string>
+    <string name="description">Ajouter une description</string>
     <string name="country">Country</string>
     <string name="city">City</string>
     <string name="street">Street</string>
@@ -88,5 +88,19 @@
     <string name="video_url">video_base_url%1$s</string>
     <string name="error_loading_image">Error Loading image</string>
     <string name="no_gps">Please Enable Your GPS</string>
+    <string name="name">Name</string>
+    <string name="preferred_communication_method">Preferred communication method:</string>
+    <string name="whatsapp">Whatsapp</string>
+    <string name="phonecall">PhoneCall</string>
+    <string name="both">Both</string>
+    <string name="enter_name">Please Enter Your name</string>
+    <string name="finish">Finish</string>
+
+    <!--    prefs keys-->
+    <string name="cookie_token">cookie_token</string>
+    <string name="user_id">user_id</string>
+    <string name="success">Register Success</string>
+    <string name="all">All</string>
+
 
 </resources>

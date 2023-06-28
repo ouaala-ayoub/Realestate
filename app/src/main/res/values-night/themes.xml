@@ -5,6 +5,10 @@
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/black</item>
+
+        <item name="colorOnSurface">@color/colorText</item>
+
+        <item name="colorAccent">@color/colorAccent</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
@@ -13,6 +17,8 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="iconTint">@color/white</item>
+
+        <item name="android:textColor">@color/stroke_button_color</item>
 
         <item name="textInputOutlinedStyle">@style/MaterialEditTextStyle</item>
     </style>

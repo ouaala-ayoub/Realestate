@@ -4,11 +4,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.realestate.R
 import com.example.realestate.data.models.Post
 import com.example.realestate.databinding.SinglePostBinding
 import com.example.realestate.utils.OnPostClickListener
+import com.example.realestate.utils.loadImage
 
 class PostsAdapter(
 
@@ -33,11 +33,9 @@ class PostsAdapter(
             val context = binding.root.context
             binding.apply {
 
-//                Glide
-//                    .with(postImage)
-//                    .load(currentPost)
-//                    .fitCenter()
-//                    .into(postImage)
+                if (currentPost.media.isNotEmpty()) {
+                    postImage.loadImage(currentPost.media[0])
+                }
 
                 postWhole.setOnClickListener {
                     Log.d(TAG, "clicked post at $position with id: ${currentPost.id} ")
@@ -46,8 +44,7 @@ class PostsAdapter(
                 postPrice.text =
                     context.getString(
                         R.string.price,
-                        currentPost.price.toString(),
-                        currentPost.currency
+                        currentPost.price.toString()
                     )
                 currentPost.location.apply {
                     postLocation.text =

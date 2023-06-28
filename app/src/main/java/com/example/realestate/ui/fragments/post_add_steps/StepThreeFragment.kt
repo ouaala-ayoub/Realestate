@@ -3,8 +3,6 @@ package com.example.realestate.ui.fragments.post_add_steps
 import android.Manifest
 import android.annotation.SuppressLint
 import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,10 +15,7 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.R
-import com.example.realestate.data.models.FragmentStep
-import com.example.realestate.data.models.LocationData
-import com.example.realestate.data.models.Post
-import com.example.realestate.data.models.Type
+import com.example.realestate.data.models.*
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.databinding.FragmentStepThreeBinding
@@ -29,7 +24,6 @@ import com.example.realestate.ui.viewmodels.postaddmodels.StepThreeModel
 import com.example.realestate.utils.*
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 
 class StepThreeFragment : FragmentStep() {
@@ -40,8 +34,6 @@ class StepThreeFragment : FragmentStep() {
 
     private lateinit var binding: FragmentStepThreeBinding
     private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
-    private lateinit var locationManager: LocationManager
-    private lateinit var locationListener: LocationListener
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val stepThreeModel: StepThreeModel by lazy {
         StepThreeModel(PostsRepository(Retrofit.getInstance()))
@@ -88,6 +80,31 @@ class StepThreeFragment : FragmentStep() {
         // Inflate the layout for this fragment
         binding = FragmentStepThreeBinding.inflate(inflater, container, false)
 
+        stepThreeModel.apply {
+
+            isDataValid.observe(viewLifecycleOwner) { isValid ->
+                Log.d(TAG, "isValidData : $isValid")
+                (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValid)
+            }
+
+            loading.observe(viewLifecycleOwner) { loading ->
+                binding.progressBar.isVisible = loading
+                for (v in binding.wholeLayout.children) {
+                    v.isEnabled = false
+                }
+            }
+
+            requestResponse.observe(viewLifecycleOwner) { requestResponse ->
+                Log.d(TAG, "onCreateView: ${requestResponse?.message}")
+                if (requestResponse != null) {
+                    requireContext().toast(requestResponse.message, Toast.LENGTH_SHORT)
+                } else {
+                    doOnFail()
+                }
+                requireActivity().finish()
+            }
+        }
+
         binding.getLocation.setOnClickListener {
             requireActivity().handlePermission(
                 object : PermissionResult {
@@ -122,32 +139,8 @@ class StepThreeFragment : FragmentStep() {
             )
         }
 
-        stepThreeModel.apply {
 
-            isDataValid.observe(viewLifecycleOwner) { isValid ->
-                Log.d(TAG, "isValidData : $isValid")
-                (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValid)
-            }
-
-            loading.observe(viewLifecycleOwner) { loading ->
-                binding.progressBar.isVisible = loading
-                for (v in binding.wholeLayout.children) {
-                    v.isEnabled = false
-                }
-            }
-
-            requestResponse.observe(viewLifecycleOwner) { requestResponse ->
-                Log.d(TAG, "onCreateView: ${requestResponse?.message}")
-                if (requestResponse != null) {
-                    requireContext().toast(requestResponse.message, Toast.LENGTH_SHORT)
-                } else {
-                    requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
-                }
-                requireActivity().finish()
-            }
-        }
-
-        setEditTexts(Type.RENT.value)
+        setEditTexts()
         handleLocationEditText()
 
         return binding.root
@@ -159,25 +152,38 @@ class StepThreeFragment : FragmentStep() {
         (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(lastState)
     }
 
-    override fun onNextClicked(viewPager: ViewPager2, post: Post) {
-        super.onNextClicked(viewPager, post)
+    override fun onNextClicked(viewPager: ViewPager2) {
+        super.onNextClicked(viewPager)
         // send the request
 
-        makeDialog(
+        val dialog = makeDialog(
             requireContext(),
             object : OnDialogClicked {
                 override fun onPositiveButtonClicked() {
                     (requireActivity() as AddPostActivity).post.apply {
-                        stepThreeModel.apply {
-                            location = LocationData(
-                                country = countryLiveData.value.toString(),
-                                city = cityLiveData.value.toString(),
-                                street = streetLiveData.value.toString()
-                            )
-                            type = typeLiveData.value.toString()
-                            description = descriptionLiveData.value.toString()
+                        val userId = CurrentUser.prefs.get()
+                        if (userId != null) {
+                            stepThreeModel.apply {
+                                val l = LocationData(
+                                    country = countryLiveData.value.toString(),
+                                    city = "Rabat"
+                                )
+
+                                if (cityLiveData.value != null)
+                                    l.city = cityLiveData.value.toString()
+
+                                if (streetLiveData.value != null)
+                                    l.street = streetLiveData.value.toString()
+
+                                location = l
+                                description = descriptionLiveData.value.toString()
+                                ownerId = userId
+                            }
+                            Log.d(TAG, "post to add: $this")
+                            stepThreeModel.addPost(this)
+                        } else {
+                            doOnFail()
                         }
-                        stepThreeModel.addPost(this)
                     }
                 }
 
@@ -188,32 +194,47 @@ class StepThreeFragment : FragmentStep() {
             getString(R.string.finish_dialog_message)
         )
 
+        dialog.apply {
+            show()
+            separateButtonsBy(10)
+        }
 
+    }
+
+    private fun doOnFail() {
+        requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
     }
 
     override fun onBackClicked(viewPager: ViewPager2) {
         viewPager.currentItem--
     }
 
-    private fun setEditTexts(defaultType: String) {
+    private fun setEditTexts() {
         binding.apply {
             stepThreeModel.apply {
 
-                _typeLiveData.value = defaultType
+                _countryLiveData.value = countryPicker.selectedCountryName
+
+                countryPicker.setOnCountryChangeListener {
+                    // your code to handle selected country
+                    val country = countryPicker.selectedCountryName
+                    Log.d(TAG, "country: $country")
+                    _countryLiveData.postValue(country)
+                    getCities(country)
+                }
 
                 //handle edit texts use input
-                countryEditText.updateLiveData(_countryLiveData)
                 cityEditText.updateLiveData(_cityLiveData)
                 streetEditText.updateLiveData(_streetLiveData)
                 descriptionEditText.updateLiveData(_descriptionLiveData)
 
-                //handle chips user input
-                for (view in chips.children) {
-                    val chip = view as Chip
-                    chip.setOnClickListener { _typeLiveData.postValue(chip.text.toString()) }
-                }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
     }
 
     private fun handleLocationEditText() {
@@ -223,19 +244,6 @@ class StepThreeFragment : FragmentStep() {
                 //for test purposes
 //                countryEditText.setWithList(listOf("Morocco", "Armenia", "UAE"), requireContext())
 
-                countries.observe(viewLifecycleOwner) { countries ->
-                    countryEditText.apply {
-                        val adapter = setUpAndHandleSearch(countries)
-                        setOnItemClickListener { _, view, _, _ ->
-                            val country = (view as TextView).text
-
-                            Log.d(TAG, "onItemSelected: $country")
-                            adapter.filter.filter(null)
-
-//                    getCities(country)
-                        }
-                    }
-                }
                 cities.observe(viewLifecycleOwner) { cities ->
                     cityEditText.apply {
                         isEnabled = true

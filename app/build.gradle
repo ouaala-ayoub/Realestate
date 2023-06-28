@@ -64,6 +64,11 @@ dependencies {
 
     //ui
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+
+    //country picker
+    implementation 'com.hbb20:ccp:2.7.0'
+    implementation 'com.hbb20:android-country-picker:0.0.7'
 
     //firebase
     implementation 'com.google.firebase:firebase-auth:22.0.0'
@@ -81,6 +86,12 @@ dependencies {
 
     //image loading
     implementation 'com.github.bumptech.glide:glide:4.15.1'
+    implementation 'com.cloudinary:cloudinary-android:2.3.1'
+
+    //video loading
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.7'
+
+    implementation 'com.google.android.material:material:1.9.0'
 
     //sms handling
 //    implementation 'com.google.android.gms:play-services-auth:20.5.0'

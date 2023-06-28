@@ -7,13 +7,13 @@ data class User(
     val id: String? = null,
 
     @SerializedName("name")
-    val name: String,
+    val name: String?,
 
     @SerializedName("phone")
-    val phone: Phone,
-
-    @SerializedName("isAdmin")
-    val isAdmin: Boolean,
+    val phone: String,
+//
+//    @SerializedName("isAdmin")
+//    val isAdmin: Boolean,
 
     @SerializedName("communicationMethod")
     val string: String

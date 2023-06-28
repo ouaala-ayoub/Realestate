@@ -25,16 +25,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.RecyclerView
+import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.realestate.R
 import com.example.realestate.data.models.Error
 import com.example.realestate.data.models.ErrorResponse
-import com.example.realestate.data.models.Post
 import com.example.realestate.data.models.SearchParams
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.firebase.FirebaseException
@@ -55,7 +58,7 @@ interface Task {
 }
 
 interface HandleSubmitInterface {
-    fun onNextClicked(viewPager: ViewPager2, post: Post)
+    fun onNextClicked(viewPager: ViewPager2)
     fun onBackClicked(viewPager: ViewPager2)
 }
 
@@ -143,11 +146,12 @@ fun <T> handleApiRequest(
 
             if (response.isSuccessful) {
                 dataLiveData.postValue(response.body())
+                Log.d(TAG, "onResponse: ${response.body()}")
             } else {
                 getError(TAG, response.errorBody(), response.code())
                 dataLiveData.postValue(null)
             }
-            additionalCode?.onResponse(response)
+            additionalCode?.onResponse<T>(response)
             loadingLiveData.postValue(false)
         }
 
@@ -192,24 +196,32 @@ fun circularProgressBar(context: Context): CircularProgressDrawable {
 }
 
 fun ImageView.loadImage(imageName: String) {
+    val imageUrl = context.getString(R.string.image_url, imageName)
     Glide.with(this)
-        .load(context.getString(R.string.image_url, imageName))
+//        .load(imageUrl)
+        .load(imageName)
         .placeholder(circularProgressBar(context))
         .error(R.drawable.baseline_broken_image_24)
         .into(this)
 }
 
-fun VideoView.loadVideo(videoName: String) {
+fun StyledPlayerView.loadVideo(videoName: String, myPlayer: ExoPlayer) {
     val videoUrl = this.context.getString(R.string.video_url, videoName)
+    player = myPlayer
+//    setVideoPath(videoUrl)
+    val mediaItem =
+        MediaItem.fromUri(videoName)
+    // Set the media item to be played.
+    myPlayer.setMediaItem(mediaItem)
+    // Prepare the player.
+    myPlayer.prepare()
+    // Start the playback.
+    myPlayer.play()
+}
 
-    setVideoPath(videoUrl)
-    setOnClickListener {
-        if (isPlaying) {
-            stopPlayback()
-        } else {
-            start()
-        }
-    }
+fun Fragment.doOnFail() {
+    requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
+    findNavController().popBackStack()
 }
 
 fun ImageView.loadImageUri(imageUri: Uri) {
@@ -265,20 +277,20 @@ fun AlertDialog.separateButtonsBy(margin: Int) {
     negButton.layoutParams = params
 }
 
-fun RecyclerView.handleRefreshWithScrolling(swipeRefresh: SwipeRefreshLayout) {
-//    this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-//            super.onScrollStateChanged(recyclerView, newState)
-//            val isRvDragging = newState == RecyclerView.SCROLL_STATE_DRAGGING
-//            swipeRefresh.isEnabled = !isRvDragging
+//fun RecyclerView.handleRefreshWithScrolling(swipeRefresh: SwipeRefreshLayout) {
+////    this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+////        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+////            super.onScrollStateChanged(recyclerView, newState)
+////            val isRvDragging = newState == RecyclerView.SCROLL_STATE_DRAGGING
+////            swipeRefresh.isEnabled = !isRvDragging
+////        }
+////    })
+//    addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//            swipeRefresh.isEnabled = !recyclerView.canScrollVertically(-1)
 //        }
 //    })
-    addOnScrollListener(object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            swipeRefresh.isEnabled = !recyclerView.canScrollVertically(-1)
-        }
-    })
-}
+//}
 
 private fun showInContextUI(context: Context, onDialogClicked: OnDialogClicked) {
     val dialog = makeDialog(
@@ -558,4 +570,32 @@ fun Spinner.setWithList(items: List<String>, onSelected: OnSelected) {
 
 interface OnSelected {
     fun onSelected(selectedItem: String)
+}
+
+fun Context.getType(uri: Uri): String? {
+    val cr = contentResolver
+    return cr.getType(uri)
+}
+
+//suspend fun isImage(mediaLink: String): Boolean = withContext(Dispatchers.IO) {
+//    val url = URL(mediaLink)
+//    val connection: URLConnection = url.openConnection()
+//    val contentType: String? = connection.contentType
+//
+//    contentType?.startsWith("image/", ignoreCase = true) == true
+//}
+
+fun CollapsingToolbarLayout.enableScroll() {
+    val params = layoutParams as AppBarLayout.LayoutParams
+    params.scrollFlags = (
+            AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                    or AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+            )
+    layoutParams = params
+}
+
+fun CollapsingToolbarLayout.disableScroll() {
+    val params = layoutParams as AppBarLayout.LayoutParams
+    params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+    layoutParams = params
 }

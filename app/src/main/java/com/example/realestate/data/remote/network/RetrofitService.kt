@@ -1,9 +1,6 @@
 package com.example.realestate.data.remote.network
 
-import com.example.realestate.data.models.IdResponse
-import com.example.realestate.data.models.MessageResponse
-import com.example.realestate.data.models.Post
-import com.example.realestate.data.models.User
+import com.example.realestate.data.models.*
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -20,19 +17,23 @@ interface RetrofitService {
 //    @GET("streets")
 //    fun getStreets(): Call<List<String>>
 
+    @GET("posts/categories")
+    fun getCategories(): Call<List<String>>
+
     //posts
     @GET("posts")
     fun getPosts(
-        @Query("s") title: String? = null,
+        @Query("search") title: String? = null,
         @Query("p") price: Number? = null,
-        @Query("c") category: String? = null,
-        @Query("t") type: String? = null,
+        @Query("country") country: String? = null,
+        @Query("category") category: String? = null,
+        @Query("type") type: String? = null,
         @Query("n") filterByDate: String? = null,
         @Query("pg") page: String? = null
     ): Call<MutableList<Post>>
 
     @POST("posts")
-    fun addPost(post: Post): Call<MessageResponse>
+    fun addPost(@Body post: PostWithoutId): Call<MessageResponse>
 
     @GET("posts/{id}")
     fun getPostById(@Path("id") postId: String): Call<Post>
@@ -48,8 +49,11 @@ interface RetrofitService {
     fun getUserById(@Path("id") userId: String): Call<User>
 
     @POST("users")
-    fun addUser(user: User): Call<IdResponse>
+    fun addUser(@Body user: User): Call<IdResponse>
 
-    @PUT("posts/{id}")
-    fun updateUser(@Path("id") userId: String, @Body newUser: User): Call<IdResponse>
+    @PUT("users/{id}")
+    fun addData(@Path("id") userId: String, @Body dataToAdd: AdditionalInfo): Call<MessageResponse>
+
+    @POST("login")
+    fun login(@Header("Authorization") token: String): Call<UserId>
 }

@@ -2,10 +2,7 @@ package com.example.realestate.data.models
 
 import com.google.gson.annotations.SerializedName
 
-data class Post(
-
-    @SerializedName("_id")
-    val id: String? = null,
+data class PostWithoutId(
 
     @SerializedName("description")
     var description: String? = null,
@@ -29,7 +26,7 @@ data class Post(
     var category: String
 ) {
     companion object {
-        val emptyPost = Post(
+        val emptyPost = PostWithoutId(
             type = Type.RENT.value,
             price = 0,
             category = "",
@@ -42,3 +39,4 @@ data class Post(
         )
     }
 }
+

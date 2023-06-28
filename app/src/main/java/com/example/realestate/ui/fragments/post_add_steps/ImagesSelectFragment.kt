@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.R
 import com.example.realestate.data.models.FragmentStep
-import com.example.realestate.data.models.Post
 import com.example.realestate.databinding.FragmentImagesSelectBinding
 import com.example.realestate.ui.activities.AddPostActivity
 import com.example.realestate.ui.adapters.ImagesAdapter
@@ -63,12 +62,17 @@ class ImagesSelectFragment : FragmentStep() {
         imageResultLauncher = startActivityResult(
             object : SelectionResult {
                 override fun onResultOk(data: Intent) {
-                    imagesAdapter.addImages(data.getContentAsList())
+                    val uris = data.getContentAsList()
+                    imagesAdapter.addImages(uris)
+
+                    uris.forEach { uri ->
+                        val mime = requireContext().getType(uri)
+                        imagesAdapter.upload(uri, mime)
+                    }
                 }
 
                 override fun onResultFailed() {
-//                    TODO("Not yet implemented")
-                    Log.i(TAG, "imageResultLauncher onResultFailed")
+                    Log.e(TAG, "imageResultLauncher onResultFailed")
                 }
             }
         )
@@ -117,11 +121,9 @@ class ImagesSelectFragment : FragmentStep() {
         return binding.root
     }
 
-    override fun onNextClicked(viewPager: ViewPager2, post: Post) {
+    override fun onNextClicked(viewPager: ViewPager2) {
         viewPager.currentItem++
-
-//        add logic
-//        post.media = mediaList.value
+        (requireActivity() as AddPostActivity).post.media = imagesAdapter.getUploadedMedia()
     }
 
     override fun onBackClicked(viewPager: ViewPager2) {

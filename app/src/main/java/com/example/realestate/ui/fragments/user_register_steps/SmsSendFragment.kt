@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import com.example.realestate.R
 import com.example.realestate.databinding.FragmentSmsSendBinding
@@ -42,12 +43,29 @@ class SmsSendFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentSmsSendBinding.inflate(inflater, container, false)
 
+        smsSendModel.validPhone.observe(viewLifecycleOwner) { valid ->
+            binding.send.isEnabled = valid
+        }
+        smsSendModel.loading.observe(viewLifecycleOwner) { loading ->
+            Log.d(TAG, "loading: $loading")
+            binding.loading.isVisible = loading
+
+            updateUi(loading)
+
+        }
+
         binding.send.setOnClickListener {
 
             //block back button when user send verification sms
             requireActivity().disableBackButton(viewLifecycleOwner)
 
-            smsSendModel.sendVerification("+212658729171", object : OnVerificationCompleted {
+            val code = binding.countryCode.selectedCountryCodeWithPlus
+            val phone = binding.phoneEditText.text.toString()
+            val phoneNumber = code + phone
+
+            Log.d(TAG, "phoneNumber: $phoneNumber")
+
+            smsSendModel.sendVerification(phoneNumber, object : OnVerificationCompleted {
                 override fun onCodeSent(verificationId: String) {
                     goToVerifyCode(verificationId)
                 }
@@ -63,14 +81,24 @@ class SmsSendFragment : Fragment() {
         return binding.root
     }
 
+
+    private fun updateUi(loading: Boolean) {
+        binding.apply {
+            send.isEnabled = !loading
+            countryCode.setCcpClickable(!loading)
+            phoneEditText.isEnabled = !loading
+        }
+    }
+
     private fun goToVerifyCode(verificationId: String) {
         val action =
             SmsSendFragmentDirections.actionSmsSendFragmentToVerificationCodeFragment(verificationId)
         findNavController().navigate(action)
     }
 
-    private fun goToAddInfo(phoneNumber: String) {
-        val action = SmsSendFragmentDirections.actionSmsSendFragmentToAddInfoFragment2(phoneNumber)
+    private fun goToAddInfo(phoneNumber: String, tokenId: String) {
+        val action =
+            SmsSendFragmentDirections.actionSmsSendFragmentToAddInfoFragment2(phoneNumber, tokenId)
         findNavController().navigate(action)
     }
 
@@ -80,19 +108,28 @@ class SmsSendFragment : Fragment() {
 
                 //consider sending the whole user
 
-                val phoneNumber = user?.phoneNumber
-                if (phoneNumber != null) {
-                    goToAddInfo(phoneNumber)
-                } else {
-                    Log.e(TAG, "phoneNumber: null")
+
+                user?.getIdToken(false)?.addOnCompleteListener {
+                    val tokenId = it.result.token
+                    val phoneNumber = user.phoneNumber
+
+                    if (phoneNumber != null && tokenId != null) {
+                        goToAddInfo(phoneNumber, tokenId)
+                    } else {
+                        onFail()
+                    }
                 }
+
             }
 
             override fun onFail(e: Exception?) {
-                requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
-                requireActivity().finish()
+                onFail()
             }
         })
     }
 
+    private fun onFail() {
+        requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
+        requireActivity().finish()
+    }
 }

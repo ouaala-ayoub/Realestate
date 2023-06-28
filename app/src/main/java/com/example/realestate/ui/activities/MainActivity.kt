@@ -1,9 +1,7 @@
 package com.example.realestate.ui.activities
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
@@ -15,51 +13,49 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.realestate.R
+import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.SearchParams
-import com.example.realestate.data.models.Type
 import com.example.realestate.databinding.ActivityMainBinding
 import com.example.realestate.utils.ActivityResultListener
-import com.example.realestate.utils.SelectionResult
-import com.example.realestate.utils.startActivityResult
+import com.example.realestate.utils.SessionCookie
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 class MainActivity : AppCompatActivity(), ActivityResultListener {
 
-    private lateinit var resultListener: ActivityResultListener
-    var params: SearchParams = SearchParams(type = Type.RENT.value)
-
     companion object {
         private const val TAG = "MainActivity"
     }
 
+    var params: SearchParams = SearchParams()
+    private lateinit var resultListener: ActivityResultListener
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
     lateinit var bottomNavView: BottomNavigationView
-    private val searchLauncher = startActivityResult(
-        object : SelectionResult {
-            override fun onResultOk(data: Intent) {
-                val searchParams = data.getParcelableExtra<SearchParams>("search_params")
-
-                // Use the search parameters as needed
-                if (searchParams != null) {
-                    // Perform the search using the search parameters
-                    // ...
-                    params = searchParams
-                    backToHomeFragment()
-                    resultListener.onResultOk(params)
-
-                    Log.d(TAG, "searchParams result : $searchParams")
-                }
-            }
-
-            override fun onResultFailed() {
-                resultListener.onResultCancelled()
-            }
-
-        }
-    )
+//    private val searchLauncher = startActivityResult(
+//        object : SelectionResult {
+//            override fun onResultOk(data: Intent) {
+//                val searchParams = data.getParcelableExtra<SearchParams>("search_params")
+//
+//                // Use the search parameters as needed
+//                if (searchParams != null) {
+//                    // Perform the search using the search parameters
+//                    // ...
+//                    params = searchParams
+//                    backToHomeFragment()
+//                    resultListener.onResultOk(params)
+//
+//                    Log.d(TAG, "searchParams result : $searchParams")
+//                }
+//            }
+//
+//            override fun onResultFailed() {
+//                resultListener.onResultCancelled()
+//            }
+//
+//        }
+//    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -87,10 +83,10 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                 handleDrawerLayout(drawerLayout)
                 return true
             }
-            R.id.app_bar_search -> {
-                openSearchFragment()
-                return true
-            }
+//            R.id.app_bar_search -> {
+//                openSearchFragment()
+//                return true
+//            }
             else -> {
                 super.onOptionsItemSelected(item)
             }
@@ -105,11 +101,11 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         }
     }
 
-    private fun openSearchFragment() {
-        val intent = Intent(this, SearchActivity::class.java)
-        intent.putExtra("search_params", params)
-        searchLauncher.launch(intent)
-    }
+//    private fun openSearchFragment() {
+//        val intent = Intent(this, SearchActivity::class.java)
+//        intent.putExtra("search_params", params)
+//        searchLauncher.launch(intent)
+//    }
 
     private fun setTheBottomNav() {
         val navHost =
@@ -122,7 +118,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
             when (menuItem.itemId) {
                 R.id.addPostActivity -> {
                     //to change
-                    val userConnected = FirebaseAuth.getInstance().currentUser != null
+                    val userConnected = CurrentUser.prefs.get() != null
                     if (userConnected) {
                         // User is connected, open PostAddActivity
                         navController.navigate(R.id.addPostActivity)
@@ -132,7 +128,14 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                     }
                 }
                 R.id.savedFragment -> {
-                    navController.navigate(R.id.savedFragment)
+                    val userConnected = CurrentUser.prefs.get() != null
+                    if (userConnected) {
+                        // User is connected, open savedFragment
+                        navController.navigate(R.id.savedFragment)
+                    } else {
+                        // User is not connected, open UserRegisterActivity
+                        navController.navigate(R.id.userRegisterActivity)
+                    }
                 }
                 R.id.homeNav -> {
                     navController.navigate(R.id.homeNav)
@@ -167,6 +170,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         val phoneTv = view.findViewById<TextView>(R.id.user_phone)
 
         handleUser(FirebaseAuth.getInstance().currentUser, phoneTv)
+        FirebaseAuth.getInstance().currentUser
 
         FirebaseAuth.getInstance().addAuthStateListener { auth ->
             handleUser(auth.currentUser, phoneTv)
@@ -214,6 +218,8 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
     private fun logout() {
         FirebaseAuth.getInstance().signOut()
+        SessionCookie.prefs.delete()
+        CurrentUser.prefs.delete()
     }
 
 }

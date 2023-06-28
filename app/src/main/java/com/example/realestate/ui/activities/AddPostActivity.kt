@@ -2,11 +2,10 @@ package com.example.realestate.ui.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import com.example.realestate.data.models.FragmentStep
-import com.example.realestate.data.models.Post
-import com.example.realestate.data.remote.network.Retrofit
-import com.example.realestate.data.repositories.PostsRepository
+import com.example.realestate.data.models.PostWithoutId
 import com.example.realestate.databinding.ActivityAddPostBinding
 import com.example.realestate.ui.adapters.FragmentsAdapter
 import com.example.realestate.ui.fragments.post_add_steps.ImagesSelectFragment
@@ -17,6 +16,10 @@ import com.example.realestate.utils.showLeaveDialog
 import com.google.android.material.tabs.TabLayoutMediator
 
 class AddPostActivity : AppCompatActivity() {
+
+    companion object {
+        private const val TAG = "AddPostActivity"
+    }
 
     val addPostModel: AddPostModel by lazy {
         AddPostModel()
@@ -32,9 +35,9 @@ class AddPostActivity : AppCompatActivity() {
     private val fragmentsAdapter: FragmentsAdapter by lazy {
         FragmentsAdapter(this, fragmentsList)
     }
-    val post: Post by lazy {
+    val post: PostWithoutId by lazy {
         //don't forget ownerId
-        Post.emptyPost
+        PostWithoutId.emptyPost
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,11 +69,12 @@ class AddPostActivity : AppCompatActivity() {
                 fragmentsAdapter.onBackClicked(viewPager)
             }
             next.setOnClickListener {
-                fragmentsAdapter.onNextClicked(viewPager, post)
+                fragmentsAdapter.onNextClicked(viewPager)
             }
         }
 
         addPostModel.isValidData.observe(this) { isValidData ->
+            Log.d(TAG, "isValidData: $isValidData")
             binding.next.isEnabled = isValidData
         }
 
@@ -80,7 +84,7 @@ class AddPostActivity : AppCompatActivity() {
 
     private fun setViewPager() {
         binding.fragmentsViewPager.apply {
-//            offscreenPageLimit = fragmentsList.size
+            offscreenPageLimit = 1
             adapter = fragmentsAdapter
             TabLayoutMediator(binding.progressTabBar, this, true) { tab, _ ->
                 tab.view.isClickable = false

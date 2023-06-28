@@ -12,6 +12,14 @@
         android:layout_height="match_parent"
         tools:context=".ui.fragments.HomeFragment">
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:elevation="2dp"
+            android:visibility="invisible" />
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/vAppBar"
@@ -43,7 +51,7 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <com.google.android.material.chip.Chip
-                            android:id="@+id/rent"
+                            android:id="@+id/all"
                             style="@style/ChipStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -51,6 +59,19 @@
                             android:layout_weight="1"
                             android:checkable="true"
                             android:checked="true"
+                            android:elevation="2dp"
+                            android:gravity="center"
+                            android:text="@string/all"
+                            android:textAlignment="center" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/rent"
+                            style="@style/ChipStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:layout_weight="1"
+                            android:checkable="true"
                             android:elevation="2dp"
                             android:gravity="center"
                             android:text="@string/rent"
@@ -66,43 +87,25 @@
                             android:checkable="true"
                             android:elevation="2dp"
                             android:gravity="center"
-                            android:text="@string/buy"
-                            android:textAlignment="center" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/sell"
-                            style="@style/ChipStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="2dp"
-                            android:layout_weight="1"
-                            android:checkable="true"
-                            android:elevation="2dp"
-                            android:gravity="center"
                             android:text="@string/sell"
                             android:textAlignment="center" />
 
                     </LinearLayout>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/countryTextField"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    <com.hbb20.CountryCodePicker
+                        android:id="@+id/countryPicker"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginBottom="10dp"
-                        android:hint="@string/country">
-
-                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                            android:id="@+id/countryEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="text"
-                            android:lines="1"
-                            android:textStyle="bold" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_margin="5dp"
+                        app:ccp_showPhoneCode="false"
+                        app:ccp_showFullName="true"
+                        app:ccp_showNameCode="false"
+                        android:gravity="center"
+                        app:ccp_autoDetectCountry="true"
+                        app:ccp_contentColor="@color/colorBackground"
+                        android:background="@color/colorText"
+                        app:ccpDialog_textColor="@color/stroke_button_color"
+                        app:cp_initialSelectionMode="autoDetectCounty" />
 
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/categories_chip_group"
@@ -114,6 +117,11 @@
 
                     </com.google.android.material.chip.ChipGroup>
 
+                    <SearchView
+                        android:id="@+id/search_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:iconifiedByDefault="false" />
 
                 </LinearLayout>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
@@ -122,14 +130,14 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/post_rv"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -142,108 +150,3 @@
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
-    <!--xmlns:tools="http://schemas.android.com/tools"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--tools:context=".ui.fragments.HomeFragment">-->
-
-
-    <!--<LinearLayout-->
-    <!--    android:id="@+id/chips"-->
-    <!--    android:layout_width="match_parent"-->
-    <!--    android:layout_height="wrap_content"-->
-    <!--    android:orientation="horizontal"-->
-    <!--    app:layout_constraintEnd_toEndOf="parent"-->
-    <!--    app:layout_constraintHorizontal_bias="0.5"-->
-    <!--    app:layout_constraintStart_toStartOf="parent"-->
-    <!--    app:layout_constraintTop_toTopOf="parent">-->
-
-    <!--    <com.google.android.material.chip.Chip-->
-    <!--        android:id="@+id/rent"-->
-    <!--        style="@style/ChipStyle"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_margin="2dp"-->
-    <!--        android:layout_weight="1"-->
-    <!--        android:checkable="true"-->
-    <!--        android:checked="true"-->
-    <!--        android:elevation="2dp"-->
-    <!--        android:gravity="center"-->
-    <!--        android:text="@string/rent"-->
-    <!--        android:textAlignment="center" />-->
-
-    <!--    <com.google.android.material.chip.Chip-->
-    <!--        android:id="@+id/buy"-->
-    <!--        style="@style/ChipStyle"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_margin="2dp"-->
-    <!--        android:layout_weight="1"-->
-    <!--        android:checkable="true"-->
-    <!--        android:elevation="2dp"-->
-    <!--        android:gravity="center"-->
-    <!--        android:text="@string/buy"-->
-    <!--        android:textAlignment="center" />-->
-
-    <!--    <com.google.android.material.chip.Chip-->
-    <!--        android:id="@+id/sell"-->
-    <!--        style="@style/ChipStyle"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_margin="2dp"-->
-    <!--        android:layout_weight="1"-->
-    <!--        android:checkable="true"-->
-    <!--        android:elevation="2dp"-->
-    <!--        android:gravity="center"-->
-    <!--        android:text="@string/sell"-->
-    <!--        android:textAlignment="center" />-->
-
-    <!--</LinearLayout>-->
-
-    <!--<Spinner-->
-    <!--    android:id="@+id/spinner"-->
-    <!--    android:layout_width="match_parent"-->
-    <!--    android:layout_height="wrap_content"-->
-    <!--    app:layout_constraintEnd_toEndOf="parent"-->
-    <!--    app:layout_constraintHorizontal_bias="0.5"-->
-    <!--    app:layout_constraintStart_toStartOf="parent"-->
-    <!--    app:layout_constraintTop_toBottomOf="@+id/chips" />-->
-
-    <!--<androidx.recyclerview.widget.RecyclerView-->
-    <!--    android:id="@+id/recyclerView"-->
-    <!--    android:layout_width="match_parent"-->
-    <!--    android:layout_height="wrap_content"-->
-    <!--    app:layout_constraintEnd_toEndOf="parent"-->
-    <!--    app:layout_constraintHorizontal_bias="0.5"-->
-    <!--    app:layout_constraintStart_toStartOf="parent"-->
-    <!--    app:layout_constraintTop_toBottomOf="@+id/spinner" />-->
-
-    <!--<androidx.swiperefreshlayout.widget.SwipeRefreshLayout-->
-    <!--    android:id="@+id/swipeRefreshLayout"-->
-    <!--    android:layout_width="0dp"-->
-    <!--    android:layout_height="0dp"-->
-    <!--    android:layout_marginStart="5dp"-->
-    <!--    android:layout_marginEnd="5dp"-->
-    <!--    app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--    app:layout_constraintEnd_toEndOf="parent"-->
-    <!--    app:layout_constraintHorizontal_bias="0.5"-->
-    <!--    app:layout_constraintStart_toStartOf="parent"-->
-    <!--    app:layout_constraintTop_toBottomOf="@+id/recyclerView">-->
-
-    <!--    <androidx.recyclerview.widget.RecyclerView-->
-    <!--        android:id="@+id/post_rv"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="0dp"-->
-    <!--        android:layout_margin="5dp"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintHorizontal_bias="0.5"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />-->
-    <!--</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
-
-
-    <!--</androidx.constraintlayout.widget.ConstraintLayout>-->

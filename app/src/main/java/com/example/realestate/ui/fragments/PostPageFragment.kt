@@ -7,11 +7,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.realestate.R
 import com.example.realestate.data.remote.network.Retrofit
@@ -21,6 +19,7 @@ import com.example.realestate.databinding.FragmentPostPageBinding
 import com.example.realestate.ui.adapters.MediaPagerAdapter
 import com.example.realestate.ui.viewmodels.PostPageModel
 import com.example.realestate.utils.*
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -35,6 +34,9 @@ class PostPageFragment : Fragment() {
     private lateinit var phoneNumber: String
     private val args: PostPageFragmentArgs by navArgs()
     private lateinit var imagesAdapter: MediaPagerAdapter
+    private val exoPlayer: ExoPlayer by lazy {
+        ExoPlayer.Builder(requireContext()).build()
+    }
     private val postId: String by lazy {
         args.postId
     }
@@ -79,8 +81,7 @@ class PostPageFragment : Fragment() {
                     if (seller != null) {
                         ownerTextView.text = seller.name
 
-                        val formatPhone = seller.phone.code + seller.phone.number
-                        phoneNumber = formatPhone
+                        phoneNumber = seller.phone
 
                         message.setOnClickListener {
                             //whatsapp message
@@ -123,7 +124,7 @@ class PostPageFragment : Fragment() {
 
                     //and the images
                     imagesAdapter = if (post.media.isNotEmpty())
-                        MediaPagerAdapter(post.media)
+                        MediaPagerAdapter(post.media, exoPlayer)
                     else
                         MediaPagerAdapter(listOf("empty"))
 
@@ -134,8 +135,7 @@ class PostPageFragment : Fragment() {
                     }
                 } else {
                     //go back if error
-                    requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
-                    findNavController().popBackStack()
+                    doOnFail()
                 }
             }
             postLoading.observe(viewLifecycleOwner) { loading ->
@@ -157,5 +157,10 @@ class PostPageFragment : Fragment() {
         val intent = Intent(Intent.ACTION_CALL)
         intent.data = Uri.parse("tel:$phoneNumber")
         startActivity(intent)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        exoPlayer.release()
     }
 }

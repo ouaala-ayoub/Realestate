@@ -5,7 +5,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.utils.HandleSubmitInterface
 
 open class FragmentStep : Fragment(), HandleSubmitInterface {
-    override fun onNextClicked(viewPager: ViewPager2, post: Post) {
+    override fun onNextClicked(viewPager: ViewPager2) {
     }
 
     override fun onBackClicked(viewPager: ViewPager2) {

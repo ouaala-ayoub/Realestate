@@ -3,7 +3,6 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -65,14 +64,14 @@
             android:layout_height="wrap_content"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="@string/currency"
-            android:textColor="@color/black"
+            android:text="@string/type"
             android:textStyle="bold" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chips"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -82,7 +81,7 @@
             app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/usd"
+                android:id="@+id/rent"
                 style="@style/ChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -92,11 +91,11 @@
                 android:checked="true"
                 android:elevation="2dp"
                 android:gravity="center"
-                android:text="@string/usd"
+                android:text="@string/rent"
                 android:textAlignment="center" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/eu"
+                android:id="@+id/for_sell"
                 style="@style/ChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -105,10 +104,12 @@
                 android:checkable="true"
                 android:elevation="2dp"
                 android:gravity="center"
-                android:text="@string/eu"
+                android:text="@string/sell"
                 android:textAlignment="center" />
 
+
         </com.google.android.material.chip.ChipGroup>
+
 
     </LinearLayout>
 
