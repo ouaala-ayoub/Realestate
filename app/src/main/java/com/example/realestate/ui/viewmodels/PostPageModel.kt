@@ -39,7 +39,4 @@ class PostPageModel(
     fun getUserById(userId: String) {
         handleApiRequest(usersRepository.getUserById(userId), _postLoading, _seller, TAG)
     }
-
-
-
 }

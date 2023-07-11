@@ -111,6 +111,9 @@
     <string name="error_getting_type">error getting types</string>
     <string name="phone_number">Phone Number</string>
     <string name="sms_send">Sms send</string>
+    <string name="detail_image">detail image</string>
+    <string name="category_type" >%1$s, %2$s</string>
+    <string name="detail_separator">:</string>
 
 
 </resources>

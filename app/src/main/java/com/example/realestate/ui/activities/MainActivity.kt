@@ -17,7 +17,12 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.SearchParams
+import com.example.realestate.data.remote.network.Retrofit
+import com.example.realestate.data.repositories.PostsRepository
+import com.example.realestate.data.repositories.StaticDataRepository
+import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.ActivityMainBinding
+import com.example.realestate.ui.viewmodels.HomeViewModel
 import com.example.realestate.utils.ActivityResultListener
 import com.example.realestate.utils.SelectionResult
 import com.example.realestate.utils.SessionCookie
@@ -33,6 +38,21 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     }
 
     var params: SearchParams = SearchParams()
+    val viewModel: HomeViewModel by lazy {
+        val retrofit = Retrofit.getInstance()
+        HomeViewModel(
+            PostsRepository(retrofit),
+            StaticDataRepository(retrofit),
+            UsersRepository(retrofit)
+        ).also {
+            val connected = CurrentUser.isConnected()
+            if (connected)
+                it.getUserById(CurrentUser.prefs.get()!!)
+
+            it.getCategories()
+            it.getPosts(source = "onCreate activity")
+        }
+    }
     private lateinit var resultListener: ActivityResultListener
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout

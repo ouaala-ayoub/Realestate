@@ -12,14 +12,18 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.PostNavArgs
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
+import com.example.realestate.data.models.DetailsType
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.FragmentPostPageBinding
 import com.example.realestate.ui.activities.UserRegisterActivity
+import com.example.realestate.ui.adapters.DetailsAdapter
 import com.example.realestate.ui.adapters.MediaPagerAdapter
 import com.example.realestate.ui.viewmodels.PostPageModel
 import com.example.realestate.utils.*
@@ -49,6 +53,9 @@ class PostPageFragment : Fragment() {
         PostPageModel(PostsRepository(retrofit), UsersRepository(retrofit)).apply {
             getPost(postId)
         }
+    }
+    private val detailsAdapter: DetailsAdapter by lazy {
+        DetailsAdapter(DetailsType.LONG)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,6 +95,10 @@ class PostPageFragment : Fragment() {
                 goToActivity<UserRegisterActivity>(requireContext())
             }
         }
+        binding.detailsRv.apply {
+            adapter = detailsAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
 
         postPageModel.apply {
             seller.observe(viewLifecycleOwner) { seller ->
@@ -115,6 +126,8 @@ class PostPageFragment : Fragment() {
                             }, listOf(android.Manifest.permission.CALL_PHONE))
 
                         }
+                    } else {
+                        //TODO
                     }
                 }
             }
@@ -127,14 +140,19 @@ class PostPageFragment : Fragment() {
 
                     //bind the data
                     binding.priceTextView.text = post.price.toString()
-                    binding.categoryTextView.text = post.category
+                    binding.categoryTypeRv.text =
+                        getString(R.string.category_type, post.category, post.type)
                     binding.locationTextView.text = getString(
                         R.string.location,
                         post.location.country,
                         post.location.city,
                         post.location.street
                     )
-                    binding.typeTextView.text = post.type
+
+                    val details = post.details
+                    if (!details.isNullOrEmpty()) {
+                        detailsAdapter.setDetailsMap(details)
+                    }
 
                     //and the images
                     imagesAdapter = if (post.media.isNotEmpty())

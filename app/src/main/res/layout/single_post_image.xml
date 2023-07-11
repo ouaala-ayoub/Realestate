@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="5dp"
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/post_image_vp"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/post_page_image_height"
-        android:contentDescription="@string/post_image_description"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:scaleType="fitCenter"
-        app:srcCompat="@drawable/ic_launcher_foreground" />
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="5dp">
+
+        <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/post_image_vp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/post_page_image_height"
+            android:background="@drawable/images"
+            android:contentDescription="@string/post_image_description"
+            android:orientation="horizontal"
+            android:scaleType="fitXY" />
+
+    </androidx.cardview.widget.CardView>
 
 </com.google.android.material.card.MaterialCardView>

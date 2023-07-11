@@ -45,25 +45,14 @@ class HomeFragment : Fragment(), ActivityResultListener {
     private lateinit var viewModel: HomeViewModel
     private lateinit var postsAdapter: PostsAdapter
     private lateinit var searchParams: SearchParams
-    private val retrofit = Retrofit.getInstance()
-    private var times = 0
+    private var searchTimes = 0
     private var selectedChipId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = HomeViewModel(
-            PostsRepository(retrofit),
-            StaticDataRepository(retrofit),
-            UsersRepository(retrofit)
-        ).also {
-            //user connected
-            val connected = CurrentUser.isConnected()
-            if (connected)
-                it.getUserById(CurrentUser.prefs.get()!!)
-
-            it.getCategories()
-        }
+        val activity = (requireActivity() as MainActivity)
+        viewModel = activity.viewModel
 
         postsAdapter = PostsAdapter(
             object : OnPostClickListener {
@@ -203,7 +192,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 countryPicker.selectedCountryName?.apply {
                     val name = this
                     searchParams.location?.country = name
-                    viewModel.getPosts(searchParams)
+                    viewModel.getPosts(searchParams, source = "countryPicker")
                 }
             }
 
@@ -214,13 +203,19 @@ class HomeFragment : Fragment(), ActivityResultListener {
                     setOnCheckedStateChangeListener { group, checkedId ->
                         if (checkedId.isEmpty()) {
                             searchParams.category = null
-                            viewModel.getPosts(searchParams)
+                            viewModel.getPosts(
+                                searchParams,
+                                source = "setOnCheckedStateChangeListener isEmpty = true"
+                            )
                         } else {
                             val selectedChip: Chip? = group.findViewById(checkedId[0])
                             val selectedCategory: String? = selectedChip?.text?.toString()
 
                             searchParams.category = selectedCategory
-                            viewModel.getPosts(searchParams)
+                            viewModel.getPosts(
+                                searchParams,
+                                source = "setOnCheckedStateChangeListener isEmpty = false"
+                            )
 
                         }
                     }
@@ -235,7 +230,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
             //handle swipe gesture
             swipeRefreshLayout.setOnRefreshListener {
-                viewModel.getPosts(searchParams)
+                viewModel.getPosts(searchParams, source = "swipeRefreshLayout.setOnRefreshListener")
                 if (viewModel.categoriesList.value.isNullOrEmpty()) {
                     viewModel.getCategories()
                 }
@@ -250,9 +245,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
             }
 
             viewModel.postsList.observe(viewLifecycleOwner) { posts ->
-                Log.d(TAG, "got $times: times")
-                Log.d(TAG, "postsList: $posts")
-
 
                 handleHomeButton()
 
@@ -274,17 +266,8 @@ class HomeFragment : Fragment(), ActivityResultListener {
                     )
                     binding.postRv.unVeil()
 
-//                    if (refreshed || firstTime) {
-//                        binding.scrollView.setExpanded(true, true)
-//                        refreshed = false
-//                        firstTime = false
-//                    } else
-//                        binding.vAppBar.setExpanded(false, false)
-
-
                     swipeRefreshLayout.isRefreshing = false
                 }
-                times++
             }
         }
 
@@ -298,25 +281,26 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 androidx.appcompat.widget.SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     viewModel.apply {
-                        searchByQuery(query)
+                        searchByQuery(query, "onQueryTextSubmit")
                     }
                     return false
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    viewModel.apply {
-                        searchByQuery(newText)
-                    }
+                    //TODO fix this bug where this function gets called without query change
+//                    viewModel.apply {
+//                        searchByQuery(newText, "onQueryTextChange")
+//                    }
                     return false
                 }
 
-                fun searchByQuery(query: String?) {
+                fun searchByQuery(query: String?, source: String) {
                     if (query.isNullOrBlank())
                         searchParams.title = null
                     else
                         searchParams.title = query
 
-                    viewModel.getPosts(searchParams)
+                    viewModel.getPosts(searchParams, source = source)
                 }
             })
         }
@@ -381,7 +365,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 searchParams.type = Type.BUY.value
             }
         }
-        viewModel.getPosts(searchParams)
+        viewModel.getPosts(searchParams, source = "onChipClicked")
     }
 
 
@@ -404,7 +388,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
     private fun requestData(params: SearchParams) {
         Log.d(TAG, "requesting Data with params: $params")
-        viewModel.getPosts(searchParams)
+        viewModel.getPosts(searchParams, source = "onResultOk requestData")
     }
 
     override fun onResultCancelled() {

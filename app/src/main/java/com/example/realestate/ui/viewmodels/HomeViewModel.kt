@@ -1,5 +1,6 @@
 package com.example.realestate.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -43,7 +44,7 @@ class HomeViewModel(
     val isProgressBarTurning: LiveData<Boolean>
         get() = _isLoading
     val postsList: LiveData<MutableList<Post>?>
-        get() = getPosts()
+        get() = _postsList
     val categoriesList: LiveData<List<String>?>
         get() = _categoriesList
     val countries: LiveData<List<String>?>
@@ -58,7 +59,11 @@ class HomeViewModel(
         get() = _deletedFromFav
 
     // no filters by default
-    fun getPosts(searchParams: SearchParams = SearchParams()): MutableLiveData<MutableList<Post>?> {
+    fun getPosts(
+        searchParams: SearchParams = SearchParams(),
+        source: String
+    ): MutableLiveData<MutableList<Post>?> {
+        Log.i(TAG, "requested data yes source = $source")
         handleApiRequest(
             postsRepository.getPosts(searchParams),
             _isLoading,
@@ -86,6 +91,7 @@ class HomeViewModel(
     }
 
     fun getCategories(): MutableLiveData<List<String>?> {
+        Log.d(TAG, "getCategories")
         handleApiRequest(
             staticDataRepository.getCategories(),
             _isLoading,

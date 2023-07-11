@@ -213,6 +213,7 @@ fun ImageView.loadImage(imageName: String) {
     Glide.with(this)
 //        .load(imageUrl)
         .load(imageName)
+        .centerCrop()
         .placeholder(circularProgressBar(context))
         .error(R.drawable.baseline_broken_image_24)
         .into(this)
@@ -245,6 +246,7 @@ fun Activity.doOnFail() {
 fun ImageView.loadImageUri(imageUri: Uri) {
     Glide.with(this)
         .load(imageUri)
+        .centerCrop()
         .placeholder(circularProgressBar(context))
         .error(R.drawable.baseline_broken_image_24)
         .into(this)

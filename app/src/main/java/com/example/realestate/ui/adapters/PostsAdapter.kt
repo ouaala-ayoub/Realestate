@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
+import com.example.realestate.data.models.DetailsType
 import com.example.realestate.data.models.MediaType
 import com.example.realestate.data.models.Post
 import com.example.realestate.databinding.SinglePostBinding
@@ -40,7 +41,7 @@ class PostsAdapter(
     inner class PostHolder(private val binding: SinglePostBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private val detailsShortAdapter = DetailsShortAdapter()
+        private val detailsShortAdapter = DetailsAdapter(DetailsType.SHORT)
 
         fun bind(position: Int) {
             val currentPost = postsList[position]
@@ -101,12 +102,13 @@ class PostsAdapter(
                     }
                 }
 
-                if (!currentPost.details.isNullOrEmpty()) {
-//                    detailsShortRv.apply {
-//                        adapter = detailsShortAdapter
-//                        layoutManager = LinearLayoutManager(context)
-//                        detailsShortAdapter.setDetailsMap(currentPost.details!!)
-//                    }
+                val details = currentPost.details
+                if (!details.isNullOrEmpty()) {
+                    detailsShortRv.apply {
+                        adapter = detailsShortAdapter
+                        layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+                        detailsShortAdapter.setDetailsMap(details)
+                    }
                 }
             }
         }
