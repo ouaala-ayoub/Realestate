@@ -2,13 +2,13 @@ package com.example.realestate.ui.fragments.user_register_steps
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.realestate.R
@@ -19,8 +19,11 @@ import com.example.realestate.ui.viewmodels.userregistermodels.VerificationCodeM
 import com.example.realestate.utils.Task
 import com.example.realestate.utils.disableBackButton
 import com.example.realestate.utils.toast
+import com.fraggjkee.smsconfirmationview.SmsConfirmationView
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.PhoneAuthProvider
+import com.stfalcon.smsverifycatcher.SmsVerifyCatcher
+
 
 class VerificationCodeFragment : Fragment() {
 
@@ -28,6 +31,7 @@ class VerificationCodeFragment : Fragment() {
         private const val TAG = "VerificationCodeFragment"
     }
 
+    private lateinit var smsVerifyCatcher: SmsVerifyCatcher
     private lateinit var binding: FragmentVerificationCodeBinding
     private val args: VerificationCodeFragmentArgs by navArgs()
     private val verificationModel: VerificationCodeModel by lazy {
@@ -35,12 +39,6 @@ class VerificationCodeFragment : Fragment() {
     }
     private val verificationId: String by lazy {
         args.verificationId
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "verificationId: $verificationId")
-
     }
 
     override fun onCreateView(
@@ -53,9 +51,20 @@ class VerificationCodeFragment : Fragment() {
 
         verificationModel.apply {
 
-            binding.verificationCodeEt.doOnTextChanged { code, _, _, _ ->
-                setVerificationCode(code.toString())
-            }
+            //TODO
+//            smsVerifyCatcher = SmsVerifyCatcher(
+//                requireActivity()
+//            ) { message ->
+//                Log.d(TAG, "message: $message")
+////                val code: String = parseCode(message) //Parse verification code
+////                etCode.setText(code) //set code in edit text
+//                //then you can send verification code to server
+//            }
+
+            binding.smsVerificationCodeEt.onChangeListener =
+                SmsConfirmationView.OnChangeListener { code, _ ->
+                    setVerificationCode(code)
+                }
 
             isLoading.observe(viewLifecycleOwner) { loading ->
                 binding.verifyProgressBar.isVisible = loading
@@ -65,12 +74,12 @@ class VerificationCodeFragment : Fragment() {
                 binding.verify.isEnabled = dataValid
             }
 
-
         }
 
         binding.verify.setOnClickListener {
 
-            val code = binding.verificationCodeEt.text.toString()
+//            val code = binding.verificationCodeEt.code
+            val code = binding.smsVerificationCodeEt.enteredCode
             val credential = PhoneAuthProvider.getCredential(verificationId, code)
 
             verificationModel.signInWithPhoneAuthCredential(
@@ -88,20 +97,19 @@ class VerificationCodeFragment : Fragment() {
                                     if (userId != null) {
                                         goToAddData(userId.id, tokenId)
                                     } else {
-                                        onFail()
+                                        onFail(getString(R.string.error))
                                     }
                                 }
                             } else {
-                                onFail()
+                                onFail(getString(R.string.wrong_code))
                             }
 
                         }
                     }
 
                     override fun onFail(e: Exception?) {
-                        Log.e(TAG, "onFail: ${e?.message}")
                         e?.printStackTrace()
-                        onFail()
+                        onFail(getString(R.string.wrong_code))
                     }
                 })
         }
@@ -110,14 +118,14 @@ class VerificationCodeFragment : Fragment() {
     }
 
 
-    private fun onFail() {
-        requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
+    private fun onFail(message: String) {
+        requireContext().toast(message, Toast.LENGTH_SHORT)
         requireActivity().finish()
     }
 
     private fun updateUi(loading: Boolean) {
         binding.apply {
-            verificationCodeEt.isEnabled = !loading
+            smsVerificationCodeEt.isEnabled = !loading
             verify.isEnabled = !loading
         }
     }
@@ -129,6 +137,16 @@ class VerificationCodeFragment : Fragment() {
                 token
             )
         findNavController().navigate(action)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        smsVerifyCatcher.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        smsVerifyCatcher.onStop()
     }
 
 }

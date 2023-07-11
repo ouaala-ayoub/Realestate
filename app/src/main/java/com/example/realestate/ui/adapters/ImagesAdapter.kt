@@ -3,9 +3,11 @@ package com.example.realestate.ui.adapters
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.R
 import com.example.realestate.data.models.Media
+import com.example.realestate.data.models.UriHolder
 import com.example.realestate.databinding.SingleImageBinding
 import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
 import com.example.realestate.utils.loadImageUri
@@ -18,11 +20,12 @@ class ImagesAdapter(
 
     companion object {
         private const val TAG = "ImagesAdapter"
+        private const val PROGRESS_COMPLETE = 100
     }
 
     private var imagesList: Media = Media(
         MutableList(imagesNumber) {
-            null
+            UriHolder()
         }
     )
 
@@ -30,7 +33,8 @@ class ImagesAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(position: Int) {
-            val currentImage = imagesList.uris[position]
+            val currentImage = imagesList.uriHolders[position].uri
+            val currentProgress = imagesList.uriHolders[position].uploadProgress
             val isNull = currentImage == null
             val isSelected = position == imagesList.selectedPosition
 
@@ -63,7 +67,28 @@ class ImagesAdapter(
                     }
                 }
 
+                //handle progress
+                if (currentProgress != null) {
+
+                    if (currentProgress == PROGRESS_COMPLETE) {
+                        hideLoadingDialog()
+                    } else {
+                        showLoadingDialog()
+                        binding.imageUploadProgress.progress = currentProgress
+                    }
+
+                } else {
+                    hideLoadingDialog()
+                }
             }
+        }
+
+        private fun showLoadingDialog() {
+            binding.imageUploadProgress.isVisible = true
+        }
+
+        private fun hideLoadingDialog() {
+            binding.imageUploadProgress.isVisible = false
         }
 
 
@@ -90,30 +115,22 @@ class ImagesAdapter(
         )
     }
 
-    override fun getItemCount() = imagesList.uris.size
+    override fun getItemCount() = imagesList.uriHolders.size
 
     override fun onBindViewHolder(holder: ImagesHolder, position: Int) {
         holder.bind(position)
     }
 
-    fun addImages(listToAdd: List<Uri>) {
-        viewModel.addImages(listToAdd, imagesList, this)
+    fun addImages(listToAdd: List<Uri>, mimeType: List<String?>) {
+        viewModel.addImages(listToAdd, imagesList, this, mimeType)
     }
 
     fun getUploadedMedia(): List<String> {
         return viewModel.getResult(imagesList.selectedPosition)
     }
 
-    fun upload(uri: Uri, mimeType: String?) {
-        when {
-            mimeType == null -> return
-            mimeType.contains("image") -> {
-                viewModel.uploadImage(uri, imagesList)
-            }
-            mimeType.contains("video") -> {
-                viewModel.uploadVideo(uri, imagesList)
-            }
-        }
+    fun updateProgress(progress: Int, position: Int) {
+        imagesList.uriHolders[position].uploadProgress = progress
+        notifyItemChanged(position)
     }
-
 }

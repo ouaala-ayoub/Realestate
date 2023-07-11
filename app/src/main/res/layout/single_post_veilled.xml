@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.skydoves.androidveil.VeilLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/veilLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/post_whole"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <!-- Veiled item views -->
+            <View
+                android:id="@+id/veiled_image"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/post_image_height"
+                android:layout_margin="5dp"
+                android:background="@drawable/skeleton_background" />
+
+            <TextView
+                android:id="@+id/veiled_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/skeleton_background"
+                android:padding="5dp" />
+
+            <TextView
+                android:id="@+id/veiled_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/skeleton_background"
+                android:padding="5dp"
+                app:drawableStartCompat="@drawable/baseline_location_on_24"
+                app:drawableTint="@color/yellow" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</com.skydoves.androidveil.VeilLayout>
+
+
+

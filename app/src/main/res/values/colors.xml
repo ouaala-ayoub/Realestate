@@ -32,4 +32,7 @@
 
     <!--    helper text color-->
     <color name="red">#8b0000</color>
+    <color name="yellow">#ffd60a</color>
+
+    <color name="skeleton_color">#D3D3D3</color>
 </resources>

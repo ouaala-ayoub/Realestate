@@ -1,7 +1,11 @@
 package com.example.realestate.data.remote.network
 
 import com.example.realestate.data.models.*
+import com.google.gson.JsonObject
+import com.google.gson.annotations.SerializedName
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -17,10 +21,22 @@ interface RetrofitService {
 //    @GET("streets")
 //    fun getStreets(): Call<List<String>>
 
+    //sign the uploads
+    @POST("upload/newnew")
+    fun generateSignature(@Query("timestamp") timeStamp: Long): Call<SignResult>
+
+    //reports
+    @GET("reports/reasons")
+    fun getReportReasons(): Call<List<String>>
+
+    @POST("reports")
+    fun addReport(@Body reportToAdd: Report): Call<MessageResponse>
+
+    //posts
+
     @GET("posts/categories")
     fun getCategories(): Call<List<String>>
 
-    //posts
     @GET("posts")
     fun getPosts(
         @Query("search") title: String? = null,
@@ -56,4 +72,24 @@ interface RetrofitService {
 
     @POST("login")
     fun login(@Header("Authorization") token: String): Call<UserId>
+
+    @GET("users/{id}/favourites")
+    fun getSavedPosts(@Path("id") userId: String): Call<List<Post>>
+
+    @HTTP(method = "DELETE", path = "users/{id}/favourites", hasBody = true)
+    fun deleteFavourite(
+        @Path("id") userId: String,
+        @Body favouriteId: NewFavouritesRequest
+    ): Call<BooleanHolder>
+
+    @PATCH("users/{id}/favourites")
+    fun addFavourite(
+        @Path("id") userId: String,
+        @Body favouriteId: NewFavouritesRequest
+    ): Call<BooleanHolder>
 }
+
+data class BooleanHolder(
+    @SerializedName("updated")
+    val data: Boolean
+)

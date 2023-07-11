@@ -3,27 +3,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_elements"
-    app:startDestination="@id/homeNav">
+    app:startDestination="@id/homeFragment">
 
-    <navigation android:id="@+id/homeNav"
-        app:startDestination="@id/homeFragment">
-        <fragment
-            android:id="@+id/homeFragment"
-            android:name="com.example.realestate.ui.fragments.HomeFragment"
-            android:label="fragment_home"
-            tools:layout="@layout/fragment_home" >
-            <action
-                android:id="@+id/action_homeFragment_to_postPageFragment2"
-                app:destination="@id/postPageFragment" />
-        </fragment>
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.realestate.ui.fragments.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_postPageFragment2"
+            app:destination="@id/postPageFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_postNav"
+            app:destination="@id/postNav" />
+    </fragment>
+    <navigation
+        android:id="@+id/postNav"
+        app:startDestination="@id/postPageFragment">
+        <argument
+            android:name="postId"
+            app:argType="string" />
         <fragment
             android:id="@+id/postPageFragment"
             android:name="com.example.realestate.ui.fragments.PostPageFragment"
             android:label="fragment_post_page"
-            tools:layout="@layout/fragment_post_page" >
-            <argument
-                android:name="postId"
-                app:argType="string" />
+            tools:layout="@layout/fragment_post_page">
+            <action
+                android:id="@+id/action_postPageFragment_to_reportFragment"
+                app:destination="@id/reportFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/reportFragment"
+            android:name="com.example.realestate.ui.fragments.ReportFragment"
+            android:label="fragment_report"
+            tools:layout="@layout/fragment_report">
         </fragment>
     </navigation>
     <activity
@@ -40,5 +54,9 @@
         android:id="@+id/savedFragment"
         android:name="com.example.realestate.ui.fragments.SavedFragment"
         android:label="fragment_saved"
-        tools:layout="@layout/fragment_saved" />
+        tools:layout="@layout/fragment_saved" >
+        <action
+            android:id="@+id/action_savedFragment_to_postNav"
+            app:destination="@id/postNav" />
+    </fragment>
 </navigation>

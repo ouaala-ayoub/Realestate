@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -16,12 +17,15 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.realestate.R
+import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.SearchParams
 import com.example.realestate.data.models.Type
+import com.example.realestate.data.models.User
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
-import com.example.realestate.databinding.FragmentHomeBinding
+import com.example.realestate.data.repositories.UsersRepository
+import com.example.realestate.databinding.FragmentHomeModifiedBinding
 import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.adapters.PostsAdapter
 import com.example.realestate.ui.viewmodels.HomeViewModel
@@ -30,31 +34,50 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), ActivityResultListener {
 
     companion object {
         private const val TAG = "HomeFragment"
     }
 
-    private var firstTime: Boolean = true
-    private lateinit var binding: FragmentHomeBinding
+    private var favourites: List<String> = listOf()
+    private lateinit var binding: FragmentHomeModifiedBinding
     private lateinit var viewModel: HomeViewModel
     private lateinit var postsAdapter: PostsAdapter
     private lateinit var searchParams: SearchParams
     private val retrofit = Retrofit.getInstance()
+    private var times = 0
     private var selectedChipId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val activity = (requireActivity() as MainActivity)
-        viewModel = HomeViewModel(PostsRepository(retrofit), StaticDataRepository(retrofit)).also {
+
+        viewModel = HomeViewModel(
+            PostsRepository(retrofit),
+            StaticDataRepository(retrofit),
+            UsersRepository(retrofit)
+        ).also {
+            //user connected
+            val connected = CurrentUser.isConnected()
+            if (connected)
+                it.getUserById(CurrentUser.prefs.get()!!)
+
             it.getCategories()
         }
-        searchParams = activity.params
+
         postsAdapter = PostsAdapter(
             object : OnPostClickListener {
                 override fun onClick(postId: String) {
                     goToPostFragment(postId)
+                }
+            },
+            object : OnAddToFavClicked {
+                override fun onChecked(postId: String, userId: String) {
+                    viewModel.deleteFromFavourites(userId, postId)
+                }
+
+                override fun onUnChecked(postId: String, userId: String) {
+                    viewModel.addToFavourites(userId, postId)
                 }
             }
         )
@@ -65,11 +88,17 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        val activity = (requireActivity() as MainActivity)
+        binding = FragmentHomeModifiedBinding.inflate(inflater, container, false)
         binding.postRv.apply {
-            adapter = postsAdapter
-            layoutManager = LinearLayoutManager(requireContext())
+            setAdapter(postsAdapter)
+            setLayoutManager(LinearLayoutManager(requireContext()))
+            addVeiledItems(10)
         }
+
+        //initialise filter params
+        searchParams = activity.params
+        searchParams.location?.country = binding.countryPicker.selectedCountryName
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -101,20 +130,71 @@ class HomeFragment : Fragment() {
 
             })
 
+
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        val activity = (requireActivity() as MainActivity)
-//        activity.setActivityResultListener(this)
+        val activity = (requireActivity() as MainActivity)
+        activity.setActivityResultListener(this)
 
         binding.apply {
 
+            viewModel.addedToFav.observe(viewLifecycleOwner) { holder ->
+                holder?.apply {
+                    if (!data) {
+                        requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
+                    }
+                }
+            }
+
+            viewModel.deletedFromFav.observe(viewLifecycleOwner) { holder ->
+                holder?.apply {
+                    if (!data) {
+                        requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
+                    }
+                }
+            }
+
+            viewModel.user.observe(viewLifecycleOwner) { user ->
+                if (user != null) {
+                    user.favourites = listOf()
+                    postsAdapter.setFavourites(user.favourites)
+                } else {
+                    requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
+                }
+            }
+
+            //handle error message
+            viewModel.postsMessage.observe(viewLifecycleOwner) { postsMessage ->
+                Log.d(TAG, "message: $postsMessage")
+                if (postsMessage.isEmpty()) {
+                    this.postsMessage.visibility = View.GONE
+                } else {
+                    this.postsMessage.visibility = View.VISIBLE
+                    this.postsMessage.text = postsMessage
+                }
+
+            }
+            viewModel.categoriesMessage.observe(viewLifecycleOwner) { categoriesMessage ->
+                Log.d(TAG, "message: $categoriesMessage")
+                if (categoriesMessage.isEmpty()) {
+                    this.categoriesMessage.visibility = View.GONE
+                } else {
+                    this.categoriesMessage.visibility = View.VISIBLE
+                    this.categoriesMessage.text = categoriesMessage
+                }
+            }
+
             //handle loading
             viewModel.isProgressBarTurning.observe(viewLifecycleOwner) { loading ->
-                progressBar.isVisible = loading
+                binding.progressBar.isVisible = loading
+                if (loading && !binding.postRv.isVeiled) {
+                    binding.postRv.veil()
+                }
             }
 
             //get the current country and send the request to get the posts of this country
@@ -138,8 +218,6 @@ class HomeFragment : Fragment() {
                         } else {
                             val selectedChip: Chip? = group.findViewById(checkedId[0])
                             val selectedCategory: String? = selectedChip?.text?.toString()
-
-                            Log.d(TAG, "selectedCategory: $selectedCategory")
 
                             searchParams.category = selectedCategory
                             viewModel.getPosts(searchParams)
@@ -165,40 +243,48 @@ class HomeFragment : Fragment() {
 
 
             //disable swipe refresh if not on top
-            vAppBar.addOnOffsetChangedListener { _, verticalOffset ->
-                val isAppBarExpanded = verticalOffset == 0
+            scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+                val isAtTop = scrollY == 0
                 swipeRefreshLayout.isEnabled =
-                    isAppBarExpanded && !postRv.canScrollVertically(-1)
+                    isAtTop && !postRv.canScrollVertically(-1)
             }
 
-
             viewModel.postsList.observe(viewLifecycleOwner) { posts ->
+                Log.d(TAG, "got $times: times")
                 Log.d(TAG, "postsList: $posts")
 
 
                 handleHomeButton()
 
                 //prevent scrolling bugs
-                if (posts.isNullOrEmpty()) {
-                    collapsingBar.disableScroll()
-                } else {
-                    collapsingBar.enableScroll()
-                }
+//                if (posts.isNullOrEmpty()) {
+//                    collapsingBar.disableScroll()
+//                } else {
+//                    collapsingBar.enableScroll()
+//                }
 
 
                 posts?.apply {
-                    if (firstTime) {
-                        postsAdapter.setPostsList(posts)
-                        firstTime = false
-                    } else {
-                        val recyclerViewState = binding.postRv.layoutManager?.onSaveInstanceState()
-                        postsAdapter.setPostsList(posts)
-                        binding.postRv.layoutManager?.onRestoreInstanceState(recyclerViewState)
-                        binding.vAppBar.setExpanded(false, false)
-                    }
+
+                    val recyclerViewState =
+                        binding.postRv.getRecyclerView().layoutManager?.onSaveInstanceState()
+                    postsAdapter.setPostsList(posts)
+                    binding.postRv.getRecyclerView().layoutManager?.onRestoreInstanceState(
+                        recyclerViewState
+                    )
+                    binding.postRv.unVeil()
+
+//                    if (refreshed || firstTime) {
+//                        binding.scrollView.setExpanded(true, true)
+//                        refreshed = false
+//                        firstTime = false
+//                    } else
+//                        binding.vAppBar.setExpanded(false, false)
+
 
                     swipeRefreshLayout.isRefreshing = false
                 }
+                times++
             }
         }
 
@@ -225,11 +311,12 @@ class HomeFragment : Fragment() {
                 }
 
                 fun searchByQuery(query: String?) {
-                    if (query.isNullOrBlank()) return
-                    else {
+                    if (query.isNullOrBlank())
+                        searchParams.title = null
+                    else
                         searchParams.title = query
-                        viewModel.getPosts(searchParams)
-                    }
+
+                    viewModel.getPosts(searchParams)
                 }
             })
         }
@@ -245,16 +332,8 @@ class HomeFragment : Fragment() {
     private fun handleHomeButton() {
         (requireActivity() as MainActivity).bottomNavView.setOnItemReselectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.homeNav -> {
-                    binding.postRv.apply {
-                        if (layoutManager is LinearLayoutManager) {
-                            //scroll to the top if home re clicked
-
-                            scrollToPosition(0)
-                            binding.vAppBar.setExpanded(true, true)
-
-                        }
-                    }
+                R.id.homeFragment -> {
+                    binding.scrollView.scrollTo(0, 0)
                 }
             }
         }
@@ -319,21 +398,21 @@ class HomeFragment : Fragment() {
         }
     }
 
-//    override fun onResultOk(searchParams: SearchParams) {
-//        requestData(searchParams)
-//    }
+    override fun onResultOk(searchParams: SearchParams) {
+        requestData(searchParams)
+    }
 
-//    private fun requestData(params: SearchParams) {
-//        Log.d(TAG, "requesting Data with params: $params")
-//        viewModel.getPosts(searchParams)
-//    }
+    private fun requestData(params: SearchParams) {
+        Log.d(TAG, "requesting Data with params: $params")
+        viewModel.getPosts(searchParams)
+    }
 
-//    override fun onResultCancelled() {
-//        Log.d(TAG, "onResultCancelled")
-//    }
+    override fun onResultCancelled() {
+        Log.d(TAG, "onResultCancelled")
+    }
 
     private fun goToPostFragment(postId: String) {
-        val action = HomeFragmentDirections.actionHomeFragmentToPostPageFragment2(postId)
+        val action = HomeFragmentDirections.actionHomeFragmentToPostNav(postId)
         findNavController().navigate(action)
     }
 

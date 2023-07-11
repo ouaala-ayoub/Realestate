@@ -49,7 +49,7 @@ class StepTwoFragment : FragmentStep() {
                     }
                 }
             } else {
-                doOnFail()
+                requireActivity().doOnFail()
             }
         }
 

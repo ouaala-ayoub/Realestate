@@ -1,7 +1,9 @@
 package com.example.realestate.ui.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
@@ -17,7 +19,9 @@ import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.SearchParams
 import com.example.realestate.databinding.ActivityMainBinding
 import com.example.realestate.utils.ActivityResultListener
+import com.example.realestate.utils.SelectionResult
 import com.example.realestate.utils.SessionCookie
+import com.example.realestate.utils.startActivityResult
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -33,29 +37,29 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
     lateinit var bottomNavView: BottomNavigationView
-//    private val searchLauncher = startActivityResult(
-//        object : SelectionResult {
-//            override fun onResultOk(data: Intent) {
-//                val searchParams = data.getParcelableExtra<SearchParams>("search_params")
-//
-//                // Use the search parameters as needed
-//                if (searchParams != null) {
-//                    // Perform the search using the search parameters
-//                    // ...
-//                    params = searchParams
-//                    backToHomeFragment()
-//                    resultListener.onResultOk(params)
-//
-//                    Log.d(TAG, "searchParams result : $searchParams")
-//                }
-//            }
-//
-//            override fun onResultFailed() {
-//                resultListener.onResultCancelled()
-//            }
-//
-//        }
-//    )
+    private val searchLauncher = startActivityResult(
+        object : SelectionResult {
+            override fun onResultOk(data: Intent) {
+                val searchParams = data.getParcelableExtra<SearchParams>("search_params")
+
+                // Use the search parameters as needed
+                if (searchParams != null) {
+                    // Perform the search using the search parameters
+                    // ...
+                    params = searchParams
+                    backToHomeFragment()
+                    resultListener.onResultOk(params)
+
+                    Log.d(TAG, "searchParams result : $searchParams")
+                }
+            }
+
+            override fun onResultFailed() {
+                resultListener.onResultCancelled()
+            }
+
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -65,6 +69,8 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         drawerLayout = binding.drawerLayout
         bottomNavView = binding.bottomNav
+
+        supportActionBar
 
         initialiseDrawerLayout(drawerLayout)
         setTheBottomNav()
@@ -83,10 +89,10 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                 handleDrawerLayout(drawerLayout)
                 return true
             }
-//            R.id.app_bar_search -> {
-//                openSearchFragment()
-//                return true
-//            }
+            R.id.filter_button -> {
+                openSearchActivity()
+                return true
+            }
             else -> {
                 super.onOptionsItemSelected(item)
             }
@@ -101,11 +107,11 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         }
     }
 
-//    private fun openSearchFragment() {
-//        val intent = Intent(this, SearchActivity::class.java)
-//        intent.putExtra("search_params", params)
-//        searchLauncher.launch(intent)
-//    }
+    private fun openSearchActivity() {
+        val intent = Intent(this, SearchActivity::class.java)
+        intent.putExtra("search_params", params)
+        searchLauncher.launch(intent)
+    }
 
     private fun setTheBottomNav() {
         val navHost =
@@ -137,8 +143,8 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                         navController.navigate(R.id.userRegisterActivity)
                     }
                 }
-                R.id.homeNav -> {
-                    navController.navigate(R.id.homeNav)
+                R.id.homeFragment -> {
+                    navController.navigate(R.id.homeFragment)
                 }
                 // Handle other menu items if needed
             }
@@ -152,8 +158,9 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         // Manually set the selected item in the bottom navigation view based on the current destination
         val navDestination = findNavController(R.id.fragment_container).currentDestination
         when (navDestination?.id) {
-            R.id.homeFragment -> binding.bottomNav.selectedItemId = R.id.homeNav
-            R.id.postPageFragment -> binding.bottomNav.selectedItemId = R.id.homeNav
+            R.id.homeFragment -> binding.bottomNav.selectedItemId = R.id.homeFragment
+//            R.id.postPageFragment -> binding.bottomNav.selectedItemId = R.id.homeNav
+//            R.id.reportFragment -> binding.bottomNav.selectedItemId = R.id.homeNav
             R.id.savedFragment -> binding.bottomNav.selectedItemId = R.id.savedFragment
             // Add cases for other destinations if needed
         }

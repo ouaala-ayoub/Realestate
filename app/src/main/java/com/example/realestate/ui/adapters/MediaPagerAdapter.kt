@@ -1,15 +1,14 @@
 package com.example.realestate.ui.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.MimeTypeMap
 import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.data.models.MediaType
 import com.example.realestate.databinding.ErrorBinding
 import com.example.realestate.databinding.SinglePostImageBinding
 import com.example.realestate.databinding.SinglePostVideoBinding
+import com.example.realestate.utils.getMediaType
 import com.example.realestate.utils.loadImage
 import com.example.realestate.utils.loadVideo
 import com.google.android.exoplayer2.ExoPlayer
@@ -52,21 +51,9 @@ class MediaPagerAdapter(private val mediaList: List<String>, private val exoPlay
     }
 
     override fun getItemViewType(position: Int): Int {
-        return getMediaType(mediaList[position]).ordinal
+        return getMediaType(mediaList[position], TAG).ordinal
     }
 
-    private fun getMediaType(url: String): MediaType {
-        val extension = MimeTypeMap.getFileExtensionFromUrl(url)
-        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-
-        Log.d(TAG, "mimeType: $mimeType")
-
-        return when {
-            mimeType?.startsWith("image/") == true -> MediaType.IMAGE
-            mimeType?.startsWith("video/") == true -> MediaType.VIDEO
-            else -> MediaType.UNKNOWN
-        }
-    }
 
     override fun getItemCount(): Int {
         return mediaList.size

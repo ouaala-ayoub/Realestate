@@ -1,6 +1,7 @@
-<!-- single_item_layout.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/post_whole"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,7 +10,7 @@
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="true">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -21,28 +22,63 @@
             android:layout_height="@dimen/post_image_height"
             android:contentDescription="@string/post_image_description"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/ic_launcher_foreground" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_broken_image_24" />
+
 
         <TextView
             android:id="@+id/post_price"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="10dp"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            android:textColor="@color/colorSecondary" />
+            android:textColor="@color/yellow"
+            app:layout_constraintBottom_toTopOf="@+id/post_location"
+            app:layout_constraintEnd_toStartOf="@+id/add_to_fav"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/post_image" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/add_to_fav"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:layout_weight="0.1"
+            android:button="@drawable/add_to_favourite_selector"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/post_image" />
 
         <TextView
             android:id="@+id/post_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             android:padding="5dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             app:drawableStartCompat="@drawable/baseline_location_on_24"
-            app:drawableTint="@color/colorSecondary">
+            app:drawableTint="@color/yellow"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_to_fav">
 
         </TextView>
 
-    </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/details_short_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/post_location" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

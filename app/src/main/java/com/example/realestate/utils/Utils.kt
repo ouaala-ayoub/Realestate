@@ -11,6 +11,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
@@ -32,7 +33,9 @@ import com.bumptech.glide.Glide
 import com.example.realestate.R
 import com.example.realestate.data.models.Error
 import com.example.realestate.data.models.ErrorResponse
+import com.example.realestate.data.models.MediaType
 import com.example.realestate.data.models.SearchParams
+import com.example.realestate.ui.adapters.MediaPagerAdapter
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.StyledPlayerView
@@ -51,6 +54,11 @@ import retrofit2.Response
 
 
 const val TAG = "Utils"
+
+interface OnFavouriteClickListener {
+    fun onFavouriteClicked(postId: String)
+    fun onDeleteClickListener(postId: String)
+}
 
 interface Task {
     fun onSuccess(user: FirebaseUser?)
@@ -86,6 +94,11 @@ interface OnPostClickListener {
     fun onClick(postId: String)
 }
 
+interface OnAddToFavClicked {
+    fun onChecked(postId: String, userId: String)
+    fun onUnChecked(postId: String, userId: String)
+}
+
 interface OnVerificationCompleted {
     fun onCodeSent(verificationId: String)
 
@@ -94,8 +107,8 @@ interface OnVerificationCompleted {
     fun onFail(e: FirebaseException) = null
 }
 
-interface AdditionalCode {
-    fun <T> onResponse(responseBody: Response<T>)
+interface AdditionalCode<T> {
+    fun onResponse(responseBody: Response<T>)
     fun onFailure()
 }
 
@@ -134,12 +147,12 @@ fun FragmentActivity.disableBackButton(viewLifecycleOwner: LifecycleOwner) {
 
 fun <T> handleApiRequest(
     apiCall: Call<T>,
-    loadingLiveData: MutableLiveData<Boolean>,
+    loadingLiveData: MutableLiveData<Boolean>?,
     dataLiveData: MutableLiveData<T?>,
     TAG: String,
-    additionalCode: AdditionalCode? = null
+    additionalCode: AdditionalCode<T>? = null
 ) {
-    loadingLiveData.postValue(true)
+    loadingLiveData?.postValue(true)
 
     apiCall.enqueue(object : Callback<T> {
         override fun onResponse(call: Call<T>, response: Response<T>) {
@@ -151,12 +164,12 @@ fun <T> handleApiRequest(
                 getError(TAG, response.errorBody(), response.code())
                 dataLiveData.postValue(null)
             }
-            additionalCode?.onResponse<T>(response)
-            loadingLiveData.postValue(false)
+            additionalCode?.onResponse(response)
+            loadingLiveData?.postValue(false)
         }
 
         override fun onFailure(call: Call<T>, t: Throwable) {
-            loadingLiveData.postValue(false)
+            loadingLiveData?.postValue(false)
             dataLiveData.postValue(null)
             Log.e(TAG, "onFailure: ${t.message}")
             additionalCode?.onFailure()
@@ -164,7 +177,7 @@ fun <T> handleApiRequest(
     })
 }
 
-private fun getError(
+fun getError(
     TAG: String,
     responseBody: ResponseBody?,
     code: Int
@@ -222,6 +235,11 @@ fun StyledPlayerView.loadVideo(videoName: String, myPlayer: ExoPlayer) {
 fun Fragment.doOnFail() {
     requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
     findNavController().popBackStack()
+}
+
+fun Activity.doOnFail() {
+    toast(getString(R.string.error), Toast.LENGTH_SHORT)
+    finish()
 }
 
 fun ImageView.loadImageUri(imageUri: Uri) {
@@ -598,4 +616,31 @@ fun CollapsingToolbarLayout.disableScroll() {
     val params = layoutParams as AppBarLayout.LayoutParams
     params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
     layoutParams = params
+}
+
+fun progressDialog(
+    context: Context,
+    view: View,
+): AlertDialog {
+
+    val builder = AlertDialog.Builder(context)
+
+    builder.apply {
+        setCancelable(false)
+        setView(view)
+    }
+    return builder.create()
+}
+
+fun getMediaType(url: String, TAG: String): MediaType {
+    val extension = MimeTypeMap.getFileExtensionFromUrl(url)
+    val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+
+    Log.d(TAG, "mimeType: $mimeType")
+
+    return when {
+        mimeType?.startsWith("image/") == true -> MediaType.IMAGE
+        mimeType?.startsWith("video/") == true -> MediaType.VIDEO
+        else -> MediaType.UNKNOWN
+    }
 }

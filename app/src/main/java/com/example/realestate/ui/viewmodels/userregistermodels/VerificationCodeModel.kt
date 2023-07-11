@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.realestate.data.models.CurrentUser
+import com.example.realestate.data.models.User
 import com.example.realestate.data.models.UserId
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.utils.AdditionalCode
@@ -35,16 +36,21 @@ class VerificationCodeModel(private val repository: UsersRepository) : LoginMode
     }
 
     fun login(token: String) {
-        handleApiRequest(repository.login(token), _loading, _userId, TAG, object : AdditionalCode {
-            override fun <T> onResponse(responseBody: Response<T>) {
-                val userId = (responseBody.body() as UserId?)   ?.id
-                Log.d(TAG, "userId: $userId")
-                //store user id in the prefs
-                if (userId != null)
-                    CurrentUser.prefs.set(userId)
-            }
+        handleApiRequest(
+            repository.login(token),
+            _loading,
+            _userId,
+            TAG,
+            object : AdditionalCode<UserId> {
+                override fun onResponse(responseBody: Response<UserId>) {
+                    val userId = (responseBody.body())?.id
+                    Log.d(TAG, "userId: $userId")
+                    //store user id in the prefs
+                    if (userId != null)
+                        CurrentUser.prefs.set(userId)
+                }
 
-            override fun onFailure() {}
-        })
+                override fun onFailure() {}
+            })
     }
 }

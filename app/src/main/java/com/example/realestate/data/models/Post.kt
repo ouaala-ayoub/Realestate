@@ -26,7 +26,11 @@ data class Post(
     var ownerId: String,
 
     @SerializedName("category")
-    var category: String
+    var category: String,
+
+    @SerializedName("details")
+    var details: Map<String, String>? = null
+
 ) {
     companion object {
         val emptyPost = Post(

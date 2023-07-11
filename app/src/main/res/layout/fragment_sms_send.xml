@@ -19,6 +19,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/otp"
+            android:contentDescription="@string/sms_send" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,15 +35,6 @@
             android:text="@string/verify_your_number"
             android:textSize="22sp"
             android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:text="@string/please_enter_your_country_and_your_phone_number"
-            android:textSize="18sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,6 +61,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:hint="@string/phone_number"
                 android:gravity="start">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -70,7 +69,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:inputType="phone"
+                    android:inputType="number"
                     android:lines="1"
                     android:textSize="18sp"
                     android:textStyle="bold" />

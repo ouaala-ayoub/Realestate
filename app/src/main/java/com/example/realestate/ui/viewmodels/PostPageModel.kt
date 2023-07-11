@@ -3,15 +3,18 @@ package com.example.realestate.ui.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.realestate.data.models.MessageResponse
 import com.example.realestate.data.models.Post
+import com.example.realestate.data.models.Report
 import com.example.realestate.data.models.User
 import com.example.realestate.data.repositories.PostsRepository
+import com.example.realestate.data.repositories.ReportsRepository
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.utils.handleApiRequest
 
 class PostPageModel(
     private val postsRepository: PostsRepository,
-    private val usersRepository: UsersRepository
+    private val usersRepository: UsersRepository,
 ) : ViewModel() {
 
     companion object {
@@ -36,5 +39,7 @@ class PostPageModel(
     fun getUserById(userId: String) {
         handleApiRequest(usersRepository.getUserById(userId), _postLoading, _seller, TAG)
     }
+
+
 
 }

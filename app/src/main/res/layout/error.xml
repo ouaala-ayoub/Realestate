@@ -15,4 +15,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/baseline_broken_image_24"
         android:contentDescription="@string/error_loading_image" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,10 +11,13 @@ data class User(
 
     @SerializedName("phone")
     val phone: String,
+
+    @SerializedName("favourites")
+    var favourites: List<String> = listOf(),
 //
 //    @SerializedName("isAdmin")
 //    val isAdmin: Boolean,
 
     @SerializedName("communicationMethod")
-    val string: String
+    val communicationMethod: String
 )

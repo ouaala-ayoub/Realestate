@@ -179,7 +179,6 @@ class StepThreeFragment : FragmentStep() {
                                 description = descriptionLiveData.value.toString()
                                 ownerId = userId
                             }
-                            Log.d(TAG, "post to add: $this")
                             stepThreeModel.addPost(this)
                         } else {
                             doOnFail()

@@ -10,12 +10,16 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.realestate.PostNavArgs
 import com.example.realestate.R
+import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.FragmentPostPageBinding
+import com.example.realestate.ui.activities.UserRegisterActivity
 import com.example.realestate.ui.adapters.MediaPagerAdapter
 import com.example.realestate.ui.viewmodels.PostPageModel
 import com.example.realestate.utils.*
@@ -32,7 +36,7 @@ class PostPageFragment : Fragment() {
     private lateinit var binding: FragmentPostPageBinding
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private lateinit var phoneNumber: String
-    private val args: PostPageFragmentArgs by navArgs()
+    private val args: PostNavArgs by navArgs()
     private lateinit var imagesAdapter: MediaPagerAdapter
     private val exoPlayer: ExoPlayer by lazy {
         ExoPlayer.Builder(requireContext()).build()
@@ -74,6 +78,16 @@ class PostPageFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentPostPageBinding.inflate(inflater, container, false)
+
+        binding.reportButton.setOnClickListener {
+            val connected = CurrentUser.prefs.get() != null
+
+            if (connected) {
+                navigateToReportFragment()
+            } else {
+                goToActivity<UserRegisterActivity>(requireContext())
+            }
+        }
 
         postPageModel.apply {
             seller.observe(viewLifecycleOwner) { seller ->
@@ -144,6 +158,12 @@ class PostPageFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun navigateToReportFragment() {
+        val action =
+            PostPageFragmentDirections.actionPostPageFragmentToReportFragment()
+        findNavController().navigate(action)
     }
 
     private fun openWhatsapp(phoneNumber: String) {

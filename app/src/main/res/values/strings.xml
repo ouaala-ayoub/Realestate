@@ -65,13 +65,14 @@
     <string name="city">City</string>
     <string name="street">Street</string>
     <string name="error">Unexpected Error</string>
+    <string name="wrong_code">Wrong verification code</string>
     <string name="finish_dialog_title">Last Step</string>
-    <string name="finish_dialog_message">Are you sure of all the data entered ?</string>
+    <string name="finish_dialog_message">Your post will be verified and approved by admins as soon as possible</string>
     <string name="or">Or</string>
     <string name="automatically_get_location">Automatically get location</string>
 
     <!--    sms send strings-->
-    <string name="verify_your_number">Verify Your Number</string>
+    <string name="verify_your_number">Verify Your Phone Number</string>
     <string name="please_enter_your_country_and_your_phone_number">Please enter your Country and your Phone Number</string>
     <string name="send">SEND</string>
     <string name="no_user">No user</string>
@@ -101,6 +102,15 @@
     <string name="user_id">user_id</string>
     <string name="success">Register Success</string>
     <string name="all">All</string>
+    <string name="progress_string">uploading %1$d</string>
+    <string name="pls_type_code">Please enter the verification code sent to you by SMS</string>
+    <string name="report_this_post">Report This Post</string>
+    <string name="submit">Submit</string>
+    <string name="reason">Reason</string>
+    <string name="proprety_type">Proprety Type</string>
+    <string name="error_getting_type">error getting types</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="sms_send">Sms send</string>
 
 
 </resources>

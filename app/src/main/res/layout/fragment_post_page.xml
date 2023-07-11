@@ -7,6 +7,20 @@
     tools:context=".ui.fragments.PostPageFragment">
 
 
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/report_button"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:src="@drawable/baseline_report_24"-->
+<!--        app:tint="@color/red"-->
+<!--        android:contentDescription="@string/report_this_post"-->
+<!--        android:outlineProvider="none"-->
+<!--        app:backgroundTint="@android:color/transparent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        android:layout_margin="10dp"-->
+<!--        app:maxImageSize="40dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -17,8 +31,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5">
+        app:layout_constraintTop_toTopOf="parent">
 
 
         <!-- Post Images -->
@@ -107,6 +120,18 @@
 
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/report_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="@string/report_this_post"
+            app:icon="@drawable/baseline_report_24"
+            app:iconTint="@color/red"
+            app:strokeColor="@color/red" />
 
 
         <!-- Post Type -->

@@ -6,15 +6,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.realestate.data.models.AdditionalInfo
 import com.example.realestate.data.models.MessageResponse
+import com.example.realestate.data.models.User
+import com.example.realestate.data.models.UserId
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.utils.handleApiRequest
 
-class AddInfoModel(private val repository: UsersRepository) : ViewModel() {
+class AddInfoModel(private val repository: UsersRepository, private val userId: String) :
+    ViewModel() {
 
     companion object {
         private const val TAG = "AddInfoModel"
     }
 
+    private val _user = MutableLiveData<User?>()
     private val _name = MutableLiveData<String>()
     private val _commMethod = MutableLiveData<String>()
     private val _messageResponse = MutableLiveData<MessageResponse?>()
@@ -26,6 +30,8 @@ class AddInfoModel(private val repository: UsersRepository) : ViewModel() {
         }
     }
 
+    val user: LiveData<User?>
+        get() = getUserById(userId)
     val name: LiveData<String>
         get() = _name
     val commMethod: LiveData<String>
@@ -34,6 +40,11 @@ class AddInfoModel(private val repository: UsersRepository) : ViewModel() {
         get() = _messageResponse
     val loading: LiveData<Boolean>
         get() = _loading
+
+    private fun getUserById(userId: String): MutableLiveData<User?> {
+        handleApiRequest(repository.getUserById(userId), _loading, _user, TAG)
+        return _user
+    }
 
     fun updateName(name: String) {
         _name.postValue(name)

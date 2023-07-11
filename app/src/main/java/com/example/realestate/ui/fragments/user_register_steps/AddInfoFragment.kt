@@ -29,14 +29,14 @@ class AddInfoFragment : Fragment() {
 
     private lateinit var binding: FragmentAddInfoBinding
     private val args: AddInfoFragmentArgs by navArgs()
+    private val userId: String by lazy {
+        args.userId
+    }
     private val addInfoModel: AddInfoModel by lazy {
-        AddInfoModel(UsersRepository(Retrofit.getInstance()))
+        AddInfoModel(UsersRepository(Retrofit.getInstance()), userId)
     }
     private val tokenId: String by lazy {
         args.tokenId
-    }
-    private val userId: String by lazy {
-        args.userId
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,9 +65,17 @@ class AddInfoFragment : Fragment() {
         binding.apply {
 
             //all by default
-            addInfoModel.updateCommMethod(CommunicationMethod.ALL.value)
+            addInfoModel.apply {
+                user.observe(viewLifecycleOwner) { user ->
+                    if (user != null) {
+                        user.name?.apply {
+                            nameEditText.setText(this)
+                        }
+                        updateCommMethod(user.communicationMethod)
+                    }
+                }
+            }
 
-//            phoneAdd.text = phoneNumber
 
             nameEditText.doOnTextChanged { name, _, _, _ ->
                 addInfoModel.updateName(name.toString())
@@ -106,11 +114,7 @@ class AddInfoFragment : Fragment() {
                     val name = addInfoModel.name.value!!
                     val method = addInfoModel.commMethod.value!!
 
-                    val data = AdditionalInfo(name, method)
-
-                    Log.d(TAG, "AdditionalInfo: $data")
-
-                    addInfoModel.addInfoToUser(userId, data)
+                    addInfoModel.addInfoToUser(userId, AdditionalInfo(name, method))
                 }
             }
         }

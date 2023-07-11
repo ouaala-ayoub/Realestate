@@ -6,20 +6,39 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.user_register_steps.VerificationCodeFragment">
 
-    <EditText
-        android:id="@+id/verification_code_et"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/verification_code"
-        android:inputType="number"
-        android:maxLength="6"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/verify"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/sms_send"
+            android:src="@drawable/otp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:lines="3"
+            android:text="@string/pls_type_code"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <com.fraggjkee.smsconfirmationview.SmsConfirmationView
+            android:id="@+id/sms_verification_code_et"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:scv_codeLength="6" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/verify"
