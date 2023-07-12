@@ -113,6 +113,7 @@ dependencies {
 //
 //    //image zoom
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+    implementation 'com.github.MikeOrtiz:TouchImageView:3.2.1'
 
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'

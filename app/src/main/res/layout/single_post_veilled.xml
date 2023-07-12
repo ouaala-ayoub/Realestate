@@ -28,7 +28,7 @@
 
             <TextView
                 android:id="@+id/veiled_price"
-                android:layout_width="match_parent"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:background="@drawable/skeleton_background"

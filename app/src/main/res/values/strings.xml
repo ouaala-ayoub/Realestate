@@ -60,7 +60,9 @@
     <string name="type">Type</string>
 
     <!--    step three strings-->
-    <string name="description">Ajouter une description</string>
+    <string name="add_description">Add a description</string>
+    <string name="description">Description</string>
+    <string name="placeholder_description">Real estate is defined as the land and any permanent structures, like a home, or improvements attached to the land, whether natural or man-made.</string>
     <string name="country">Country</string>
     <string name="city">City</string>
     <string name="street">Street</string>
@@ -112,8 +114,9 @@
     <string name="phone_number">Phone Number</string>
     <string name="sms_send">Sms send</string>
     <string name="detail_image">detail image</string>
-    <string name="category_type" >%1$s, %2$s</string>
+    <string name="category_type">%1$s, %2$s</string>
     <string name="detail_separator">:</string>
+    <string name="details">Details</string>
 
 
 </resources>

@@ -45,14 +45,12 @@
             app:layout_constraintTop_toTopOf="parent">
 
 
-            <!-- Post Images -->
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/media_vp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="true" />
 
-            <!-- Post Category -->
             <TextView
                 android:id="@+id/category_type_rv"
                 style="@style/TextAppearance.MaterialComponents.Body2"
@@ -63,7 +61,6 @@
                 android:textStyle="bold"
                 tools:text="House, rent" />
 
-            <!-- Post Price -->
             <TextView
                 android:id="@+id/locationTextView"
                 android:layout_width="match_parent"
@@ -83,7 +80,16 @@
                 android:textSize="18sp"
                 tools:text="1000 USD" />
 
-            <!-- Post Location -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/details"
+                android:textColor="@color/yellow"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/details_rv"
                 android:layout_width="match_parent"
@@ -91,6 +97,25 @@
                 android:orientation="vertical"
                 tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/single_long_detail" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/description"
+                android:textColor="@color/yellow"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/description_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="@string/placeholder_description"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:textSize="18sp" />
 
             <!-- Post Owner -->
 

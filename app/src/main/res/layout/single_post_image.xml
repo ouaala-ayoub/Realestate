@@ -18,7 +18,7 @@
             android:id="@+id/post_image_vp"
             android:layout_width="match_parent"
             android:layout_height="@dimen/post_page_image_height"
-            android:background="@drawable/images"
+            tools:src="@drawable/images"
             android:contentDescription="@string/post_image_description"
             android:orientation="horizontal"
             android:scaleType="fitXY" />

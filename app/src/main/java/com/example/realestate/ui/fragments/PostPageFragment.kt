@@ -139,7 +139,7 @@ class PostPageFragment : Fragment() {
                     getUserById(post.ownerId)
 
                     //bind the data
-                    binding.priceTextView.text = post.price.toString()
+                    binding.priceTextView.text = getString(R.string.price, post.price.toString())
                     binding.categoryTypeRv.text =
                         getString(R.string.category_type, post.category, post.type)
                     binding.locationTextView.text = getString(
@@ -148,6 +148,7 @@ class PostPageFragment : Fragment() {
                         post.location.city,
                         post.location.street
                     )
+                    binding.descriptionRv.text = post.description
 
                     val details = post.details
                     if (!details.isNullOrEmpty()) {
@@ -163,7 +164,7 @@ class PostPageFragment : Fragment() {
 
                     binding.mediaVp.apply {
                         adapter = imagesAdapter
-                        setPageTransformer(ZoomOutPageTransformer())
+//                        setPageTransformer(ZoomOutPageTransformer())
                     }
                 } else {
                     //go back if error

@@ -25,6 +25,7 @@ import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.data.repositories.UsersRepository
+import com.example.realestate.databinding.ChipVeilledBinding
 import com.example.realestate.databinding.FragmentHomeModifiedBinding
 import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.adapters.PostsAdapter
@@ -79,11 +80,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
         val activity = (requireActivity() as MainActivity)
         binding = FragmentHomeModifiedBinding.inflate(inflater, container, false)
-        binding.postRv.apply {
-            setAdapter(postsAdapter)
-            setLayoutManager(LinearLayoutManager(requireContext()))
-            addVeiledItems(10)
-        }
 
         //initialise filter params
         searchParams = activity.params
@@ -126,6 +122,13 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.postRv.apply {
+            setAdapter(postsAdapter)
+            setLayoutManager(LinearLayoutManager(requireContext()))
+            addVeiledItems(10)
+        }
+        binding.categoriesChipGroup.addVeilElements(10)
+        binding.shimmerFrameLayout.startShimmer()
 
         val activity = (requireActivity() as MainActivity)
         activity.setActivityResultListener(this)
@@ -199,6 +202,8 @@ class HomeFragment : Fragment(), ActivityResultListener {
             viewModel.categoriesList.observe(viewLifecycleOwner) { categories ->
                 if (categories == null) return@observe
                 categoriesChipGroup.apply {
+                    removeAllViews()
+                    binding.shimmerFrameLayout.hideShimmer()
                     fillWith(categories)
                     setOnCheckedStateChangeListener { group, checkedId ->
                         if (checkedId.isEmpty()) {
@@ -334,6 +339,15 @@ class HomeFragment : Fragment(), ActivityResultListener {
 //                setChipDrawable(chipDrawable)
             }
             addView(chip)
+        }
+    }
+
+    private fun ChipGroup.addVeilElements(number: Int) {
+        for (i in 0..number) {
+            val veiledChip = ChipVeilledBinding.inflate(layoutInflater)
+            val randomText = RandomTextGenerator.generateRandomEmptyString(10, 20)
+            veiledChip.chipVeiled.text = randomText
+            addView(veiledChip.root)
         }
     }
 
