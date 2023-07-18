@@ -1,42 +1,49 @@
 package com.example.realestate.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.FragmentSavedBinding
-import com.example.realestate.ui.adapters.FavouritesAdapter
-import com.example.realestate.ui.viewmodels.SavedViewModel
-import com.example.realestate.utils.OnFavouriteClickListener
+import com.example.realestate.ui.adapters.LikedAdapter
+import com.example.realestate.ui.viewmodels.LikedViewModel
+import com.example.realestate.utils.OnLikedClickListener
+import com.example.realestate.utils.toast
 
-class SavedFragment : Fragment() {
+class LikedFragment : Fragment() {
 
     companion object {
-        private const val TAG = "SavedFragment"
+        private const val TAG = "LikedFragment"
     }
 
     private lateinit var binding: FragmentSavedBinding
-    private val viewModel: SavedViewModel by lazy {
-        SavedViewModel(UsersRepository(Retrofit.getInstance()))
+    private val viewModel: LikedViewModel by lazy {
+        LikedViewModel(UsersRepository(Retrofit.getInstance()))
     }
-    private val postsAdapter: FavouritesAdapter by lazy {
-        FavouritesAdapter(
-            object : OnFavouriteClickListener {
-                override fun onFavouriteClicked(postId: String) {
+    private val likedAdapter: LikedAdapter by lazy {
+        LikedAdapter(
+            object : OnLikedClickListener {
+                override fun onClicked(postId: String) {
                     openPostFragment(postId)
                 }
 
-                override fun onDeleteClickListener(postId: String) {
+                override fun onDeleteClickedListener(postId: String) {
                     val userId = CurrentUser.prefs.get()
                     userId?.apply {
-                        viewModel.deleteFromFavourites(this, postId)
+                        viewModel.apply {
+                            deleteFromFavourites(postId)
+
+                        }
                     }
                 }
             }
@@ -48,7 +55,7 @@ class SavedFragment : Fragment() {
         //get user saved posts
         val userId = CurrentUser.prefs.get()
         userId?.apply {
-            viewModel.getSavedPosts(this)
+            viewModel.getLikedPosts(this)
         }
     }
 
@@ -59,11 +66,21 @@ class SavedFragment : Fragment() {
         binding = FragmentSavedBinding.inflate(inflater, container, false)
 
         binding.savedRv.apply {
-            adapter = postsAdapter
+            adapter = likedAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
 
         viewModel.apply {
+            unliked.observe(viewLifecycleOwner) { message ->
+                if (message == null)
+                    requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
+                else {
+                    val userId = CurrentUser.prefs.get()
+                    userId?.apply {
+                        viewModel.getLikedPosts(this)
+                    }
+                }
+            }
             postsMessage.observe(viewLifecycleOwner) { postsMessage ->
                 if (postsMessage.isEmpty()) {
                     binding.postsStateMessage.visibility = View.GONE
@@ -74,7 +91,7 @@ class SavedFragment : Fragment() {
             }
             savedList.observe(viewLifecycleOwner) { savedList ->
                 savedList?.apply {
-                    postsAdapter.setList(this)
+                    likedAdapter.setList(this)
                 }
             }
             loading.observe(viewLifecycleOwner) { loading ->
@@ -86,7 +103,7 @@ class SavedFragment : Fragment() {
     }
 
     private fun openPostFragment(postId: String) {
-        val action = SavedFragmentDirections.actionSavedFragmentToPostNav(postId)
+        val action = LikedFragmentDirections.actionSavedFragmentToPostNav(postId)
         findNavController().navigate(action)
     }
 

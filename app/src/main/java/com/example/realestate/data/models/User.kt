@@ -12,8 +12,8 @@ data class User(
     @SerializedName("phone")
     val phone: String,
 
-    @SerializedName("favourites")
-    var favourites: List<String> = listOf(),
+    @SerializedName("likes")
+    var likes: List<String> = listOf(),
 //
 //    @SerializedName("isAdmin")
 //    val isAdmin: Boolean,

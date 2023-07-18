@@ -4,10 +4,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.realestate.data.models.MessageResponse
 import com.example.realestate.data.models.Post
 import com.example.realestate.data.models.SearchParams
 import com.example.realestate.data.models.User
-import com.example.realestate.data.remote.network.BooleanHolder
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.data.repositories.UsersRepository
@@ -35,8 +35,8 @@ class HomeViewModel(
     private val _isLoading = MutableLiveData<Boolean>()
     private val _postsMessage = MutableLiveData<String>()
     private val _categoriesMessage = MutableLiveData<String>()
-    private val _addedToFav = MutableLiveData<BooleanHolder?>()
-    private val _deletedFromFav = MutableLiveData<BooleanHolder?>()
+    private val _liked = MutableLiveData<MessageResponse?>()
+    private val _unliked = MutableLiveData<MessageResponse?>()
 
 
     val user: LiveData<User?>
@@ -53,10 +53,10 @@ class HomeViewModel(
         get() = _postsMessage
     val categoriesMessage: LiveData<String>
         get() = _categoriesMessage
-    val addedToFav: LiveData<BooleanHolder?>
-        get() = _addedToFav
-    val deletedFromFav: LiveData<BooleanHolder?>
-        get() = _deletedFromFav
+    val liked: LiveData<MessageResponse?>
+        get() = _liked
+    val unliked: LiveData<MessageResponse?>
+        get() = _unliked
 
     // no filters by default
     fun getPosts(
@@ -123,20 +123,20 @@ class HomeViewModel(
         handleApiRequest(usersRepository.getUserById(userId), null, _user, TAG)
     }
 
-    fun addToFavourites(userId: String, postId: String) {
+    fun like(postId: String) {
         handleApiRequest(
-            usersRepository.addToFavourites(userId, postId),
+            usersRepository.like(postId),
             null,
-            _addedToFav,
+            _liked,
             TAG
         )
     }
 
-    fun deleteFromFavourites(userId: String, postId: String) {
+    fun unlike(postId: String) {
         handleApiRequest(
-            usersRepository.addToFavourites(userId, postId),
+            usersRepository.unlike(postId),
             null,
-            _deletedFromFav,
+            _unliked,
             TAG
         )
     }

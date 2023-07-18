@@ -3,23 +3,23 @@ package com.example.realestate.ui.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.realestate.data.models.MessageResponse
 import com.example.realestate.data.models.Post
-import com.example.realestate.data.remote.network.BooleanHolder
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.utils.AdditionalCode
 import com.example.realestate.utils.handleApiRequest
 import retrofit2.Response
 
-class SavedViewModel(private val repository: UsersRepository) : ViewModel() {
+class LikedViewModel(private val repository: UsersRepository) : ViewModel() {
     companion object {
-        private const val TAG = "SavedViewModel"
-        private const val NO_FAVOURITES = "No Favourites"
+        private const val TAG = "LikedViewModel"
+        private const val NO_FAVOURITES = "No Liked Posts"
         private const val ERROR = "Unexpected Error"
     }
 
     private val _savedList = MutableLiveData<List<Post>?>()
     private val _loading = MutableLiveData<Boolean>()
-    private val _deletedFromFav = MutableLiveData<BooleanHolder?>()
+    private val _unliked = MutableLiveData<MessageResponse?>()
     private val _postsMessage = MutableLiveData<String>()
 
 
@@ -27,14 +27,14 @@ class SavedViewModel(private val repository: UsersRepository) : ViewModel() {
         get() = _savedList
     val loading: LiveData<Boolean>
         get() = _loading
-    val deletedFromFav: LiveData<BooleanHolder?>
-        get() = _deletedFromFav
+    val unliked: LiveData<MessageResponse?>
+        get() = _unliked
     val postsMessage: LiveData<String>
         get() = _postsMessage
 
-    fun getSavedPosts(userId: String) {
+    fun getLikedPosts(userId: String) {
         handleApiRequest(
-            repository.getSavedPosts(userId),
+            repository.getLikedPosts(userId),
             _loading,
             _savedList,
             TAG,
@@ -58,11 +58,11 @@ class SavedViewModel(private val repository: UsersRepository) : ViewModel() {
         )
     }
 
-    fun deleteFromFavourites(userId: String, postId: String) {
+    fun deleteFromFavourites(postId: String) {
         handleApiRequest(
-            repository.addToFavourites(userId, postId),
+            repository.unlike(postId),
             null,
-            _deletedFromFav,
+            _unliked,
             TAG
         )
     }

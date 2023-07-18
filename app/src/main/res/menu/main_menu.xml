@@ -6,9 +6,9 @@
         android:icon="@drawable/baseline_home_24"
         android:title="@string/home" />
     <item
-        android:id="@+id/savedFragment"
-        android:icon="@drawable/baseline_bookmark_24"
-        android:title="@string/saved" />
+        android:id="@+id/likedFragment"
+        android:icon="@drawable/baseline_favorite_24"
+        android:title="@string/liked" />
     <item
         android:id="@+id/addPostActivity"
         android:icon="@drawable/baseline_add_business_24"

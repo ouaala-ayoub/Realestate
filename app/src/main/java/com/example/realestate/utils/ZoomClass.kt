@@ -1,4 +1,4 @@
-package com.example.realestate
+package com.example.realestate.utils
 
 import android.content.Context
 import android.graphics.Matrix
@@ -8,7 +8,6 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
-import androidx.annotation.Nullable
 import androidx.appcompat.widget.AppCompatImageView
 
 class ZoomClass : AppCompatImageView, View.OnTouchListener,

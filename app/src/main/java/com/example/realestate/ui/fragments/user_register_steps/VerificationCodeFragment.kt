@@ -141,12 +141,12 @@ class VerificationCodeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        smsVerifyCatcher.onStart()
+//        smsVerifyCatcher.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        smsVerifyCatcher.onStop()
+//        smsVerifyCatcher.onStop()
     }
 
 }

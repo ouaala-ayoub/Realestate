@@ -14,15 +14,17 @@ class ResponseInterceptor : Interceptor {
         val originalResponse = chain.proceed(chain.request())
 
         // Check if the response contains a Set-Cookie header
-        val cookies = originalResponse.headers("Set-Cookie")
+        val cookies = originalResponse.headers("set-cookie")
+        Log.d(TAG, "cookies: $cookies")
         if (cookies.isNotEmpty()) {
             for (cookie in cookies) {
                 // Handle the session cookie here
-                if (cookie.startsWith("session_cookie=")) {
-                    val sessionCookie = cookie.substringAfter("session_cookie=")
+                if (cookie.startsWith("session=")) {
+                    val sessionCookie = cookie.substringAfter("session=")
+                    val sessionValue = sessionCookie.split(";")[0]
                     // Store or process the session cookie as needed
-                    Log.d(TAG, "session_cookie = $sessionCookie")
-                    SessionCookie.prefs.set(sessionCookie)
+                    Log.d(TAG, "session = $sessionValue")
+                    SessionCookie.prefs.set(sessionValue)
                 }
             }
         }

@@ -25,7 +25,7 @@
 
     <!--bottom navigation menu-->
     <string name="home">Home</string>
-    <string name="saved">Saved</string>
+    <string name="liked">Liked</string>
     <string name="add_a_post">Add a Post</string>
 
     <!--    permission-->
@@ -117,6 +117,9 @@
     <string name="category_type">%1$s, %2$s</string>
     <string name="detail_separator">:</string>
     <string name="details">Details</string>
+    <string name="try_again">Error authenticating please try again</string>
+    <string name="no_defined">-</string>
+    <string name="image_placeholder">image placeholder</string>
 
 
 </resources>

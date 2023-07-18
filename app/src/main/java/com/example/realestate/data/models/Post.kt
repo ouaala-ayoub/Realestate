@@ -25,6 +25,9 @@ data class Post(
     @SerializedName("ownerId")
     var ownerId: String,
 
+    @SerializedName("likes")
+    val likes: Int = 0,
+
     @SerializedName("category")
     var category: String,
 

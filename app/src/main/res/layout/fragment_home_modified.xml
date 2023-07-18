@@ -135,8 +135,8 @@
                         app:singleSelection="true">
 
                     </com.google.android.material.chip.ChipGroup>
-                </com.facebook.shimmer.ShimmerFrameLayout>
 
+                </com.facebook.shimmer.ShimmerFrameLayout>
 
                 <TextView
                     android:id="@+id/categories_message"

@@ -33,7 +33,7 @@ class PostsAdapter(
         notifyDataSetChanged()
     }
 
-    fun setFavourites(list: List<String>) {
+    fun setLiked(list: List<String>) {
         favourites = list.toMutableList()
         notifyDataSetChanged()
     }
@@ -86,14 +86,14 @@ class PostsAdapter(
                 addToFav.isChecked = isChecked
                 addToFav.setOnClickListener {
                     val userConnected = CurrentUser.isConnected()
-                    val userId = CurrentUser.prefs.get()
+//                    val userId = CurrentUser.prefs.get()
                     val postId = currentPost.id!!
 
                     if (userConnected) {
                         if (isChecked) {
-                            addToFavClicked.onChecked(postId, userId!!)
+                            addToFavClicked.onChecked(postId)
                         } else {
-                            addToFavClicked.onUnChecked(postId, userId!!)
+                            addToFavClicked.onUnChecked(postId)
                         }
 
                     } else {
@@ -129,5 +129,15 @@ class PostsAdapter(
 
     override fun onBindViewHolder(holder: PostHolder, position: Int) {
         holder.bind(position)
+    }
+
+    fun unlike(postId: String) {
+        favourites.remove(postId)
+        val indexModified = postsList.indexOfFirst { post -> post.id == postId }
+
+    }
+
+    fun like(postId: String) {
+        favourites.add(postId)
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/email_auth_navigation"
+    app:startDestination="@id/emailVerificationFragment">
+
+    <fragment
+        android:id="@+id/emailVerificationFragment"
+        android:name="com.example.realestate.ui.fragments.user_register_steps.EmailVerificationFragment"
+        android:label="fragment_email_verification"
+        tools:layout="@layout/fragment_email_verification" />
+</navigation>

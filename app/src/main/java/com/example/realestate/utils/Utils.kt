@@ -35,7 +35,6 @@ import com.example.realestate.data.models.Error
 import com.example.realestate.data.models.ErrorResponse
 import com.example.realestate.data.models.MediaType
 import com.example.realestate.data.models.SearchParams
-import com.example.realestate.ui.adapters.MediaPagerAdapter
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.StyledPlayerView
@@ -55,9 +54,9 @@ import retrofit2.Response
 
 const val TAG = "Utils"
 
-interface OnFavouriteClickListener {
-    fun onFavouriteClicked(postId: String)
-    fun onDeleteClickListener(postId: String)
+interface OnLikedClickListener {
+    fun onClicked(postId: String)
+    fun onDeleteClickedListener(postId: String)
 }
 
 interface Task {
@@ -95,8 +94,8 @@ interface OnPostClickListener {
 }
 
 interface OnAddToFavClicked {
-    fun onChecked(postId: String, userId: String)
-    fun onUnChecked(postId: String, userId: String)
+    fun onChecked(postId: String)
+    fun onUnChecked(postId: String)
 }
 
 interface OnVerificationCompleted {
@@ -645,4 +644,9 @@ fun getMediaType(url: String, TAG: String): MediaType {
         mimeType?.startsWith("video/") == true -> MediaType.VIDEO
         else -> MediaType.UNKNOWN
     }
+}
+
+fun TextView.defineField(value: String?, context: Context, fillWith: String? = null) {
+    text = value
+        ?: (fillWith ?: context.getString(R.string.no_defined))
 }

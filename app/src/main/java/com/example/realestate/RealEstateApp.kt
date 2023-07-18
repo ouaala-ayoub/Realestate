@@ -11,6 +11,7 @@ import com.cloudinary.android.signed.SignatureProvider
 import com.example.realestate.data.models.ParamsToSign
 import com.example.realestate.data.models.SignResult
 import com.example.realestate.data.remote.network.Retrofit
+import com.example.realestate.utils.SessionCookie
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
@@ -28,6 +29,8 @@ class RealEstateApp : Application() {
         super.onCreate()
 
         appContext = applicationContext
+        val test = SessionCookie.prefs.get()
+        Log.i(TAG, "SessionCookie: $test")
 
         //firebase initialisation
         FirebaseApp.initializeApp(this)

@@ -6,22 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.PostPageFragment">
 
-
-    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-    <!--        android:id="@+id/report_button"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:src="@drawable/baseline_report_24"-->
-    <!--        app:tint="@color/red"-->
-    <!--        android:contentDescription="@string/report_this_post"-->
-    <!--        android:outlineProvider="none"-->
-    <!--        app:backgroundTint="@android:color/transparent"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        android:layout_margin="10dp"-->
-    <!--        app:maxImageSize="40dp"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent" />-->
-
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
@@ -30,7 +16,21 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5">
+        app:layout_constraintVertical_bias="0.5"
+        app:skeletonAllowSavedState="true"
+        app:skeletonAnimateRestoredBounds="true"
+        app:skeletonBoneColor="@color/skeleton_color"
+        app:skeletonBoneMaxThickness="12dp"
+        app:skeletonBoneMinThickness="10dp"
+        app:skeletonDissectLargeBones="false"
+        app:skeletonGenerateBones="true"
+        app:skeletonShimmerRayColor="@color/skeleton_color"
+        app:skeletonShimmerRayCount="4"
+        app:skeletonShimmerRaySharedInterpolator="true"
+        app:skeletonShimmerRayThickness="120dp"
+        app:skeletonTransitionDuration="200"
+        app:skeletonUseStateTransition="true"
+        tools:background="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -49,7 +49,17 @@
                 android:id="@+id/media_vp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:nestedScrollingEnabled="true" />
+
+
+            <ImageView
+                android:id="@+id/image_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/post_image_height"
+                android:layout_margin="5dp"
+                android:contentDescription="@string/image_placeholder"
+                android:src="@drawable/skeleton_background" />
 
             <TextView
                 android:id="@+id/category_type_rv"
@@ -81,12 +91,13 @@
                 tools:text="1000 USD" />
 
             <TextView
+                android:id="@+id/details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/details"
-                android:textColor="@color/yellow"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
+                android:text="@string/details"
+                android:textColor="@color/yellow"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -101,10 +112,10 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/description"
-                android:textColor="@color/yellow"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
+                android:text="@string/description"
+                android:textColor="@color/yellow"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -112,10 +123,10 @@
                 android:id="@+id/description_rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="@string/placeholder_description"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                tools:text="@string/placeholder_description" />
 
             <!-- Post Owner -->
 
@@ -147,8 +158,8 @@
                         android:layout_margin="5dp"
                         android:layout_weight="1"
                         android:backgroundTint="@color/stroke_button_color"
-                        android:textColor="@color/colorBackground"
-                        android:text="@string/call" />
+                        android:text="@string/call"
+                        android:textColor="@color/colorBackground" />
 
                     <Button
                         android:id="@+id/message"
@@ -158,8 +169,8 @@
                         android:layout_margin="5dp"
                         android:layout_weight="1"
                         android:backgroundTint="@color/stroke_button_color"
-                        android:textColor="@color/colorBackground"
-                        android:text="@string/message" />
+                        android:text="@string/message"
+                        android:textColor="@color/colorBackground" />
                 </LinearLayout>
 
 

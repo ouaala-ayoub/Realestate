@@ -20,7 +20,7 @@ class RequestInterceptor : Interceptor {
         //add the session cookie stored in the shared prefs
         SessionCookie.prefs.get()?.apply {
             Log.d(TAG, "session_cookie = $this")
-            builder.addHeader("Cookie", "session_cookie=$this")
+            builder.addHeader("Cookie", "session=$this")
         }
 
         return chain.proceed(builder.build())

@@ -62,12 +62,14 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
             },
             object : OnAddToFavClicked {
-                override fun onChecked(postId: String, userId: String) {
-                    viewModel.deleteFromFavourites(userId, postId)
+                override fun onChecked(postId: String) {
+                    viewModel.unlike(postId)
+//                    postsAdapter.unlike(postId)
                 }
 
-                override fun onUnChecked(postId: String, userId: String) {
-                    viewModel.addToFavourites(userId, postId)
+                override fun onUnChecked(postId: String) {
+                    viewModel.like(postId)
+//                    postsAdapter.like(postId)
                 }
             }
         )
@@ -135,26 +137,26 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
         binding.apply {
 
-            viewModel.addedToFav.observe(viewLifecycleOwner) { holder ->
-                holder?.apply {
-                    if (!data) {
-                        requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
-                    }
+            viewModel.liked.observe(viewLifecycleOwner) { message ->
+                if (message == null)
+                    requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
+                else {
+                    requestTheUser()
                 }
             }
 
-            viewModel.deletedFromFav.observe(viewLifecycleOwner) { holder ->
-                holder?.apply {
-                    if (!data) {
-                        requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
-                    }
+            viewModel.unliked.observe(viewLifecycleOwner) { message ->
+                if (message == null)
+                    requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
+                else {
+                    requestTheUser()
                 }
             }
 
             viewModel.user.observe(viewLifecycleOwner) { user ->
                 if (user != null) {
-                    user.favourites = listOf()
-                    postsAdapter.setFavourites(user.favourites)
+//                    user.likes = listOf()
+                    postsAdapter.setLiked(user.likes)
                 } else {
                     requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
                 }
@@ -276,6 +278,12 @@ class HomeFragment : Fragment(), ActivityResultListener {
             }
         }
 
+    }
+
+    private fun requestTheUser() {
+        val connected = CurrentUser.isConnected()
+        if (connected)
+            viewModel.getUserById(CurrentUser.prefs.get()!!)
     }
 
     private fun handleSearch() {

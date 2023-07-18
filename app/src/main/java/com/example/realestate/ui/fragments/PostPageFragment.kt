@@ -14,6 +14,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.eudycontreras.boneslibrary.extensions.disableSkeletonLoading
+import com.eudycontreras.boneslibrary.extensions.enableSkeletonLoading
 import com.example.realestate.PostNavArgs
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
@@ -104,7 +106,7 @@ class PostPageFragment : Fragment() {
             seller.observe(viewLifecycleOwner) { seller ->
                 binding.apply {
                     if (seller != null) {
-                        ownerTextView.text = seller.name
+                        ownerTextView.defineField(seller.name, requireContext())
 
                         phoneNumber = seller.phone
 
@@ -139,16 +141,39 @@ class PostPageFragment : Fragment() {
                     getUserById(post.ownerId)
 
                     //bind the data
-                    binding.priceTextView.text = getString(R.string.price, post.price.toString())
-                    binding.categoryTypeRv.text =
-                        getString(R.string.category_type, post.category, post.type)
-                    binding.locationTextView.text = getString(
-                        R.string.location,
-                        post.location.country,
-                        post.location.city,
-                        post.location.street
-                    )
-                    binding.descriptionRv.text = post.description
+                    binding.apply {
+                        priceTextView.defineField(
+                            getString(R.string.price, post.price.toString()),
+                            requireContext()
+                        )
+                        categoryTypeRv.defineField(
+                            getString(
+                                R.string.category_type,
+                                post.category,
+                                post.type
+                            ), requireContext()
+                        )
+                        locationTextView.defineField(
+                            getString(
+                                R.string.location,
+                                post.location.country,
+                                post.location.city,
+                                post.location.street
+                            ),
+                            requireContext()
+                        )
+                        descriptionRv.defineField(post.description, requireContext())
+                    }
+//                    binding.priceTextView.text = getString(R.string.price, post.price.toString())
+//                    binding.categoryTypeRv.text =
+//                        getString(R.string.category_type, post.category, post.type)
+//                    binding.locationTextView.text = getString(
+//                        R.string.location,
+//                        post.location.country,
+//                        post.location.city,
+//                        post.location.street
+//                    )
+//                    binding.descriptionRv.text = post.description
 
                     val details = post.details
                     if (!details.isNullOrEmpty()) {
@@ -172,7 +197,13 @@ class PostPageFragment : Fragment() {
                 }
             }
             postLoading.observe(viewLifecycleOwner) { loading ->
+                if (loading) {
+                    binding.scrollView.enableSkeletonLoading()
+                } else {
+                    binding.scrollView.disableSkeletonLoading()
+                }
                 binding.postProgressBar.isVisible = loading
+                binding.imagePlaceholder.isVisible = loading
             }
         }
 

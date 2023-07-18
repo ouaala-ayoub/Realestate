@@ -33,6 +33,10 @@ import com.google.firebase.auth.FirebaseUser
 
 class MainActivity : AppCompatActivity(), ActivityResultListener {
 
+    init {
+
+    }
+
     companion object {
         private const val TAG = "MainActivity"
     }
@@ -110,7 +114,8 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                 return true
             }
             R.id.filter_button -> {
-                openSearchActivity()
+                //TODO
+//                openSearchActivity()
                 return true
             }
             else -> {
@@ -141,10 +146,11 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         binding.bottomNav.setupWithNavController(navController)
 
         binding.bottomNav.setOnItemSelectedListener { menuItem ->
+            val userConnected = CurrentUser.isConnected()
+            Log.d(TAG, "CurrentUser.prefs.get() : ${CurrentUser.prefs.get()}")
             when (menuItem.itemId) {
                 R.id.addPostActivity -> {
                     //to change
-                    val userConnected = CurrentUser.prefs.get() != null
                     if (userConnected) {
                         // User is connected, open PostAddActivity
                         navController.navigate(R.id.addPostActivity)
@@ -153,11 +159,10 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                         navController.navigate(R.id.userRegisterActivity)
                     }
                 }
-                R.id.savedFragment -> {
-                    val userConnected = CurrentUser.prefs.get() != null
+                R.id.likedFragment -> {
                     if (userConnected) {
                         // User is connected, open savedFragment
-                        navController.navigate(R.id.savedFragment)
+                        navController.navigate(R.id.likedFragment)
                     } else {
                         // User is not connected, open UserRegisterActivity
                         navController.navigate(R.id.userRegisterActivity)
@@ -181,7 +186,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
             R.id.homeFragment -> binding.bottomNav.selectedItemId = R.id.homeFragment
 //            R.id.postPageFragment -> binding.bottomNav.selectedItemId = R.id.homeNav
 //            R.id.reportFragment -> binding.bottomNav.selectedItemId = R.id.homeNav
-            R.id.savedFragment -> binding.bottomNav.selectedItemId = R.id.savedFragment
+            R.id.likedFragment -> binding.bottomNav.selectedItemId = R.id.likedFragment
             // Add cases for other destinations if needed
         }
     }
@@ -216,6 +221,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     }
 
     private fun handleUser(user: FirebaseUser?, phoneTv: TextView) {
+        Log.d(TAG, "handleUser user ${user?.phoneNumber}")
         if (user != null) {
             phoneTv.text = user.phoneNumber
         } else {
