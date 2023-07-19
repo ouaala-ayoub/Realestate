@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activities.SearchActivity">
+    tools:context=".ui.activities.FilterActivity">
 
     <Button
         android:id="@+id/search"
@@ -18,8 +18,8 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.core.widget.NestedScrollView
-        android:layout_width="409dp"
-        android:layout_height="547dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="2dp"
         android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@+id/search"
@@ -31,7 +31,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:layout_margin="10dp"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/chips"
@@ -90,7 +91,6 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:hint="@string/proprety_type">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView

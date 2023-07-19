@@ -19,14 +19,15 @@ import com.example.realestate.utils.loadImage
 class PostsAdapter(
 
     private val postClickListener: OnPostClickListener,
-    private val addToFavClicked: OnAddToFavClicked
+    private val addToFavClicked: OnAddToFavClicked,
+    private var postsList: MutableList<Post> = mutableListOf()
 
 ) : RecyclerView.Adapter<PostsAdapter.PostHolder>() {
     companion object {
         const val TAG = "PostAdapter"
     }
 
-    private var postsList: MutableList<Post> = mutableListOf()
+//    private var postsList: MutableList<Post> = mutableListOf()
     private var favourites: MutableList<String> = mutableListOf()
     fun setPostsList(list: List<Post>) {
         postsList = list.toMutableList()
@@ -129,15 +130,5 @@ class PostsAdapter(
 
     override fun onBindViewHolder(holder: PostHolder, position: Int) {
         holder.bind(position)
-    }
-
-    fun unlike(postId: String) {
-        favourites.remove(postId)
-        val indexModified = postsList.indexOfFirst { post -> post.id == postId }
-
-    }
-
-    fun like(postId: String) {
-        favourites.add(postId)
     }
 }

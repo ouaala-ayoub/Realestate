@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.eudycontreras.boneslibrary.extensions.disableSkeletonLoading
 import com.eudycontreras.boneslibrary.extensions.enableSkeletonLoading
 import com.example.realestate.PostNavArgs
@@ -62,6 +61,7 @@ class PostPageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "postId: $postId")
         permissionLauncher = requestPermissionLauncher(object : PermissionResult {
             override fun onGranted() {
                 call(phoneNumber)
@@ -136,12 +136,13 @@ class PostPageFragment : Fragment() {
             post.observe(viewLifecycleOwner) { post ->
 
                 if (post != null) {
-                    Log.d(TAG, "post = $post")
+
                     //get the owner
                     getUserById(post.ownerId)
 
                     //bind the data
                     binding.apply {
+                        imagePlaceholder.isVisible = false
                         priceTextView.defineField(
                             getString(R.string.price, post.price.toString()),
                             requireContext()
@@ -164,20 +165,12 @@ class PostPageFragment : Fragment() {
                         )
                         descriptionRv.defineField(post.description, requireContext())
                     }
-//                    binding.priceTextView.text = getString(R.string.price, post.price.toString())
-//                    binding.categoryTypeRv.text =
-//                        getString(R.string.category_type, post.category, post.type)
-//                    binding.locationTextView.text = getString(
-//                        R.string.location,
-//                        post.location.country,
-//                        post.location.city,
-//                        post.location.street
-//                    )
-//                    binding.descriptionRv.text = post.description
 
                     val details = post.details
                     if (!details.isNullOrEmpty()) {
                         detailsAdapter.setDetailsMap(details)
+                    } else {
+                        binding.details.visibility = View.GONE
                     }
 
                     //and the images
@@ -189,7 +182,7 @@ class PostPageFragment : Fragment() {
 
                     binding.mediaVp.apply {
                         adapter = imagesAdapter
-//                        setPageTransformer(ZoomOutPageTransformer())
+                        setPageTransformer(ZoomOutPageTransformer())
                     }
                 } else {
                     //go back if error

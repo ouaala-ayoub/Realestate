@@ -2,6 +2,7 @@ package com.example.realestate.ui.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,11 +21,6 @@ import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.SearchParams
 import com.example.realestate.data.models.Type
-import com.example.realestate.data.models.User
-import com.example.realestate.data.remote.network.Retrofit
-import com.example.realestate.data.repositories.PostsRepository
-import com.example.realestate.data.repositories.StaticDataRepository
-import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.ChipVeilledBinding
 import com.example.realestate.databinding.FragmentHomeModifiedBinding
 import com.example.realestate.ui.activities.MainActivity
@@ -39,18 +35,21 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
     companion object {
         private const val TAG = "HomeFragment"
+        var count = 0
     }
 
-    private var favourites: List<String> = listOf()
+    private var recyclerViewState: Parcelable? = null
     private lateinit var binding: FragmentHomeModifiedBinding
     private lateinit var viewModel: HomeViewModel
     private lateinit var postsAdapter: PostsAdapter
     private lateinit var searchParams: SearchParams
-    private var searchTimes = 0
-    private var selectedChipId: Int = 0
+    private var selectedChipId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.i(TAG, "count: $count")
+        count++
 
         val activity = (requireActivity() as MainActivity)
         viewModel = activity.viewModel
@@ -117,7 +116,42 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
             })
 
+        binding.apply {
 
+
+//            selectedChipId = binding.all.id
+            handleChips()
+
+            //default selected chip
+            binding.all.performClick()
+
+            handleSearch()
+
+            //handle swipe gesture
+            swipeRefreshLayout.setOnRefreshListener {
+                viewModel.getPosts(searchParams, source = "swipeRefreshLayout.setOnRefreshListener")
+                if (viewModel.categoriesList.value.isNullOrEmpty()) {
+                    viewModel.getCategories()
+                }
+            }
+
+
+            //disable swipe refresh if not on top
+            scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+                val isAtTop = scrollY == 0
+                swipeRefreshLayout.isEnabled =
+                    isAtTop && !postRv.canScrollVertically(-1)
+            }
+            //get the current country and send the request to get the posts of this country
+            countryPicker.setOnCountryChangeListener {
+                // your code to handle selected country
+                countryPicker.selectedCountryName?.apply {
+                    val name = this
+                    searchParams.location?.country = name
+                    viewModel.getPosts(searchParams, source = "countryPicker")
+                }
+            }
+        }
 
         return binding.root
     }
@@ -191,15 +225,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
             }
 
-            //get the current country and send the request to get the posts of this country
-            countryPicker.setOnCountryChangeListener {
-                // your code to handle selected country
-                countryPicker.selectedCountryName?.apply {
-                    val name = this
-                    searchParams.location?.country = name
-                    viewModel.getPosts(searchParams, source = "countryPicker")
-                }
-            }
+
 
             viewModel.categoriesList.observe(viewLifecycleOwner) { categories ->
                 if (categories == null) return@observe
@@ -229,44 +255,18 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
             }
 
-            //default selected chip
-            selectedChipId = binding.all.id
-
-            handleChips()
-            handleSearch()
-
-            //handle swipe gesture
-            swipeRefreshLayout.setOnRefreshListener {
-                viewModel.getPosts(searchParams, source = "swipeRefreshLayout.setOnRefreshListener")
-                if (viewModel.categoriesList.value.isNullOrEmpty()) {
-                    viewModel.getCategories()
-                }
-            }
 
 
-            //disable swipe refresh if not on top
-            scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-                val isAtTop = scrollY == 0
-                swipeRefreshLayout.isEnabled =
-                    isAtTop && !postRv.canScrollVertically(-1)
-            }
+
 
             viewModel.postsList.observe(viewLifecycleOwner) { posts ->
 
                 handleHomeButton()
 
-                //prevent scrolling bugs
-//                if (posts.isNullOrEmpty()) {
-//                    collapsingBar.disableScroll()
-//                } else {
-//                    collapsingBar.enableScroll()
-//                }
-
-
                 posts?.apply {
 
-                    val recyclerViewState =
-                        binding.postRv.getRecyclerView().layoutManager?.onSaveInstanceState()
+//                    recyclerViewState =
+//                        binding.postRv.getRecyclerView().layoutManager?.onSaveInstanceState()
                     postsAdapter.setPostsList(posts)
                     binding.postRv.getRecyclerView().layoutManager?.onRestoreInstanceState(
                         recyclerViewState
@@ -392,11 +392,13 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
 
     private fun handleChips() {
+
         for (chip in binding.chips.children) {
             chip.setOnClickListener {
                 if (selectedChipId == chip.id) {
                     // Chip is already selected, do nothing
                     Log.d(TAG, "onChipClicked already selected")
+                    chip.isEnabled = false
                     return@setOnClickListener
                 }
                 onChipClicked(it)
@@ -422,5 +424,10 @@ class HomeFragment : Fragment(), ActivityResultListener {
         findNavController().navigate(action)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        recyclerViewState =
+            binding.postRv.getRecyclerView().layoutManager?.onSaveInstanceState()
+    }
 
 }

@@ -7,27 +7,26 @@ import android.os.Bundle
 import android.util.Log
 import com.example.realestate.R
 import com.example.realestate.data.models.SearchParams
-import com.example.realestate.data.models.categories
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.StaticDataRepository
-import com.example.realestate.databinding.ActivitySearchBinding
-import com.example.realestate.ui.viewmodels.SearchModel
+import com.example.realestate.databinding.ActivityFilterBinding
+import com.example.realestate.ui.viewmodels.FilterModel
 import com.example.realestate.utils.setWithList
 
-class SearchActivity : AppCompatActivity() {
+class FilterActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "SearchActivity"
     }
 
-    private lateinit var binding: ActivitySearchBinding
-    private lateinit var searchModel: SearchModel
+    private lateinit var binding: ActivityFilterBinding
+    private lateinit var filterModel: FilterModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        searchModel = SearchModel(StaticDataRepository(Retrofit.getInstance()))
+        binding = ActivityFilterBinding.inflate(layoutInflater)
+        filterModel = FilterModel(StaticDataRepository(Retrofit.getInstance()))
 
 
         val params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -41,8 +40,8 @@ class SearchActivity : AppCompatActivity() {
             initialiseViews(this)
         }
 
-        searchModel.categoriesList.observe(this) { categories ->
-            if (categories != null) {
+        filterModel.categoriesList.observe(this) { categories ->
+            if (!categories.isNullOrEmpty()) {
                 binding.categoryEditText.setWithList(categories)
             } else {
                 binding.categoryEditText.apply {

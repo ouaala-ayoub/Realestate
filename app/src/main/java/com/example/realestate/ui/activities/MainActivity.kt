@@ -49,12 +49,13 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
             StaticDataRepository(retrofit),
             UsersRepository(retrofit)
         ).also {
-            val connected = CurrentUser.isConnected()
-            if (connected)
-                it.getUserById(CurrentUser.prefs.get()!!)
+            it.apply {
+                if (CurrentUser.isConnected())
+                    getUserById(CurrentUser.prefs.get()!!)
 
-            it.getCategories()
-            it.getPosts(source = "onCreate activity")
+                getCategories()
+                getPosts(source = "onCreate activity")
+            }
         }
     }
     private lateinit var resultListener: ActivityResultListener
@@ -115,7 +116,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
             }
             R.id.filter_button -> {
                 //TODO
-//                openSearchActivity()
+                openSearchActivity()
                 return true
             }
             else -> {
@@ -133,7 +134,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     }
 
     private fun openSearchActivity() {
-        val intent = Intent(this, SearchActivity::class.java)
+        val intent = Intent(this, FilterActivity::class.java)
         intent.putExtra("search_params", params)
         searchLauncher.launch(intent)
     }
@@ -145,9 +146,11 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
         binding.bottomNav.setupWithNavController(navController)
 
+
         binding.bottomNav.setOnItemSelectedListener { menuItem ->
             val userConnected = CurrentUser.isConnected()
-            Log.d(TAG, "CurrentUser.prefs.get() : ${CurrentUser.prefs.get()}")
+            val currentDestination = navController.currentDestination
+
             when (menuItem.itemId) {
                 R.id.addPostActivity -> {
                     //to change
@@ -162,14 +165,27 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                 R.id.likedFragment -> {
                     if (userConnected) {
                         // User is connected, open savedFragment
-                        navController.navigate(R.id.likedFragment)
+//                        navController.navigate(R.id.likedFragment)
+                        if (currentDestination?.id != R.id.likedFragment) {
+                            val fragmentInBackStack = navController.popBackStack(R.id.likedFragment, false)
+                            if (!fragmentInBackStack) {
+                                navController.navigate(R.id.likedFragment)
+                            }
+                        }
                     } else {
                         // User is not connected, open UserRegisterActivity
                         navController.navigate(R.id.userRegisterActivity)
                     }
                 }
                 R.id.homeFragment -> {
-                    navController.navigate(R.id.homeFragment)
+                    if (currentDestination?.id != R.id.homeFragment) {
+                        val fragmentInBackStack =
+                            navController.popBackStack(R.id.homeFragment, false)
+                        if (!fragmentInBackStack) {
+                            navController.navigate(R.id.homeFragment)
+                        }
+                    }
+//                    navController.navigate(R.id.homeFragment)
                 }
                 // Handle other menu items if needed
             }
