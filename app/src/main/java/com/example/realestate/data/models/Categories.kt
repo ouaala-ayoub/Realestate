@@ -1,14 +1,15 @@
 package com.example.realestate.data.models
 
-val categories = listOf<String>(
-    "House",
-    "Apartment",
-    "Furnished Apartment",
-    "Office",
-    "Farm",
-    "Warehouse",
-    "Land",
-    "Commercial",
-    "Hotel",
-    "Building",
+val categories = listOf(
+    "house",
+    "villa",
+    "apartment",
+    "furnished Apartment",
+    "office",
+    "farm",
+    "warehouse",
+    "land",
+    "commercial",
+    "hotel",
+    "building"
 )

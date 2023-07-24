@@ -12,6 +12,9 @@ data class User(
     @SerializedName("phone")
     val phone: String,
 
+    @SerializedName("email")
+    val email: String,
+
     @SerializedName("likes")
     var likes: List<String> = listOf(),
 //

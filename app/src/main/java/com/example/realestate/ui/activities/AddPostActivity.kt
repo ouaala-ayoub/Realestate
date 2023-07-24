@@ -8,6 +8,7 @@ import com.example.realestate.data.models.FragmentStep
 import com.example.realestate.data.models.PostWithoutId
 import com.example.realestate.databinding.ActivityAddPostBinding
 import com.example.realestate.ui.adapters.FragmentsAdapter
+import com.example.realestate.ui.fragments.post_add_steps.DetailsStepFragment
 import com.example.realestate.ui.fragments.post_add_steps.ImagesSelectFragment
 import com.example.realestate.ui.fragments.post_add_steps.StepThreeFragment
 import com.example.realestate.ui.fragments.post_add_steps.StepTwoFragment
@@ -25,18 +26,18 @@ class AddPostActivity : AppCompatActivity() {
         AddPostModel()
     }
     private lateinit var binding: ActivityAddPostBinding
-    private val fragmentsList: List<FragmentStep> by lazy {
+    private val fragmentsList: List<FragmentStep> =
         listOf(
             ImagesSelectFragment(),
             StepTwoFragment(),
+            DetailsStepFragment(),
             StepThreeFragment()
         )
-    }
+    
     private val fragmentsAdapter: FragmentsAdapter by lazy {
         FragmentsAdapter(this, fragmentsList)
     }
     val post: PostWithoutId by lazy {
-        //don't forget ownerId
         PostWithoutId.emptyPost
     }
 

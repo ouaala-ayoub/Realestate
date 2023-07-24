@@ -32,20 +32,6 @@ data class Post(
     var category: String,
 
     @SerializedName("details")
-    var details: Map<String, String>? = null
+    var details: Details? = null
 
-) {
-    companion object {
-        val emptyPost = Post(
-            type = Type.RENT.value,
-            price = 0,
-            category = "",
-            media = listOf(),
-            ownerId = "",
-            location = LocationData(
-                "",
-                ""
-            )
-        )
-    }
-}
+)

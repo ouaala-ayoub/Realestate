@@ -19,11 +19,11 @@ data class PostWithoutId(
     @SerializedName("location")
     var location: LocationData,
 
-    @SerializedName("ownerId")
-    var ownerId: String,
-
     @SerializedName("category")
-    var category: String
+    var category: String,
+
+    @SerializedName("details")
+    var details: Details? = null
 ) {
     companion object {
         val emptyPost = PostWithoutId(
@@ -31,7 +31,6 @@ data class PostWithoutId(
             price = 0,
             category = "",
             media = listOf(),
-            ownerId = "",
             location = LocationData(
                 "",
                 ""

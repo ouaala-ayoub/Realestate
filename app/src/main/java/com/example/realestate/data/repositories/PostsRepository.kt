@@ -17,4 +17,7 @@ class PostsRepository(private val retrofit: RetrofitService) {
     fun addPost(post: PostWithoutId) = retrofit.addPost(post)
 
     fun getPostById(postId: String) = retrofit.getPostById(postId)
+    fun getAllCities() = retrofit.getAllCities()
+
+    fun getCountries() = retrofit.getAllCountries()
 }

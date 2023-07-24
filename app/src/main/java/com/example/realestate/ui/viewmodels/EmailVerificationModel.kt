@@ -5,13 +5,16 @@ import android.content.Intent
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.ViewModel
+import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.ui.fragments.user_register_steps.EmailVerificationFragment
+import com.example.realestate.ui.viewmodels.userregistermodels.LoginModel
 import com.example.realestate.utils.Task
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 
-class EmailVerificationModel : ViewModel() {
+class EmailVerificationModel(private val usersRepository: UsersRepository) :
+    LoginModel(usersRepository) {
 
     companion object {
         private const val TAG = "EmailVerificationModel"

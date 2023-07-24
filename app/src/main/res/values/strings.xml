@@ -4,8 +4,8 @@
     <string name="nav_close">Close</string>
 
     <!-- main activity -->
-    <string name="rent">Rent</string>
-    <string name="sell">Sell</string>
+    <string name="rent">rent</string>
+    <string name="sell">sell</string>
 
     <!--dialog-->
     <string name="Yes">Yes</string>
@@ -63,9 +63,9 @@
     <string name="add_description">Add a description</string>
     <string name="description">Description</string>
     <string name="placeholder_description">Real estate is defined as the land and any permanent structures, like a home, or improvements attached to the land, whether natural or man-made.</string>
-    <string name="country">Country</string>
-    <string name="city">City</string>
-    <string name="street">Street</string>
+    <string name="country">Choose a Country</string>
+    <string name="city">Cities</string>
+    <string name="street">Areas</string>
     <string name="error">Unexpected Error</string>
     <string name="wrong_code">Wrong verification code</string>
     <string name="finish_dialog_title">Last Step</string>
@@ -120,6 +120,17 @@
     <string name="try_again">Error authenticating please try again</string>
     <string name="no_defined">-</string>
     <string name="image_placeholder">image placeholder</string>
+    <string name="building_age">Building Age</string>
+    <string name="is_furnished">Furnished</string>
+    <string name="has_balcony">Balcony</string>
+    <string name="is_new">New</string>
+    <string name="has_gym">Gym</string>
+    <string name="has_swimming_pool">Swimming Pool</string>
+    <string name="has_parking">Parking</string>
+    <string name="number_of_bedrooms">Number of Bedrooms</string>
+    <string name="floor_number">Floor Number</string>
+    <string name="space">Space</string>
+    <string name="max_string">Media selection limit exceeded</string>
 
 
 </resources>

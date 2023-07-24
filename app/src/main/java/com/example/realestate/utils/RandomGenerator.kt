@@ -1,10 +1,20 @@
 package com.example.realestate.utils
 
+import java.security.SecureRandom
+import java.util.*
 import kotlin.random.Random
 
-object RandomTextGenerator {
+object RandomGenerator {
     private const val CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
+    fun createUniqueImageName(): String {
+        val random = SecureRandom()
+        val timeNow = Date().time
+        val randomBytes = ByteArray(6)
+        random.nextBytes(randomBytes)
+        val randomHex = randomBytes.joinToString("") { "%02x".format(it) }
+        return "$timeNow.$randomHex"
+    }
     fun generateRandomText(minLength: Int, maxLength: Int): String {
         val length = generateRandomLength(minLength, maxLength)
         val sb = StringBuilder(length)

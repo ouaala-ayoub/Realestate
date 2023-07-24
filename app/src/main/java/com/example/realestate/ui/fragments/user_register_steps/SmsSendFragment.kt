@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import com.example.realestate.R
+import com.example.realestate.data.remote.network.Retrofit
+import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.FragmentSmsSendBinding
 import com.example.realestate.ui.viewmodels.userregistermodels.SmsSendModel
 import com.example.realestate.utils.OnVerificationCompleted
@@ -28,7 +30,7 @@ class SmsSendFragment : Fragment() {
 
     private lateinit var binding: FragmentSmsSendBinding
     private val smsSendModel: SmsSendModel by lazy {
-        SmsSendModel(FirebaseAuth.getInstance())
+        SmsSendModel(FirebaseAuth.getInstance(), UsersRepository(Retrofit.getInstance()))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,10 +113,17 @@ class SmsSendFragment : Fragment() {
 
                 user?.getIdToken(false)?.addOnCompleteListener {
                     val tokenId = it.result.token
-                    val phoneNumber = user.phoneNumber
-
-                    if (phoneNumber != null && tokenId != null) {
-                        goToAddInfo(phoneNumber, tokenId)
+                    if (tokenId != null) {
+                        Log.d(TAG, "tokenId: $tokenId")
+                        smsSendModel.login(tokenId)
+                        smsSendModel.userId.observe(viewLifecycleOwner) { userId ->
+                            Log.d(TAG, "userId: $userId")
+                            if (userId != null) {
+                                goToAddInfo(userId.id, tokenId)
+                            } else {
+                                onFail()
+                            }
+                        }
                     } else {
                         onFail()
                     }

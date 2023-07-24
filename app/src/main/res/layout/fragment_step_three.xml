@@ -8,8 +8,8 @@
     tools:context=".ui.fragments.post_add_steps.StepThreeFragment">
 
     <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_margin="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,24 +21,44 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
             android:orientation="vertical">
 
-            <com.hbb20.CountryCodePicker
-                android:id="@+id/countryPicker"
+            <!--            <com.hbb20.CountryCodePicker-->
+            <!--                android:id="@+id/countryPicker"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+
+            <!--                android:layout_marginBottom="10dp"-->
+            <!--                android:gravity="center"-->
+            <!--                app:ccpDialog_showNameCode="false"-->
+            <!--                app:ccpDialog_textColor="@color/stroke_button_color"-->
+            <!--                app:ccp_autoDetectCountry="true"-->
+            <!--                app:ccp_contentColor="@color/stroke_button_color"-->
+            <!--                app:ccp_defaultNameCode="IND"-->
+            <!--                app:ccp_showFlag="true"-->
+            <!--                app:ccp_showFullName="true"-->
+            <!--                app:ccp_showNameCode="false"-->
+            <!--                app:ccp_showPhoneCode="false" />-->
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/countryTextField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorText"
-                android:gravity="center"
-                app:ccpDialog_showNameCode="false"
-                app:ccpDialog_textColor="@color/stroke_button_color"
-                app:ccp_autoDetectCountry="true"
-                app:ccp_contentColor="@color/colorBackground"
-                app:ccp_defaultNameCode="IND"
-                app:ccp_showFlag="true"
-                app:ccp_showFullName="true"
-                app:ccp_showNameCode="false"
-                app:ccp_showPhoneCode="false" />
+                android:layout_marginBottom="10dp"
+                android:hint="@string/country"
+                app:helperText="@string/obligatory"
+                app:helperTextTextColor="@color/red">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/countryEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:lines="1"
+                    android:textStyle="bold" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/cityTextField"
@@ -46,6 +66,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
+                android:enabled="false"
                 android:hint="@string/city"
                 app:helperText="@string/obligatory"
                 app:helperTextTextColor="@color/red">
@@ -66,6 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
+                android:enabled="false"
                 android:hint="@string/street">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -91,6 +113,8 @@
                 android:id="@+id/get_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 android:text="@string/automatically_get_location"
                 app:icon="@drawable/baseline_location_on_24" />
 

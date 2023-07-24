@@ -12,18 +12,14 @@ import com.example.realestate.utils.AdditionalCode
 import com.example.realestate.utils.handleApiRequest
 import retrofit2.Response
 
-class VerificationCodeModel(private val repository: UsersRepository) : LoginModel() {
+class VerificationCodeModel(private val repository: UsersRepository) : LoginModel(repository) {
 
     companion object {
         private const val TAG = "VerificationCodeModel"
     }
 
     private val _verificationCode = MutableLiveData<String>()
-    private val _userId = MutableLiveData<UserId?>()
     private val _loading = super._isLoading
-
-    val userId: LiveData<UserId?>
-        get() = _userId
 
     val isValid = MediatorLiveData<Boolean>().apply {
         addSource(_verificationCode) { code ->
@@ -35,22 +31,5 @@ class VerificationCodeModel(private val repository: UsersRepository) : LoginMode
         _verificationCode.postValue(code)
     }
 
-    fun login(token: String) {
-        handleApiRequest(
-            repository.login(token),
-            _loading,
-            _userId,
-            TAG,
-            object : AdditionalCode<UserId> {
-                override fun onResponse(responseBody: Response<UserId>) {
-                    val userId = (responseBody.body())?.id
-                    Log.d(TAG, "userId: $userId")
-                    //store user id in the prefs
-                    if (userId != null)
-                        CurrentUser.prefs.set(userId)
-                }
 
-                override fun onFailure() {}
-            })
-    }
 }

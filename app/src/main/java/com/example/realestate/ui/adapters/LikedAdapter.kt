@@ -1,6 +1,5 @@
 package com.example.realestate.ui.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -59,7 +58,7 @@ class LikedAdapter(private val likedClickListener: OnLikedClickListener) :
                             R.string.location,
                             country,
                             city,
-                            street,
+                            area,
                         )
                 }
 
@@ -68,11 +67,11 @@ class LikedAdapter(private val likedClickListener: OnLikedClickListener) :
                 }
 
                 val details = currentPost.details
-                if (!details.isNullOrEmpty()) {
+                if (details != null) {
                     detailsShortRv.apply {
                         adapter = detailsShortAdapter
                         layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-                        detailsShortAdapter.setDetailsMap(details)
+                        detailsShortAdapter.setDetails(details)
                     }
                 }
 

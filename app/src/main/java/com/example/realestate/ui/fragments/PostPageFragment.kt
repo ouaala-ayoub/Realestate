@@ -17,6 +17,7 @@ import com.eudycontreras.boneslibrary.extensions.disableSkeletonLoading
 import com.eudycontreras.boneslibrary.extensions.enableSkeletonLoading
 import com.example.realestate.PostNavArgs
 import com.example.realestate.R
+import com.example.realestate.data.models.CommunicationMethod
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.DetailsType
 import com.example.realestate.data.remote.network.Retrofit
@@ -102,31 +103,52 @@ class PostPageFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
         }
 
+
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         postPageModel.apply {
             seller.observe(viewLifecycleOwner) { seller ->
                 binding.apply {
                     if (seller != null) {
+                        val commMethod = seller.communicationMethod
+                        val all = CommunicationMethod.ALL.value
+                        val whatsapp = CommunicationMethod.WHATSAPP.value
+                        val callMe = CommunicationMethod.CALL.value
+
                         ownerTextView.defineField(seller.name, requireContext())
 
                         phoneNumber = seller.phone
 
-                        message.setOnClickListener {
-                            //whatsapp message
-                            openWhatsapp(phoneNumber)
+                        message.apply {
+                            isEnabled = commMethod == all || commMethod == whatsapp
+                            if (isEnabled) {
+                                message.setOnClickListener {
+                                    //whatsapp message
+                                    openWhatsapp(phoneNumber)
+                                }
+                            }
                         }
-                        call.setOnClickListener {
-                            //directly call
-                            requireActivity().handlePermission(object : PermissionResult {
-                                override fun onGranted() {
-                                    call(phoneNumber)
-                                }
 
-                                override fun onNonGranted() {
-                                    permissionLauncher.requestCallPermission()
-                                }
+                        call.apply {
+                            isEnabled = commMethod == all || commMethod == callMe
+                            setOnClickListener {
+                                //directly call
+                                requireActivity().handlePermission(object : PermissionResult {
+                                    override fun onGranted() {
+                                        call(phoneNumber)
+                                    }
 
-                            }, listOf(android.Manifest.permission.CALL_PHONE))
+                                    override fun onNonGranted() {
+                                        permissionLauncher.requestCallPermission()
+                                    }
 
+                                }, listOf(android.Manifest.permission.CALL_PHONE))
+
+                            }
                         }
                     } else {
                         //TODO
@@ -136,7 +158,7 @@ class PostPageFragment : Fragment() {
             post.observe(viewLifecycleOwner) { post ->
 
                 if (post != null) {
-
+                    Log.d(TAG, "post: $post")
                     //get the owner
                     getUserById(post.ownerId)
 
@@ -159,31 +181,34 @@ class PostPageFragment : Fragment() {
                                 R.string.location,
                                 post.location.country,
                                 post.location.city,
-                                post.location.street
+                                post.location.area
                             ),
                             requireContext()
                         )
                         descriptionRv.defineField(post.description, requireContext())
+                        val details = post.details
+
+                        if (details != null) {
+                            detailsAdapter.setDetails(details)
+                        }
+//                        else {
+//                            val placeholderMap = mutableMapOf<String, String>()
+//                            placeholderMap[getString(R.string.no_defined)] =
+//                                getString(R.string.no_defined)
+//                            detailsAdapter.setDetails(placeholderMap)
+//                        }
+                        //and the images
+                        imagesAdapter = if (post.media.isNotEmpty())
+                            MediaPagerAdapter(post.media, exoPlayer)
+                        else
+                            MediaPagerAdapter(listOf("empty"))
+
+                        mediaVp.apply {
+                            adapter = imagesAdapter
+                            setPageTransformer(ZoomOutPageTransformer())
+                        }
                     }
 
-                    val details = post.details
-                    if (!details.isNullOrEmpty()) {
-                        detailsAdapter.setDetailsMap(details)
-                    } else {
-                        binding.details.visibility = View.GONE
-                    }
-
-                    //and the images
-                    imagesAdapter = if (post.media.isNotEmpty())
-                        MediaPagerAdapter(post.media, exoPlayer)
-                    else
-                        MediaPagerAdapter(listOf("empty"))
-
-
-                    binding.mediaVp.apply {
-                        adapter = imagesAdapter
-                        setPageTransformer(ZoomOutPageTransformer())
-                    }
                 } else {
                     //go back if error
                     doOnFail()
@@ -199,8 +224,6 @@ class PostPageFragment : Fragment() {
                 binding.imagePlaceholder.isVisible = loading
             }
         }
-
-        return binding.root
     }
 
     private fun navigateToReportFragment() {

@@ -8,12 +8,11 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.R
+import com.example.realestate.data.models.Details
 import com.example.realestate.data.models.DetailsType
 import com.example.realestate.databinding.ErrorBinding
 import com.example.realestate.databinding.SingleLongDetailBinding
 import com.example.realestate.databinding.SingleShortDetailBinding
-import com.example.realestate.utils.getMediaType
-import com.google.android.exoplayer2.ExoPlayer
 
 class DetailsAdapter(private val detailsType: DetailsType) :
     RecyclerView.Adapter<DetailsAdapter.DetailsHolder>() {
@@ -22,20 +21,27 @@ class DetailsAdapter(private val detailsType: DetailsType) :
         private const val TAG = "DetailsShortAdapter"
     }
 
+    private var availableDetailsList = listOf<Pair<String, Any>>()
+
+    fun setDetails(details: Details) {
+        availableDetailsList = details.getAvailableDetails()
+        notifyDataSetChanged()
+    }
+
     sealed class DetailsHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
-        abstract fun bind(currentDetail: Map.Entry<String, String>)
+        abstract fun bind(currentDetail: Pair<String, Any>)
 
         class DetailShortHolder(private val binding: SingleShortDetailBinding) :
             DetailsHolder(binding.root) {
-            override fun bind(currentDetail: Map.Entry<String, String>) {
+            override fun bind(currentDetail: Pair<String, Any>) {
 
                 Log.d(TAG, "currentDetail: $currentDetail")
 
                 binding.apply {
-                    detailBody.text = currentDetail.value
+                    detailBody.text = currentDetail.second.toString()
                     detailBody.setCompoundDrawablesWithIntrinsicBounds(
-                        getDetailIcon(currentDetail.key),
+                        getDetailIcon(currentDetail.first),
                         null,
                         null,
                         null
@@ -46,15 +52,15 @@ class DetailsAdapter(private val detailsType: DetailsType) :
 
         class DetailLongHolder(private val binding: SingleLongDetailBinding) :
             DetailsHolder(binding.root) {
-            override fun bind(currentDetail: Map.Entry<String, String>) {
+            override fun bind(currentDetail: Pair<String, Any>) {
 
                 Log.d(TAG, "currentDetail: $currentDetail")
 
                 binding.apply {
-                    detailTitle.text = currentDetail.key
-                    detailBody.text = currentDetail.value
+                    detailTitle.text = currentDetail.first
+                    detailBody.text = currentDetail.second.toString()
                     detailTitle.setCompoundDrawablesWithIntrinsicBounds(
-                        getDetailIcon(currentDetail.key),
+                        getDetailIcon(currentDetail.first),
                         null,
                         null,
                         null
@@ -66,7 +72,7 @@ class DetailsAdapter(private val detailsType: DetailsType) :
         class ErrorHolder(binding: ErrorBinding) :
             DetailsHolder(binding.root) {
 
-            override fun bind(currentDetail: Map.Entry<String, String>) {}
+            override fun bind(currentDetail: Pair<String, Any>) {}
         }
 
 
@@ -83,12 +89,6 @@ class DetailsAdapter(private val detailsType: DetailsType) :
         }
     }
 
-    private var detailsMap: Map<String, String> = mapOf()
-
-    fun setDetailsMap(map: Map<String, String>) {
-        detailsMap = map
-        notifyDataSetChanged()
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetailsHolder {
         return when (viewType) {
@@ -126,10 +126,10 @@ class DetailsAdapter(private val detailsType: DetailsType) :
         return detailsType.ordinal
     }
 
-    override fun getItemCount() = detailsMap.size
+    override fun getItemCount() = availableDetailsList.size
 
     override fun onBindViewHolder(holder: DetailsHolder, position: Int) {
-        val currentDetail = detailsMap.entries.elementAt(position)
+        val currentDetail = availableDetailsList[position]
         holder.bind(currentDetail)
     }
 }

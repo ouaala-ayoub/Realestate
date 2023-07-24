@@ -42,22 +42,6 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     }
 
     var params: SearchParams = SearchParams()
-    val viewModel: HomeViewModel by lazy {
-        val retrofit = Retrofit.getInstance()
-        HomeViewModel(
-            PostsRepository(retrofit),
-            StaticDataRepository(retrofit),
-            UsersRepository(retrofit)
-        ).also {
-            it.apply {
-                if (CurrentUser.isConnected())
-                    getUserById(CurrentUser.prefs.get()!!)
-
-                getCategories()
-                getPosts(source = "onCreate activity")
-            }
-        }
-    }
     private lateinit var resultListener: ActivityResultListener
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
@@ -149,6 +133,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
         binding.bottomNav.setOnItemSelectedListener { menuItem ->
             val userConnected = CurrentUser.isConnected()
+//            val userConnected = true
             val currentDestination = navController.currentDestination
 
             when (menuItem.itemId) {
@@ -239,7 +224,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     private fun handleUser(user: FirebaseUser?, phoneTv: TextView) {
         Log.d(TAG, "handleUser user ${user?.phoneNumber}")
         if (user != null) {
-            phoneTv.text = user.phoneNumber
+            phoneTv.text = user.email
         } else {
             phoneTv.text = getString(R.string.no_user)
         }

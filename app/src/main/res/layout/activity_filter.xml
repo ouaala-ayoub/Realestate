@@ -52,7 +52,6 @@
                     android:layout_margin="2dp"
                     android:layout_weight="1"
                     android:checkable="true"
-                    android:checked="true"
                     android:elevation="2dp"
                     android:gravity="center"
                     android:text="@string/all"

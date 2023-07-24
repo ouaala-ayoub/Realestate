@@ -17,7 +17,7 @@ class MyTests {
     fun testWithDefaultApp() {
         debugAppCheckTestHelper.withDebugProvider<Exception> {
             // Test code that requires a debug AppCheckToken.
-            val model = SmsSendModel(FirebaseAuth.getInstance())
+//            val model = SmsSendModel(FirebaseAuth.getInstance())
 //            launchActivity<MyActivity>().use {
 //            }
 //            ActivityScenarioRule

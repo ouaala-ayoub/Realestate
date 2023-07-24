@@ -6,18 +6,82 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
-import com.example.realestate.data.models.Media
-import com.example.realestate.ui.adapters.ImagesAdapter
-import com.example.realestate.utils.swap
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
+import com.example.realestate.data.models.Media
 import com.example.realestate.data.models.UriHolder
+import com.example.realestate.ui.adapters.ImagesAdapter
+import com.example.realestate.utils.RandomGenerator
+import com.example.realestate.utils.swap
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.OnPausedListener
+import com.google.firebase.storage.UploadTask
+import com.google.firebase.storage.ktx.storage
+import com.google.firebase.storage.ktx.storageMetadata
+import java.io.File
+
 
 class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
 
     companion object {
         private const val TAG = "ImagesSelectModel"
+    }
+
+    private val storage = Firebase.storage
+    private val storageRef = storage.reference
+
+    private fun uploadTest(fileUri: Uri, media: Media, position: Int) {
+        // File or Blob
+//        val file = Uri.fromFile(File("path/to/mountains.jpg"))
+
+        // Create the file metadata
+//        val metadata = storageMetadata {
+//            contentType = "image/jpeg"
+//        }
+        val fileName = RandomGenerator.createUniqueImageName()
+
+        // Upload file and metadata to the path 'images/mountains.jpg'
+        val uploadTask = storageRef.child("images/${fileName}").putFile(fileUri)
+
+        // Listen for state changes, errors, and completion of the upload.
+        // You'll need to import com.google.firebase.storage.ktx.component1 and
+        // com.google.firebase.storage.ktx.component2
+
+        uploadTask.addCallBacks(media, position)
+
+    }
+
+    private fun UploadTask.addCallBacks(images: Media, position: Int) {
+        addOnProgressListener { taskSnapshot ->
+            val progress = 100.0 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount
+            Log.d(TAG, "Upload is $progress% done")
+
+            if (progress != 100.0)
+                _progressList[position].postValue(progress.toInt())
+
+        }.addOnPausedListener {
+
+        }.addOnFailureListener { e ->
+            // Handle unsuccessful uploads
+            e.printStackTrace()
+            _uploading.postValue(false)
+        }.addOnSuccessListener { taskSnapShot ->
+            // Handle successful uploads on complete
+            // ...
+            //TODO
+            taskSnapShot.storage.downloadUrl.addOnSuccessListener { uri ->
+                val downloadUrl = uri.toString()
+                Log.d(TAG, "downloadUrl: $downloadUrl")
+
+                urlsList.add(downloadUrl)
+                updateIsValid(urlsList, images)
+                _uploading.postValue(false)
+                _progressList[position].postValue(100)
+                _uploading.postValue(false)
+            }
+
+        }
     }
 
     private fun uploadCallback(images: Media, position: Int) = object : UploadCallback {
@@ -130,7 +194,7 @@ class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
         for (i in listToAdd.indices) {
             if (startIndex + i <= images.uriHolders.lastIndex && startIndex + i >= 0) {
                 images.uriHolders[startIndex + i].uri = listToAdd[i]
-                upload(listToAdd[i], mimeTypes[i], startIndex + i, images)
+                newUpload(listToAdd[i], mimeTypes[i], startIndex + i, images)
                 rv.notifyItemChanged(startIndex + i)
             } else {
                 break
@@ -171,6 +235,10 @@ class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
                 uploadVideo(uri, imagesList, position)
             }
         }
+    }
+
+    fun newUpload(uri: Uri, mimeType: String?, position: Int, imagesList: Media){
+        uploadTest(uri, imagesList, position)
     }
 
     fun cancelAllUploads(): Int {

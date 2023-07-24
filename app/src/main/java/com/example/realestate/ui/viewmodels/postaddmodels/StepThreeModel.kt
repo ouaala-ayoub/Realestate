@@ -1,9 +1,11 @@
 package com.example.realestate.ui.viewmodels.postaddmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.realestate.data.models.CountriesData
 import com.example.realestate.data.models.MessageResponse
 import com.example.realestate.data.models.PostWithoutId
 import com.example.realestate.data.repositories.PostsRepository
@@ -13,6 +15,14 @@ class StepThreeModel(private val repository: PostsRepository) : ViewModel() {
 
     companion object {
         private const val TAG = "StepThreeModel"
+    }
+
+    fun getAllCities() {
+        handleApiRequest(repository.getAllCities(), _loading, _cities, TAG)
+    }
+
+    fun getCountries() {
+        handleApiRequest(repository.getCountries(), _loading, _countries, TAG)
     }
 
     //request related live data
@@ -32,11 +42,15 @@ class StepThreeModel(private val repository: PostsRepository) : ViewModel() {
     val _descriptionLiveData = MutableLiveData<String>()
 
     //location data live data
-    private val _cities = MutableLiveData<List<String>>()
+    private val _countries = MutableLiveData<CountriesData?>()
+    private val _cities = MutableLiveData<Map<String, List<String>>?>()
+    private val _citiesToShow = MutableLiveData<List<String>>(listOf())
     private val _streets = MutableLiveData<List<String>>()
 
+    val countries: LiveData<CountriesData?>
+        get() = _countries
     val cities: LiveData<List<String>>
-        get() = _cities
+        get() = _citiesToShow
     val streets: LiveData<List<String>>
         get() = _streets
 
@@ -71,8 +85,14 @@ class StepThreeModel(private val repository: PostsRepository) : ViewModel() {
     }
 
     fun getCities(country: String) {
-//        handleApiRequest()
+
+        _cities.value?.apply {
+            val res =
+                this.entries.find { it.key.equals(country, ignoreCase = true) }?.value ?: listOf()
+            _citiesToShow.postValue(res)
+        }
     }
+
 
     private fun validateTheData(
         country: String?,

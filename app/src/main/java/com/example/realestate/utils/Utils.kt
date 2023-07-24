@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
 import android.text.Editable
@@ -21,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -31,15 +33,14 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.realestate.R
-import com.example.realestate.data.models.Error
-import com.example.realestate.data.models.ErrorResponse
-import com.example.realestate.data.models.MediaType
-import com.example.realestate.data.models.SearchParams
+import com.example.realestate.data.models.*
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.firebase.FirebaseException
@@ -50,6 +51,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 
 
 const val TAG = "Utils"
@@ -650,3 +652,13 @@ fun TextView.defineField(value: String?, context: Context, fillWith: String? = n
     text = value
         ?: (fillWith ?: context.getString(R.string.no_defined))
 }
+
+fun ChipGroup.initialiseCategoryChip(category: String?, TAG: String) {
+    val chip = children.find { view ->
+        val chip = view as Chip
+        chip.text == category
+    } as Chip?
+    Log.d(TAG, "initialiseCategoryChip ${chip?.text}: ")
+    chip?.isChecked = true
+}
+

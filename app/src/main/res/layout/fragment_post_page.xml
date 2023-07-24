@@ -30,7 +30,7 @@
         app:skeletonShimmerRayThickness="120dp"
         app:skeletonTransitionDuration="200"
         app:skeletonUseStateTransition="true"
-        tools:background="@color/white">
+        tools:background="@color/true_white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -91,11 +91,12 @@
                 tools:text="1000 USD" />
 
             <TextView
-                android:id="@+id/details"
+                android:id="@+id/details_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
+                android:visibility="visible"
                 android:text="@string/details"
                 android:textColor="@color/yellow"
                 android:textSize="18sp"
@@ -157,8 +158,12 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:layout_weight="1"
+                        android:enabled="false"
                         android:backgroundTint="@color/stroke_button_color"
                         android:text="@string/call"
+                        app:icon="@drawable/baseline_call_24"
+                        app:iconGravity="start"
+                        app:iconTint="@color/colorBackground"
                         android:textColor="@color/colorBackground" />
 
                     <Button
@@ -168,8 +173,12 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:layout_weight="1"
+                        android:enabled="false"
                         android:backgroundTint="@color/stroke_button_color"
                         android:text="@string/message"
+                        app:icon="@drawable/icon"
+                        app:iconGravity="start"
+                        app:iconTint="@color/colorBackground"
                         android:textColor="@color/colorBackground" />
                 </LinearLayout>
 

@@ -5,13 +5,15 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.utils.OnVerificationCompleted
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import java.util.concurrent.TimeUnit
 
-class SmsSendModel(private val auth: FirebaseAuth) : LoginModel() {
+class SmsSendModel(private val auth: FirebaseAuth, private val usersRepository: UsersRepository) :
+    LoginModel(usersRepository) {
 
     companion object {
         private const val TAG = "SmsSendModel"

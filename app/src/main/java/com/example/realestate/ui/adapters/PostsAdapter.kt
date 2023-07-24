@@ -78,7 +78,7 @@ class PostsAdapter(
                             R.string.location,
                             country,
                             city,
-                            street,
+                            area,
                         )
                 }
 
@@ -104,11 +104,11 @@ class PostsAdapter(
                 }
 
                 val details = currentPost.details
-                if (!details.isNullOrEmpty()) {
+                if (details != null) {
                     detailsShortRv.apply {
                         adapter = detailsShortAdapter
                         layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-                        detailsShortAdapter.setDetailsMap(details)
+                        detailsShortAdapter.setDetails(details)
                     }
                 }
             }

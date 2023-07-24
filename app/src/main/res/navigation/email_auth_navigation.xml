@@ -9,5 +9,21 @@
         android:id="@+id/emailVerificationFragment"
         android:name="com.example.realestate.ui.fragments.user_register_steps.EmailVerificationFragment"
         android:label="fragment_email_verification"
-        tools:layout="@layout/fragment_email_verification" />
+        tools:layout="@layout/fragment_email_verification" >
+        <action
+            android:id="@+id/action_emailVerificationFragment_to_addInfoFragment2"
+            app:destination="@id/addInfoFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/addInfoFragment2"
+        android:name="com.example.realestate.ui.fragments.user_register_steps.AddInfoFragment"
+        android:label="fragment_add_info"
+        tools:layout="@layout/fragment_add_info" >
+        <argument
+            android:name="userId"
+            app:argType="string" />
+        <argument
+            android:name="tokenId"
+            app:argType="string" />
+    </fragment>
 </navigation>

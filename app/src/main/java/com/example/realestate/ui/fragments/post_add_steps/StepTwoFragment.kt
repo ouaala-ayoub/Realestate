@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.data.models.FragmentStep
 import com.example.realestate.data.models.Type
+import com.example.realestate.data.models.categories
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.FragmentStepTwoBinding
@@ -89,16 +90,22 @@ class StepTwoFragment : FragmentStep() {
     }
 
     override fun onNextClicked(viewPager: ViewPager2) {
-        viewPager.currentItem++
-
 //        add logic
         (requireActivity() as AddPostActivity).post.apply {
             stepTwoModel.liveDataWrapper.apply {
                 category = categoryLiveData.value.toString()
                 price = priceLiveData.value!!.toInt()
                 type = typeLiveData.value.toString()
+
+                //TODO change with a call to the local database
+                if (category == categories[0] || category == categories[1] || category == categories[2]) {
+                    viewPager.currentItem++
+                } else {
+                    viewPager.currentItem += 2
+                }
             }
         }
+
     }
 
     override fun onBackClicked(viewPager: ViewPager2) {

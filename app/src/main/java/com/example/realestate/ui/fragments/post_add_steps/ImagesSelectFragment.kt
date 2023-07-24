@@ -25,6 +25,8 @@ import com.example.realestate.ui.adapters.ImagesAdapter
 import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
 import com.example.realestate.utils.*
 import com.google.android.material.snackbar.Snackbar
+import gun0912.tedimagepicker.builder.TedImagePicker
+import gun0912.tedimagepicker.builder.type.MediaType
 
 class ImagesSelectFragment : FragmentStep() {
     companion object {
@@ -34,8 +36,9 @@ class ImagesSelectFragment : FragmentStep() {
     }
 
     private lateinit var binding: FragmentImagesSelectBinding
-    private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
-    private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
+
+    //    private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
+//    private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
     private val viewModel: ImagesSelectModel by lazy {
         ImagesSelectModel(MAX_INPUT_SIZE)
     }
@@ -46,38 +49,38 @@ class ImagesSelectFragment : FragmentStep() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        permissionRequestLauncher = requestPermissionLauncher(
-            object : PermissionResult {
-                override fun onGranted() {
-                    imageResultLauncher.openGallery()
-                }
-
-                override fun onNonGranted() {
-                    val snackBar = makeSnackBar(
-                        requireView(),
-                        getString(R.string.permission),
-                        Snackbar.LENGTH_INDEFINITE
-                    )
-                    snackBar.setAction(R.string.OK) {
-                        snackBar.dismiss()
-                    }.show()
-                }
-            }
-        )
-        imageResultLauncher = startActivityResult(
-            object : SelectionResult {
-                override fun onResultOk(data: Intent) {
-                    val uris = data.getContentAsList()
-                    val mediaTypes = uris.map { uri -> requireContext().getType(uri) }
-
-                    imagesAdapter.addImages(uris, mediaTypes)
-                }
-
-                override fun onResultFailed() {
-                    Log.e(TAG, "imageResultLauncher onResultFailed")
-                }
-            }
-        )
+//        permissionRequestLauncher = requestPermissionLauncher(
+//            object : PermissionResult {
+//                override fun onGranted() {
+//                    imageResultLauncher.openGallery()
+//                }
+//
+//                override fun onNonGranted() {
+//                    val snackBar = makeSnackBar(
+//                        requireView(),
+//                        getString(R.string.permission),
+//                        Snackbar.LENGTH_INDEFINITE
+//                    )
+//                    snackBar.setAction(R.string.OK) {
+//                        snackBar.dismiss()
+//                    }.show()
+//                }
+//            }
+//        )
+//        imageResultLauncher = startActivityResult(
+//            object : SelectionResult {
+//                override fun onResultOk(data: Intent) {
+//                    val uris = data.getContentAsList()
+//                    val mediaTypes = uris.map { uri -> requireContext().getType(uri) }
+//
+//                    imagesAdapter.addImages(uris, mediaTypes)
+//                }
+//
+//                override fun onResultFailed() {
+//                    Log.e(TAG, "imageResultLauncher onResultFailed")
+//                }
+//            }
+//        )
     }
 
     override fun onCreateView(
@@ -94,22 +97,35 @@ class ImagesSelectFragment : FragmentStep() {
         }
 
         binding.select.setOnClickListener {
+
+            //TODO more readable code
+            TedImagePicker
+                .with(requireContext())
+                .mediaType(MediaType.IMAGE_AND_VIDEO)
+                .max(10, getString(R.string.max_string))
+                .buttonBackground(R.drawable.yellow_drawable)
+                .buttonTextColor(R.color.colorBackground)
+                .startMultiImage { uriList ->
+                    val mediaTypes = uriList.map { uri -> requireContext().getType(uri) }
+                    imagesAdapter.addImages(uriList, mediaTypes)
+                }
+
             //handle permissions and open the gallery
-            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Manifest.permission.READ_MEDIA_IMAGES
-            } else {
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            }
-
-            requireActivity().handlePermission(object : PermissionResult {
-                override fun onGranted() {
-                    imageResultLauncher.openGallery()
-                }
-
-                override fun onNonGranted() {
-                    permissionRequestLauncher.requestStoragePermission()
-                }
-            }, listOf(permission))
+//            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                Manifest.permission.READ_MEDIA_IMAGES
+//            } else {
+//                Manifest.permission.READ_EXTERNAL_STORAGE
+//            }
+//
+//            requireActivity().handlePermission(object : PermissionResult {
+//                override fun onGranted() {
+//                    imageResultLauncher.openGallery()
+//                }
+//
+//                override fun onNonGranted() {
+//                    permissionRequestLauncher.requestStoragePermission()
+//                }
+//            }, listOf(permission))
         }
 
         viewModel.isFull.observe(viewLifecycleOwner) { isFull ->
@@ -133,12 +149,6 @@ class ImagesSelectFragment : FragmentStep() {
 
         viewModel.progress.forEachIndexed { index, progressLiveData ->
             progressLiveData.observe(viewLifecycleOwner) { progress ->
-                // Update the progress of the loading dialog (e.g., update a progress bar)
-//            val progressBar = dialog.findViewById<ProgressBar>(R.id.upload_progress_bar)
-//            progressBar?.progress = progress
-//            binding.uploadProgressBar.progress = progress
-                Log.d(TAG, "progress: $progress")
-                Log.d(TAG, "index: $index")
                 progress?.apply { imagesAdapter.updateProgress(this, index) }
             }
         }
