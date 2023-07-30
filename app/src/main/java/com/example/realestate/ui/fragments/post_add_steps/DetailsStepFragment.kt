@@ -2,16 +2,22 @@ package com.example.realestate.ui.fragments.post_add_steps
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import androidx.core.view.forEach
 import androidx.core.widget.doOnTextChanged
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.data.models.FragmentStep
 import com.example.realestate.databinding.FragmentDetailsStepBinding
 import com.example.realestate.ui.activities.AddPostActivity
 import com.example.realestate.ui.viewmodels.DetailsStepViewModel
+import com.example.realestate.utils.formatDecimal
+import com.example.realestate.utils.squareFeetToSquareMeters
+import com.example.realestate.utils.squareMeterToSquareFoot
+import com.google.android.material.chip.Chip
+import com.google.android.material.textfield.TextInputEditText
 
 class DetailsStepFragment : FragmentStep() {
 
@@ -19,6 +25,7 @@ class DetailsStepFragment : FragmentStep() {
         private const val TAG = "DetailsStepFragment"
     }
 
+    private var isConverting: Boolean = false
     private lateinit var binding: FragmentDetailsStepBinding
     private val viewModel: DetailsStepViewModel by lazy {
         DetailsStepViewModel()
@@ -38,32 +45,25 @@ class DetailsStepFragment : FragmentStep() {
         binding.apply {
             viewModel.apply {
                 // Set up listeners for user input changes
-                buildingAgeEditText.doOnTextChanged { text, _, _, _ ->
-                    setBuildingAge(text.toString())
+
+                extrasDetailsChipGrp.setOnCheckedStateChangeListener { group, checkedIds ->
+                    extrasDetailsChipGrp.forEach { view ->
+                        val chip = view as Chip
+                        val text = chip.text
+                        val lambda = mapOfFunctions["$text"]
+                        val isChecked = chip.isChecked
+
+                        lambda?.invoke(isChecked)
+                    }
+
                 }
 
-                isFurnishedCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                    setIsFurnished(isChecked)
-                }
+                proprietyConditionRg.setOnCheckedChangeListener { radioGroup, i ->
+                    val radioButton =
+                        radioGroup.findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
+                    val state = radioButton.text.toString()
 
-                hasBalconyCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                    setHasBalcony(isChecked)
-                }
-
-                isNewCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                    setIsNew(isChecked)
-                }
-
-                hasGymCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                    setHasGym(isChecked)
-                }
-
-                hasSwimmingPoolCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                    setHasSwimmingPool(isChecked)
-                }
-
-                hasParkingCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                    setHasParking(isChecked)
+                    setProprietyState(state)
                 }
 
                 numberOfBedroomsEditText.doOnTextChanged { text, _, _, _ ->
@@ -74,12 +74,15 @@ class DetailsStepFragment : FragmentStep() {
                     setFloorNumber(text.toString())
                 }
 
-                spaceEditText.doOnTextChanged { text, _, _, _ ->
-                    val spaceValue = text?.toString()?.toIntOrNull()
-                    if (spaceValue != null) {
-                        setSpace(spaceValue)
+                converter.apply {
+                    spaceMeterEditText.doOnTextChanged { text, _, _, _ ->
+                        updateValue(text, spaceFootEditText, ::squareMeterToSquareFoot, ::setSpace)
+                    }
+                    spaceFootEditText.doOnTextChanged { text, _, _, _ ->
+                        updateValue(text, spaceMeterEditText, ::squareFeetToSquareMeters)
                     }
                 }
+
             }
         }
 
@@ -96,7 +99,9 @@ class DetailsStepFragment : FragmentStep() {
     }
 
     override fun onNextClicked(viewPager: ViewPager2) {
-        (requireActivity() as AddPostActivity).post.details = viewModel.getFinalDetails()
+        val details = viewModel.getResult()
+        Log.i(TAG, "details: $details")
+        (requireActivity() as AddPostActivity).post.details = details
         viewPager.currentItem++
     }
 
@@ -108,5 +113,28 @@ class DetailsStepFragment : FragmentStep() {
         super.onResume()
         val lastState = viewModel.validationLiveData.value!!
         (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(lastState)
+    }
+
+    private fun updateValue(
+        sourceText: CharSequence?,
+        targetInput: TextInputEditText,
+        converter: (Double) -> Double,
+        setLiveData: ((Number?) -> Unit)? = null
+    ) {
+        if (!isConverting) {
+            isConverting = true
+
+            val inputValue = sourceText.toString().toDoubleOrNull()
+            setLiveData?.invoke(inputValue)
+
+            if (inputValue != null) {
+                val convertedValue = converter(inputValue)
+                targetInput.setText(formatDecimal(convertedValue))
+            } else {
+                targetInput.setText("")
+            }
+
+            isConverting = false
+        }
     }
 }

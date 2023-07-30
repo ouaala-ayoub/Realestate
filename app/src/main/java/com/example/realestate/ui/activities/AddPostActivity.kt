@@ -33,7 +33,7 @@ class AddPostActivity : AppCompatActivity() {
             DetailsStepFragment(),
             StepThreeFragment()
         )
-    
+
     private val fragmentsAdapter: FragmentsAdapter by lazy {
         FragmentsAdapter(this, fragmentsList)
     }

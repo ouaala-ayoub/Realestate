@@ -6,7 +6,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
@@ -14,28 +17,17 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.SearchParams
-import com.example.realestate.data.remote.network.Retrofit
-import com.example.realestate.data.repositories.PostsRepository
-import com.example.realestate.data.repositories.StaticDataRepository
-import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.ActivityMainBinding
-import com.example.realestate.ui.viewmodels.HomeViewModel
-import com.example.realestate.utils.ActivityResultListener
-import com.example.realestate.utils.SelectionResult
-import com.example.realestate.utils.SessionCookie
-import com.example.realestate.utils.startActivityResult
+import com.example.realestate.utils.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 class MainActivity : AppCompatActivity(), ActivityResultListener {
-
-    init {
-
-    }
 
     companion object {
         private const val TAG = "MainActivity"
@@ -45,6 +37,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     private lateinit var resultListener: ActivityResultListener
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
+    private lateinit var profileImage: ImageView
     lateinit var bottomNavView: BottomNavigationView
     private val searchLauncher = startActivityResult(
         object : SelectionResult {
@@ -69,6 +62,68 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
         }
     )
+    private val phoneVerificationLauncher = startActivityResult(object : SelectionResult {
+        override fun onResultOk(data: Intent) {
+            val phoneVerified = data.getBooleanExtra("phone_verified", false)
+            Log.i(TAG, "phoneVerified: $phoneVerified")
+
+            if (phoneVerified) {
+                findNavController(R.id.fragment_container).navigate(R.id.addPostActivity)
+            } else {
+                toast("phone required", Toast.LENGTH_SHORT)
+            }
+        }
+
+        override fun onResultFailed() {
+            Log.d(TAG, "onResultFailed()")
+            toast("phone required", Toast.LENGTH_SHORT)
+        }
+
+    })
+    private val registerForLikesLauncher = registerAnd(object : SelectionResult {
+        override fun onResultOk(data: Intent) {
+            findNavController(R.id.fragment_container).navigate(R.id.likedFragment)
+        }
+
+        override fun onResultFailed() {}
+
+    })
+    private val registerForPostAddLauncher = registerAnd(object : SelectionResult {
+        override fun onResultOk(data: Intent) {
+            val shouldCheckPhone = FirebaseAuth.getInstance().currentUser?.phoneNumber == null
+            if (shouldCheckPhone) {
+                launchPhoneAddProcess()
+            } else {
+                findNavController(R.id.fragment_container).navigate(R.id.addPostActivity)
+            }
+
+        }
+
+        override fun onResultFailed() {}
+
+    })
+
+    private fun registerAnd(selectionResult: SelectionResult) =
+        startActivityResult(object : SelectionResult {
+            override fun onResultOk(data: Intent) {
+                val registerSuccess = data.getBooleanExtra("register_success", false)
+
+                Log.i(TAG, "registerSuccess: $registerSuccess")
+
+
+                if (registerSuccess) {
+                    selectionResult.onResultOk(data)
+                } else {
+                    toast("please register first", Toast.LENGTH_SHORT)
+                }
+            }
+
+            override fun onResultFailed() {
+                Log.d(TAG, "onResultFailed()")
+                toast("please register first", Toast.LENGTH_SHORT)
+            }
+
+        })
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -78,8 +133,8 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         drawerLayout = binding.drawerLayout
         bottomNavView = binding.bottomNav
-
-        supportActionBar
+        val view = binding.navView.getHeaderView(0)
+        profileImage = view.findViewById(R.id.user_image)
 
         initialiseDrawerLayout(drawerLayout)
         setTheBottomNav()
@@ -130,7 +185,6 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
         binding.bottomNav.setupWithNavController(navController)
 
-
         binding.bottomNav.setOnItemSelectedListener { menuItem ->
             val userConnected = CurrentUser.isConnected()
 //            val userConnected = true
@@ -141,10 +195,17 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                     //to change
                     if (userConnected) {
                         // User is connected, open PostAddActivity
-                        navController.navigate(R.id.addPostActivity)
+                        val hasPhoneNumber =
+                            FirebaseAuth.getInstance().currentUser?.phoneNumber != null
+                        if (hasPhoneNumber) {
+                            navController.navigate(R.id.addPostActivity)
+                        } else {
+                            launchPhoneAddProcess()
+                        }
+
                     } else {
                         // User is not connected, open UserRegisterActivity
-                        navController.navigate(R.id.userRegisterActivity)
+                        launchRegisterProcess(registerForPostAddLauncher)
                     }
                 }
                 R.id.likedFragment -> {
@@ -152,14 +213,15 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                         // User is connected, open savedFragment
 //                        navController.navigate(R.id.likedFragment)
                         if (currentDestination?.id != R.id.likedFragment) {
-                            val fragmentInBackStack = navController.popBackStack(R.id.likedFragment, false)
+                            val fragmentInBackStack =
+                                navController.popBackStack(R.id.likedFragment, false)
                             if (!fragmentInBackStack) {
                                 navController.navigate(R.id.likedFragment)
                             }
                         }
                     } else {
                         // User is not connected, open UserRegisterActivity
-                        navController.navigate(R.id.userRegisterActivity)
+                        launchRegisterProcess(registerForLikesLauncher)
                     }
                 }
                 R.id.homeFragment -> {
@@ -176,6 +238,13 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
             }
             true
         }
+    }
+
+    private fun launchRegisterProcess(
+        registerLauncher: ActivityResultLauncher<Intent>
+    ) {
+        val addPhoneIntent = Intent(this, UserRegisterActivity::class.java)
+        registerLauncher.launch(addPhoneIntent)
     }
 
     override fun onResume() {
@@ -200,19 +269,27 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         toggle.syncState()
 
         val view = binding.navView.getHeaderView(0)
+        val emailTv = view.findViewById<TextView>(R.id.user_email)
+        val imageView = view.findViewById<ImageView>(R.id.user_image)
         val phoneTv = view.findViewById<TextView>(R.id.user_phone)
 
-        handleUser(FirebaseAuth.getInstance().currentUser, phoneTv)
+        handleUser(FirebaseAuth.getInstance().currentUser, emailTv, imageView, phoneTv)
         FirebaseAuth.getInstance().currentUser
 
         FirebaseAuth.getInstance().addAuthStateListener { auth ->
-            handleUser(auth.currentUser, phoneTv)
+            handleUser(auth.currentUser, emailTv, imageView, phoneTv)
         }
 
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.logout -> {
                     logout()
+                }
+                R.id.instagram -> {
+                    //TODO
+                }
+                R.id.email -> {
+                    //TODO
                 }
             }
             true
@@ -221,12 +298,22 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    private fun handleUser(user: FirebaseUser?, phoneTv: TextView) {
-        Log.d(TAG, "handleUser user ${user?.phoneNumber}")
+    private fun handleUser(
+        user: FirebaseUser?,
+        emailTv: TextView,
+        imageView: ImageView,
+        phoneTv: TextView
+    ) {
+
         if (user != null) {
-            phoneTv.text = user.email
+            //TODO fix this bug where email is deleted after sign with phone
+
+            emailTv.text = user.email
+            phoneTv.defineField(user.phoneNumber, this)
+
         } else {
-            phoneTv.text = getString(R.string.no_user)
+            emailTv.text = getString(R.string.no_user)
+            phoneTv.text = "_"
         }
     }
 
@@ -254,6 +341,28 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         FirebaseAuth.getInstance().signOut()
         SessionCookie.prefs.delete()
         CurrentUser.prefs.delete()
+    }
+
+    private fun launchPhoneAddProcess() {
+        val addPhoneIntent = Intent(this, PhoneAddActivity::class.java)
+        phoneVerificationLauncher.launch(addPhoneIntent)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        Glide.with(this).clear(profileImage)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        val uri = FirebaseAuth.getInstance().currentUser?.photoUrl
+        if (uri != null) {
+            profileImage.loadImageUri(uri)
+        } else {
+            profileImage.setImageResource(R.drawable.baseline_person_24)
+        }
     }
 
 }

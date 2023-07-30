@@ -7,5 +7,8 @@ class StaticDataRepository(private val retrofitService: RetrofitService) {
 
     fun getReportReasons() = retrofitService.getReportReasons()
 
-//    fun get
+    fun getAllCities() = retrofitService.getAllCities()
+
+    fun getCountries() = retrofitService.getAllCountries()
+
 }

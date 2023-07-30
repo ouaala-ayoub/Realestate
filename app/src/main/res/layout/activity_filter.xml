@@ -38,6 +38,7 @@
                 android:id="@+id/chips"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -85,11 +86,94 @@
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                app:drawableStartCompat="@drawable/baseline_location_on_24"
+                app:drawableTint="@color/yellow"
+                android:text="@string/location_tv"
+                android:textColor="@color/yellow"
+                android:textSize="16sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/countryTextField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:enabled="false"
+                android:hint="@string/country">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/countryEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:lines="1"
+                    android:textStyle="bold" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/cityTextField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:enabled="false"
+                android:hint="@string/city"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/cityEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:lines="1"
+                    android:textStyle="bold" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/areaTextField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:enabled="false"
+                android:hint="@string/street"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/areaEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:lines="1"
+                    android:textStyle="bold" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:text="@string/type"
+                android:textColor="@color/yellow"
+                android:textSize="16sp" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/categoryTextField"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:enabled="false"
                 android:hint="@string/proprety_type">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -100,6 +184,71 @@
                     android:lines="1"
                     android:textStyle="bold" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/extras_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/extras"
+                android:textColor="@color/yellow"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+<!--            TODO fix the style-->
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/extras_chip_grp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:singleSelection="false">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/furnished"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/YellowChipStyle"
+                    android:text="@string/is_furnished" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/balcony"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/YellowChipStyle"
+                    android:text="@string/has_balcony" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/new_property"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/YellowChipStyle"
+                    android:text="@string/is_new" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/gym"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/YellowChipStyle"
+                    android:text="@string/has_gym" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/swimming_pool"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/YellowChipStyle"
+                    android:text="@string/has_swimming_pool" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/parking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/YellowChipStyle"
+                    android:text="@string/has_parking" />
+
+
+            </com.google.android.material.chip.ChipGroup>
 
         </LinearLayout>
 

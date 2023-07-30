@@ -9,3 +9,8 @@ data class AdditionalInfo(
     @SerializedName("communicationMethod")
     val commMethod: String
 )
+
+data class PhoneNumber(
+    @SerializedName("phone")
+    val phone: String,
+)

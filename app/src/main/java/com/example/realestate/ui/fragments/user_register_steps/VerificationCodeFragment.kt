@@ -1,5 +1,7 @@
 package com.example.realestate.ui.fragments.user_register_steps
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,12 +14,14 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.realestate.R
+import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.FragmentVerificationCodeBinding
 import com.example.realestate.ui.viewmodels.userregistermodels.VerificationCodeModel
 import com.example.realestate.utils.Task
 import com.example.realestate.utils.disableBackButton
+import com.example.realestate.utils.doOnFail
 import com.example.realestate.utils.toast
 import com.fraggjkee.smsconfirmationview.SmsConfirmationView
 import com.google.firebase.auth.FirebaseUser
@@ -66,13 +70,6 @@ class VerificationCodeFragment : Fragment() {
                     setVerificationCode(code)
                 }
 
-            isLoading.observe(viewLifecycleOwner) { loading ->
-                binding.verifyProgressBar.isVisible = loading
-                updateUi(loading)
-            }
-            isValid.observe(viewLifecycleOwner) { dataValid ->
-                binding.verify.isEnabled = dataValid
-            }
 
         }
 
@@ -87,24 +84,40 @@ class VerificationCodeFragment : Fragment() {
                 credential,
                 object : Task {
                     override fun onSuccess(user: FirebaseUser?) {
-                        user?.getIdToken(false)?.addOnCompleteListener {
-                            val tokenId = it.result.token
-                            if (tokenId != null) {
-                                Log.d(TAG, "tokenId: $tokenId")
-                                verificationModel.login(tokenId)
-                                verificationModel.userId.observe(viewLifecycleOwner) { userId ->
-                                    Log.d(TAG, "userId: $userId")
-                                    if (userId != null) {
-                                        goToAddData(userId.id, tokenId)
-                                    } else {
-                                        onFail(getString(R.string.error))
-                                    }
-                                }
-                            } else {
-                                onFail(getString(R.string.wrong_code))
-                            }
 
+                        val userId = CurrentUser.prefs.get()
+                        if (userId != null) {
+                            val phoneNumber = user?.phoneNumber
+                            Log.d(TAG, "phoneNumber: $phoneNumber")
+                            if (phoneNumber != null) {
+                                verificationModel.addNumber(userId, phoneNumber)
+                            } else {
+                                onFail(getString(R.string.error))
+                            }
+                        } else {
+                            onFail(getString(R.string.error))
                         }
+
+//                        user?.getIdToken(false)?.addOnCompleteListener {
+//                            val tokenId = it.result.token
+//                            if (tokenId != null) {
+//                                val userId = CurrentUser.prefs.get()
+//                                if (userId != null) {
+////                                    goToAddData(userId, tokenId)
+//                                    val phoneNumber = user.phoneNumber
+//                                    if (phoneNumber != null) {
+//                                        verificationModel.addNumber(userId, phoneNumber)
+//                                    } else {
+//                                        onFail(getString(R.string.error))
+//                                    }
+//                                } else {
+//                                    onFail(getString(R.string.error))
+//                                }
+//                            } else {
+//                                onFail(getString(R.string.wrong_code))
+//                            }
+//
+//                        }
                     }
 
                     override fun onFail(e: Exception?) {
@@ -117,6 +130,28 @@ class VerificationCodeFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        verificationModel.apply {
+            isLoading.observe(viewLifecycleOwner) { loading ->
+                binding.verifyProgressBar.isVisible = loading
+                updateUi(loading)
+            }
+
+            isValid.observe(viewLifecycleOwner) { dataValid ->
+                binding.verify.isEnabled = dataValid
+            }
+
+            messageResponse.observe(viewLifecycleOwner) { message ->
+                if (message != null) {
+                    finishActivity()
+                } else {
+                    requireActivity().doOnFail()
+                }
+            }
+        }
+    }
 
     private fun onFail(message: String) {
         requireContext().toast(message, Toast.LENGTH_SHORT)
@@ -147,6 +182,16 @@ class VerificationCodeFragment : Fragment() {
     override fun onStop() {
         super.onStop()
 //        smsVerifyCatcher.onStop()
+    }
+
+    private fun finishActivity() {
+        val resultIntent = requireActivity().intent
+        resultIntent.putExtra(
+            "phone_verified",
+            true
+        ) // Optionally, pass any data back to the AddPostActivity
+        requireActivity().setResult(Activity.RESULT_OK, resultIntent)
+        requireActivity().finish()
     }
 
 }

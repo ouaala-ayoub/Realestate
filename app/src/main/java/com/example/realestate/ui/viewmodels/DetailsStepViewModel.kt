@@ -13,7 +13,16 @@ class DetailsStepViewModel : ViewModel() {
         private const val TAG = "DetailsStepViewModel"
     }
 
-    private val _buildingAge = MutableLiveData<String>()
+    val mapOfFunctions = mapOf(
+        Pair("Furnished", ::setIsFurnished),
+        Pair("Balcony", ::setHasBalcony),
+        Pair("New Property", ::setIsNew),
+        Pair("Gym", ::setHasGym),
+        Pair("Swimming Pool", ::setHasSwimmingPool),
+        Pair("Parking", ::setHasParking),
+    )
+    var detailsMap = mutableMapOf<String, Any>()
+    private val _proprietyState = MutableLiveData<String>()
     private val _isFurnished = MutableLiveData(false)
     private val _hasBalcony = MutableLiveData(false)
     private val _isNew = MutableLiveData(false)
@@ -22,7 +31,7 @@ class DetailsStepViewModel : ViewModel() {
     private val _hasParking = MutableLiveData(false)
     private val _numberOfBedrooms = MutableLiveData<String>()
     private val _floorNumber = MutableLiveData<String>()
-    private val _space = MutableLiveData<Number>()
+    private val _space = MutableLiveData<Number?>()
     // MediatorLiveData to observe changes in the above LiveData objects
 
     private val _validationLiveData = MediatorLiveData<Boolean>()
@@ -31,7 +40,7 @@ class DetailsStepViewModel : ViewModel() {
     init {
         // Add sources to MediatorLiveData
         _validationLiveData.apply {
-            addSource(_buildingAge) { validateForm() }
+            addSource(_proprietyState) { validateForm() }
             addSource(_isFurnished) { validateForm() }
             addSource(_hasBalcony) { validateForm() }
             addSource(_isNew) { validateForm() }
@@ -47,7 +56,7 @@ class DetailsStepViewModel : ViewModel() {
     // Validation function
     private fun validateForm() {
         val isValid = validateFields(
-            _buildingAge.value,
+            _proprietyState.value,
             _isFurnished.value,
             _hasBalcony.value,
             _isNew.value,
@@ -63,7 +72,7 @@ class DetailsStepViewModel : ViewModel() {
 
     // Validation logic (customize this based on your requirements)
     private fun validateFields(
-        buildingAge: String?,
+        proprietyState: String?,
         isFurnished: Boolean?,
         hasBalcony: Boolean?,
         isNew: Boolean?,
@@ -74,14 +83,15 @@ class DetailsStepViewModel : ViewModel() {
         floorNumber: String?,
         space: Number?
     ): Boolean {
+        //TODO
         // Perform your validation logic here
         // For example, check if required fields are not empty, and any other specific validations
         return true
     }
 
     // Methods to update LiveData values
-    fun setBuildingAge(age: String) {
-        _buildingAge.value = age
+    fun setProprietyState(state: String) {
+        _proprietyState.value = state
     }
 
     fun setIsFurnished(furnished: Boolean) {
@@ -116,23 +126,22 @@ class DetailsStepViewModel : ViewModel() {
         _floorNumber.value = floorNumber
     }
 
-    fun setSpace(space: Number) {
+    fun setSpace(space: Number?) {
         _space.value = space
     }
 
-    fun getFinalDetails(): Details {
-        return Details(
-            _buildingAge.value.toString(),
-            _isFurnished.value!!,
-            _hasBalcony.value!!,
-            _isNew.value!!,
-            _hasGym.value!!,
-            _hasSwimmingPool.value!!,
-            _hasParking.value!!,
-            _numberOfBedrooms.value.toString(),
-            _floorNumber.value.toString(),
-            _space.value!!
-        )
+    fun getResult(): Map<String, Any> {
+        val result = mutableMapOf<String, Any>()
+        result["isFurnished"] = _isFurnished.value!!
+        result["hasBalcony"] = _hasBalcony.value!!
+        result["isNewProperty"] = _isNew.value!!
+        result["hasGym"] = _hasGym.value!!
+        result["hasSwimmingPool"] = _hasSwimmingPool.value!!
+        result["hasParking"] = _hasParking.value!!
+        result["propertyCondition"] = _proprietyState.value.toString()
+        result["numberOfBedrooms"] = _numberOfBedrooms.value.toString()
+        result["floorNumber"] = _floorNumber.value.toString()
+        result["space"] = _space.value.toString()
+        return result.filterValues { value -> value != false }
     }
-
 }

@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class LocationData(
     @SerializedName("country")
-    var country: String? = null,
+    var country: CountriesDataItem? = null,
 
     @SerializedName("city")
     var city: String? = null,

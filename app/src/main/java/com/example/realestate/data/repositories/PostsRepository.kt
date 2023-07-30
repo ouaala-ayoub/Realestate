@@ -7,7 +7,7 @@ import com.example.realestate.data.remote.network.RetrofitService
 class PostsRepository(private val retrofit: RetrofitService) {
     fun getPosts(searchParams: SearchParams) = retrofit.getPosts(
         title = searchParams.title,
-        country = searchParams.location?.country,
+        country = searchParams.location?.country?.name,
         price = searchParams.price,
         category = searchParams.category,
         type = searchParams.type,
@@ -17,7 +17,5 @@ class PostsRepository(private val retrofit: RetrofitService) {
     fun addPost(post: PostWithoutId) = retrofit.addPost(post)
 
     fun getPostById(postId: String) = retrofit.getPostById(postId)
-    fun getAllCities() = retrofit.getAllCities()
 
-    fun getCountries() = retrofit.getAllCountries()
 }

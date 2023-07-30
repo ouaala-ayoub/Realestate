@@ -9,20 +9,24 @@ import com.example.realestate.data.models.CountriesData
 import com.example.realestate.data.models.MessageResponse
 import com.example.realestate.data.models.PostWithoutId
 import com.example.realestate.data.repositories.PostsRepository
+import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.utils.handleApiRequest
 
-class StepThreeModel(private val repository: PostsRepository) : ViewModel() {
+class StepThreeModel(
+    private val repository: PostsRepository,
+    private val staticDataRepository: StaticDataRepository
+) : ViewModel() {
 
     companion object {
         private const val TAG = "StepThreeModel"
     }
 
     fun getAllCities() {
-        handleApiRequest(repository.getAllCities(), _loading, _cities, TAG)
+        handleApiRequest(staticDataRepository.getAllCities(), _loading, _cities, TAG)
     }
 
     fun getCountries() {
-        handleApiRequest(repository.getCountries(), _loading, _countries, TAG)
+        handleApiRequest(staticDataRepository.getCountries(), _loading, _countries, TAG)
     }
 
     //request related live data

@@ -5,13 +5,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.activity.ComponentActivity
@@ -113,11 +113,45 @@ interface AdditionalCode<T> {
     fun onFailure()
 }
 
+fun AutoCompleteTextView.hideKeyboard() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(windowToken, 0)
+}
+
 fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
     val tmp = this[index1]
     this[index1] = this[index2]
     this[index2] = tmp
 }
+
+fun List<String>.capitalizeFirstLetter(): List<String> {
+    return map { str ->
+        str.upperFirstLetter()
+    }
+}
+
+fun List<String>.lowerFirstLetter(): List<String> {
+    return map { str ->
+        str.lowerFirstLetter()
+    }
+}
+
+fun String.lowerFirstLetter(): String {
+    return if (isNotEmpty()) {
+        substring(0, 1).lowercase(Locale.US) + substring(1)
+    } else {
+        this// If the string is empty, return it as is
+    }
+}
+
+fun String.upperFirstLetter(): String {
+    return if (isNotEmpty()) {
+        substring(0, 1).uppercase(Locale.US) + substring(1)
+    } else {
+        this// If the string is empty, return it as is
+    }
+}
+
 
 fun Intent.getContentAsList(): List<Uri> {
     val data = this
@@ -527,7 +561,7 @@ fun MaterialAutoCompleteTextView.setUpAndHandleSearch(
         }
 
         override fun afterTextChanged(s: Editable?) {
-            onSelected?.onSelected(s.toString())
+            onSelected?.onSelected(s)
             adapter.filter.filter(s)
         }
     })
@@ -565,32 +599,32 @@ inline fun <reified T> goToActivity(context: Context) {
     context.startActivity(intent)
 }
 
-fun Spinner.setWithList(items: List<String>, onSelected: OnSelected) {
-    val spinnerAdapter =
-        ArrayAdapter(context, android.R.layout.simple_spinner_item, items)
-    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-    onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(
-            parent: AdapterView<*>?,
-            view: View?,
-            position: Int,
-            id: Long
-        ) {
-            val selectedItem = items[position]
-            // Do something with the selected item
-            onSelected.onSelected(selectedItem)
-        }
-
-        override fun onNothingSelected(parent: AdapterView<*>?) {
-            // Handle case when no item is selected
-        }
-    }
-    adapter = spinnerAdapter
-}
+//fun Spinner.setWithList(items: List<String>, onSelected: OnSelected) {
+//    val spinnerAdapter =
+//        ArrayAdapter(context, android.R.layout.simple_spinner_item, items)
+//    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//
+//    onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+//        override fun onItemSelected(
+//            parent: AdapterView<*>?,
+//            view: View?,
+//            position: Int,
+//            id: Long
+//        ) {
+//            val selectedItem = items[position]
+//            // Do something with the selected item
+//            onSelected.onSelected(selectedItem)
+//        }
+//
+//        override fun onNothingSelected(parent: AdapterView<*>?) {
+//            // Handle case when no item is selected
+//        }
+//    }
+//    adapter = spinnerAdapter
+//}
 
 interface OnSelected {
-    fun onSelected(selectedItem: String)
+    fun onSelected(selectedItem: Editable?)
 }
 
 fun Context.getType(uri: Uri): String? {
@@ -649,8 +683,18 @@ fun getMediaType(url: String, TAG: String): MediaType {
 }
 
 fun TextView.defineField(value: String?, context: Context, fillWith: String? = null) {
-    text = value
-        ?: (fillWith ?: context.getString(R.string.no_defined))
+    text = if (value.isNullOrEmpty()) {
+        fillWith ?: context.getString(R.string.no_defined)
+    } else {
+        value
+    }
+}
+
+
+fun squareMeterToSquareFoot(meter: Double) = meter * 10.7633911105
+fun squareFeetToSquareMeters(squareFeet: Double) = squareFeet * 0.092903
+fun formatDecimal(value: Double): String {
+    return String.format(Locale.US, "%.3f", value)
 }
 
 fun ChipGroup.initialiseCategoryChip(category: String?, TAG: String) {

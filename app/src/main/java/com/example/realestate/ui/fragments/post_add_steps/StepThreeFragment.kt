@@ -19,6 +19,7 @@ import com.example.realestate.R
 import com.example.realestate.data.models.*
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
+import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.FragmentStepThreeBinding
 import com.example.realestate.ui.activities.AddPostActivity
 import com.example.realestate.ui.viewmodels.postaddmodels.StepThreeModel
@@ -37,7 +38,8 @@ class StepThreeFragment : FragmentStep() {
     private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val stepThreeModel: StepThreeModel by lazy {
-        StepThreeModel(PostsRepository(Retrofit.getInstance())).also {
+        val retrofit = Retrofit.getInstance()
+        StepThreeModel(PostsRepository(retrofit), StaticDataRepository(retrofit)).also {
             it.apply {
                 getCountries()
                 getAllCities()
@@ -125,7 +127,7 @@ class StepThreeFragment : FragmentStep() {
                     (requireActivity() as AddPostActivity).post.apply {
                         if (CurrentUser.isConnected()) {
                             stepThreeModel.apply {
-                                val l = LocationData(
+                                val l = PostLocationData(
                                     country = countryLiveData.value.toString()
                                 )
 
@@ -263,7 +265,7 @@ class StepThreeFragment : FragmentStep() {
 
                     countries?.apply {
                         countryEditText.apply {
-                            val names = map { data -> data.name }
+                            val names = map { data -> data.name?:"____" }
                             val adapter = setUpAndHandleSearch(names)
                             setOnItemClickListener { _, view, _, _ ->
                                 val text = (view as TextView).text

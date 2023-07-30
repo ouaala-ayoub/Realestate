@@ -67,6 +67,9 @@ interface RetrofitService {
     @PUT("users/{id}")
     fun addData(@Path("id") userId: String, @Body dataToAdd: AdditionalInfo): Call<MessageResponse>
 
+    @PUT("users/{id}")
+    fun addPhoneNumber(@Path("id") userId: String, @Body dataToAdd: PhoneNumber): Call<MessageResponse>
+
     @POST("login")
     fun login(@Header("Authorization") token: String): Call<UserId>
 

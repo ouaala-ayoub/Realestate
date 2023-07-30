@@ -1,6 +1,8 @@
 package com.example.realestate.data.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class PostWithoutId(
 
@@ -17,13 +19,13 @@ data class PostWithoutId(
     var price: Number,
 
     @SerializedName("location")
-    var location: LocationData,
+    var location: PostLocationData,
 
     @SerializedName("category")
     var category: String,
 
     @SerializedName("details")
-    var details: Details? = null
+    var details: Map<String, Any>? = null
 ) {
     companion object {
         val emptyPost = PostWithoutId(
@@ -31,7 +33,7 @@ data class PostWithoutId(
             price = 0,
             category = "",
             media = listOf(),
-            location = LocationData(
+            location = PostLocationData(
                 "",
                 ""
             )
@@ -39,3 +41,14 @@ data class PostWithoutId(
     }
 }
 
+@Parcelize
+data class PostLocationData(
+    @SerializedName("country")
+    var country: String? = null,
+
+    @SerializedName("city")
+    var city: String? = null,
+
+    @SerializedName("area")
+    var area: String? = null
+) : Parcelable

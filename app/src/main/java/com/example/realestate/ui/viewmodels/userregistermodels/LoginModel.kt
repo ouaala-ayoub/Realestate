@@ -14,6 +14,7 @@ import com.example.realestate.utils.handleApiRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.UserProfileChangeRequest
 import retrofit2.Response
 
 open class LoginModel(private val repository: UsersRepository) : ViewModel() {
@@ -29,34 +30,54 @@ open class LoginModel(private val repository: UsersRepository) : ViewModel() {
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
+
+    fun addPhoneToUser(){
+
+    }
     fun signInWithPhoneAuthCredential(
         activity: Activity,
         credential: PhoneAuthCredential,
         myTask: Task
     ) {
         _isLoading.postValue(true)
-        FirebaseAuth.getInstance().signInWithCredential(credential)
+        FirebaseAuth.getInstance().currentUser!!.linkWithCredential(credential)
             .addOnCompleteListener(activity) { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
-
+                    Log.d(TAG, "linkWithCredential:success")
                     val user = task.result?.user
-                    myTask.onSuccess(user)
 
-                    Log.d(TAG, "signInWithCredential:${user?.phoneNumber}")
+                    myTask.onSuccess(user)
                 } else {
-                    // Sign in failed, display a message and update the UI
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
+                    Log.w(TAG, "linkWithCredential:failure", task.exception)
                     val e = task.exception
                     myTask.onFail(e)
-                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                        // The verification code entered was invalid
-                    }
-                    // Update UI
                 }
                 _isLoading.postValue(false)
             }
+
+//        _isLoading.postValue(true)
+//        FirebaseAuth.getInstance().signInWithCredential(credential)
+//            .addOnCompleteListener(activity) { task ->
+//                if (task.isSuccessful) {
+//                    // Sign in success, update UI with the signed-in user's information
+//                    Log.d(TAG, "signInWithCredential:success")
+//
+//                    val user = task.result?.user
+//                    myTask.onSuccess(user)
+//
+//                    Log.d(TAG, "signInWithCredential:${user?.phoneNumber}")
+//                } else {
+//                    // Sign in failed, display a message and update the UI
+//                    Log.w(TAG, "signInWithCredential:failure", task.exception)
+//                    val e = task.exception
+//                    myTask.onFail(e)
+//                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+//                        // The verification code entered was invalid
+//                    }
+//                    // Update UI
+//                }
+//                _isLoading.postValue(false)
+//            }
     }
 
     fun login(token: String) {

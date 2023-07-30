@@ -20,7 +20,7 @@ data class Post(
     var price: Number,
 
     @SerializedName("location")
-    var location: LocationData,
+    var location: PostLocationData,
 
     @SerializedName("ownerId")
     var ownerId: String,

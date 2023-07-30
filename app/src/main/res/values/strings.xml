@@ -53,7 +53,7 @@
     <string name="title">Title</string>
     <string name="category">Select a Category</string>
     <string name="obligatory">Obligatory</string>
-    <string name="price_et">Price</string>
+    <string name="price_et">Price (USD $)</string>
     <string name="usd">USD</string>
     <string name="eu">EU</string>
     <string name="currency">Currency</string>
@@ -123,7 +123,7 @@
     <string name="building_age">Building Age</string>
     <string name="is_furnished">Furnished</string>
     <string name="has_balcony">Balcony</string>
-    <string name="is_new">New</string>
+    <string name="is_new">New Property</string>
     <string name="has_gym">Gym</string>
     <string name="has_swimming_pool">Swimming Pool</string>
     <string name="has_parking">Parking</string>
@@ -131,6 +131,18 @@
     <string name="floor_number">Floor Number</string>
     <string name="space">Space</string>
     <string name="max_string">Media selection limit exceeded</string>
+    <string name="property_condition">Property Condition</string>
+    <string name="luxury">luxury</string>
+    <string name="excellent">excellent</string>
+    <string name="good">good</string>
+    <string name="normal">normal</string>
+    <string name="extras">Extras</string>
+    <string name="location_tv">Location</string>
+    <string name="meter">m²</string>
+    <string name="foot">foot²</string>
+    <string name="zero">0</string>
+    <string name="instagram">Instagram</string>
+    <string name="email_us">Email us</string>
 
 
 </resources>

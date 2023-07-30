@@ -1,5 +1,7 @@
 package com.example.realestate.ui.fragments.user_register_steps
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -19,6 +21,7 @@ import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.FragmentAddInfoBinding
 import com.example.realestate.ui.viewmodels.userregistermodels.AddInfoModel
+import com.example.realestate.utils.doOnFail
 import com.example.realestate.utils.toast
 
 class AddInfoFragment : Fragment() {
@@ -92,24 +95,7 @@ class AddInfoFragment : Fragment() {
             }
 
             finish.apply {
-                addInfoModel.loading.observe(viewLifecycleOwner) { loading ->
-                    binding.progressBar2.isVisible = loading
-                    updateUi(loading)
-                }
-                addInfoModel.messageResponse.observe(viewLifecycleOwner) { message ->
-                    if (message != null) {
-                        Log.d(TAG, "message: ${message.message}")
-                        requireContext().toast(getString(R.string.success), Toast.LENGTH_SHORT)
-                        requireActivity().finish()
-                    } else {
-                        onFail()
-                    }
-                }
-                addInfoModel.isValid.observe(viewLifecycleOwner) { isValid ->
-                    Log.d(TAG, "isValid: $isValid")
-                    isEnabled = isValid
 
-                }
                 setOnClickListener {
                     val name = addInfoModel.name.value!!
                     val method = addInfoModel.commMethod.value!!
@@ -122,6 +108,34 @@ class AddInfoFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        addInfoModel.loading.observe(viewLifecycleOwner) { loading ->
+            binding.progressBar2.isVisible = loading
+            updateUi(loading)
+        }
+        addInfoModel.messageResponse.observe(viewLifecycleOwner) { message ->
+            Log.d(TAG, "message response: ${message?.message}")
+            if (message != null) {
+                finishActivity()
+            } else {
+                requireActivity().doOnFail()
+            }
+        }
+        addInfoModel.isValid.observe(viewLifecycleOwner) { isValid ->
+            Log.d(TAG, "isValid: $isValid")
+            binding.finish.isEnabled = isValid
+
+        }
+    }
+
+    private fun finishActivity() {
+        val intent = requireActivity().intent
+        intent.putExtra("register_success", true)
+        requireActivity().setResult(Activity.RESULT_OK, intent)
+        requireActivity().finish()
+    }
+
     private fun updateUi(loading: Boolean) {
         binding.apply {
             finish.isEnabled = !loading
@@ -130,10 +144,5 @@ class AddInfoFragment : Fragment() {
                 e.isEnabled = !loading
             }
         }
-    }
-
-    private fun onFail() {
-        requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
-        requireActivity().finish()
     }
 }

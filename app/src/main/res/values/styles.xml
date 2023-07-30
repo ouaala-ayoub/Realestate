@@ -13,6 +13,11 @@
         <item name="android:textColor">@color/text_color_state</item>
     </style>
 
+    <style name="YellowChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/dynamic_chip_color_state</item>
+        <item name="android:textColor">@color/text_color_state</item>
+    </style>
+
     <style name="MyActionBarTitleStyle" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/teal_700</item>
     </style>

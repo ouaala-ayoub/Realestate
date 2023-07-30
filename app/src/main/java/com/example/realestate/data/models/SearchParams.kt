@@ -11,4 +11,16 @@ data class SearchParams(
     var price: Number? = null,
     var location: LocationData? = LocationData(),
     var page: Number? = null
-) : Parcelable
+) : Parcelable {
+    fun setCountry(country: String?) {
+        location?.country = CountriesDataItem(name = country)
+    }
+
+    fun setCity(city: String?) {
+        location?.city = city
+    }
+
+    fun setArea(area: String?) {
+        location?.area = area
+    }
+}

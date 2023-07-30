@@ -9,67 +9,51 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="5dp">
+            android:layout_margin="10dp"
+            android:orientation="vertical">
 
             <!-- Building Age -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/buildingAgeInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
-                android:hint="@string/building_age">
+                android:text="@string/property_condition"
+                android:textColor="@color/yellow"
+                android:textSize="16sp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/buildingAgeEditText"
+            <RadioGroup
+                android:id="@+id/propriety_condition_rg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RadioButton
+                    android:id="@+id/lux"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:text="@string/luxury" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/isFurnishedCheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="@string/is_furnished" />
+                <RadioButton
+                    android:id="@+id/excellent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/excellent" />
 
-            <!-- Has Balcony CheckBox -->
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/hasBalconyCheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="@string/has_balcony" />
+                <RadioButton
+                    android:id="@+id/good"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/good" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/isNewCheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="@string/is_new" />
+                <RadioButton
+                    android:id="@+id/normal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/normal" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/hasGymCheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="@string/has_gym" />
-
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/hasSwimmingPoolCheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="@string/has_swimming_pool" />
-
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/hasParkingCheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="@string/has_parking" />
+            </RadioGroup>
 
             <!-- Number of Bedrooms -->
             <com.google.android.material.textfield.TextInputLayout
@@ -77,14 +61,14 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="10dp"
                 android:hint="@string/number_of_bedrooms">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/numberOfBedroomsEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
+                    android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Floor Number -->
@@ -93,32 +77,77 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="10dp"
                 android:hint="@string/floor_number">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/floorNumberEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Space -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/spaceInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:hint="@string/space">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/spaceEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Space -->
+            <include
+                android:id="@+id/converter"
+                layout="@layout/meter_to_foot_converter_layout"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/extras"
+                android:textColor="@color/yellow"
+                android:textSize="16sp" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/extras_details_chip_grp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/furnished"
+                    style="@style/YellowChipStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/is_furnished" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/balcony"
+                    style="@style/YellowChipStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/has_balcony" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/new_property"
+                    style="@style/YellowChipStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/is_new" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/gym"
+                    style="@style/YellowChipStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/has_gym" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/swimming_pool"
+                    style="@style/YellowChipStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/has_swimming_pool" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/parking"
+                    style="@style/YellowChipStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/has_parking" />
+
+            </com.google.android.material.chip.ChipGroup>
         </LinearLayout>
     </ScrollView>
 

@@ -7,20 +7,37 @@
     tools:context=".ui.fragments.user_register_steps.EmailVerificationFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/sign_in_google"
-        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="@string/fui_sign_in_with_google"
-        app:icon="@drawable/fui_ic_googleg_color_24dp"
-        app:iconPadding="5dp"
-        app:iconTint="@null"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="0.5">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="30dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/nicepng_email_symbol_png_9602830" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sign_in_google"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:text="@string/fui_sign_in_with_google"
+            app:icon="@drawable/fui_ic_googleg_color_24dp"
+            app:iconPadding="5dp"
+            app:iconTint="@null" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

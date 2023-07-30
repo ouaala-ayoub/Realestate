@@ -11,12 +11,15 @@ import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.children
+import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.realestate.R
+import com.example.realestate.data.models.CountriesDataItem
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.SearchParams
 import com.example.realestate.data.models.Type
@@ -26,6 +29,7 @@ import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.ChipVeilledBinding
 import com.example.realestate.databinding.FragmentHomeModifiedBinding
+import com.example.realestate.databinding.SingleCategoryChipBinding
 import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.adapters.PostsAdapter
 import com.example.realestate.ui.viewmodels.HomeViewModel
@@ -43,8 +47,12 @@ class HomeFragment : Fragment(), ActivityResultListener {
     }
 
     private var isUserClick = false
+    private var firstTime = true
     private var recyclerViewState: Parcelable? = null
     private lateinit var binding: FragmentHomeModifiedBinding
+    private lateinit var postsAdapter: PostsAdapter
+    private lateinit var searchParams: SearchParams
+    private var selectedChipId: Int = -1
     val viewModel: HomeViewModel by lazy {
         val retrofit = Retrofit.getInstance()
         HomeViewModel(
@@ -61,9 +69,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
             }
         }
     }
-    private lateinit var postsAdapter: PostsAdapter
-    private lateinit var searchParams: SearchParams
-    private var selectedChipId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,7 +106,11 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
         //initialise filter params
         searchParams = activity.params
-        searchParams.location?.country = binding.countryPicker.selectedCountryName
+        searchParams.location?.country =
+            CountriesDataItem(
+                name = binding.countryPicker.selectedCountryName,
+                code = binding.countryPicker.defaultCountryNameCode
+            )
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -135,7 +144,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
         binding.apply {
 
-
             selectedChipId = binding.all.id
             handleChips()
 
@@ -162,11 +170,12 @@ class HomeFragment : Fragment(), ActivityResultListener {
             //get the current country and send the request to get the posts of this country
             countryPicker.setOnCountryChangeListener {
                 // your code to handle selected country
-                countryPicker.selectedCountryName?.apply {
-                    val name = this
-                    searchParams.location?.country = name
+                countryPicker.selectedCountryName.apply {
+                    searchParams.location?.country?.name = this
                     viewModel.getPosts(searchParams, source = "countryPicker")
                 }
+                val code = countryPicker.selectedCountryNameCode
+                searchParams.location?.country?.code = code
             }
         }
 
@@ -313,10 +322,13 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    //TODO fix this bug where this function gets called without query change
-//                    viewModel.apply {
-//                        searchByQuery(newText, "onQueryTextChange")
-//                    }
+                    if (firstTime) {
+                        firstTime = false
+                    } else {
+                        viewModel.apply {
+                            searchByQuery(newText, "onQueryTextChange")
+                        }
+                    }
                     return false
                 }
 
@@ -334,11 +346,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
     }
 
 
-    private fun AutoCompleteTextView.hideKeyboard() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(windowToken, 0)
-    }
-
     private fun handleHomeButton() {
         (requireActivity() as MainActivity).bottomNavView.setOnItemReselectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -352,31 +359,13 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
     private fun ChipGroup.fillWith(categories: List<String>) {
 
-        for (category in categories) {
-            val chip = Chip(context)
-
-            //Initialise the drawable and the text color state
-            val textColorSelector =
-                ContextCompat.getColorStateList(context, R.color.text_color_state)
-            val chipDrawable = ChipDrawable.createFromAttributes(
-                context,
-                null,
-                0,
-                com.google.android.material.R.style.Widget_MaterialComponents_Chip_Choice
-            )
-            chipDrawable.setChipBackgroundColorResource(R.color.dynamic_chip_color_state)
-            chip.apply {
+        categories.forEach { category ->
+            val chipLayout = SingleCategoryChipBinding.inflate(layoutInflater, this, false)
+            chipLayout.chip.apply {
                 text = category
-                isCheckable = true
-                isCheckedIconVisible = false
-
-                //adding the text color selector
-                setTextColor(textColorSelector)
-
-                //adding the drawable
-                setChipDrawable(chipDrawable)
+                id = ViewCompat.generateViewId()
             }
-            addView(chip)
+            addView(chipLayout.root)
         }
     }
 
@@ -443,11 +432,24 @@ class HomeFragment : Fragment(), ActivityResultListener {
     override fun onResultOk(searchParams: SearchParams) {
         Log.d(TAG, "onResultOk params: $searchParams")
         this.searchParams = searchParams
-        initialiseTypeChips(this.searchParams.type)
+        initialiseTypeChips(searchParams.type)
 
-        binding.categoriesChipGroup.initialiseCategoryChip(this.searchParams.category, TAG)
+        binding.categoriesChipGroup.initialiseCategoryChip(searchParams.category, TAG)
+
+        initialiseCountryPicker(searchParams.location?.country)
 
         requestData(this.searchParams)
+    }
+
+    private fun initialiseCountryPicker(countryData: CountriesDataItem?) {
+        //TODO fix this shit
+        val code = countryData?.code
+        Log.i(TAG, "code: $code")
+        if (code == null) {
+            binding.countryPicker.setAutoDetectedCountry(false)
+        } else {
+            binding.countryPicker.setCountryForNameCode(code)
+        }
     }
 
     private fun requestData(params: SearchParams) {
