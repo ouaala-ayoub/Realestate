@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -24,6 +25,7 @@ import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.FragmentPostPageBinding
+import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.activities.UserRegisterActivity
 import com.example.realestate.ui.adapters.DetailsAdapter
 import com.example.realestate.ui.adapters.MediaPagerAdapter
@@ -31,6 +33,7 @@ import com.example.realestate.ui.viewmodels.PostPageModel
 import com.example.realestate.utils.*
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.material.snackbar.Snackbar
+import okhttp3.internal.readFieldOrNull
 
 
 class PostPageFragment : Fragment() {
@@ -42,6 +45,8 @@ class PostPageFragment : Fragment() {
     private lateinit var binding: FragmentPostPageBinding
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private lateinit var phoneNumber: String
+    private lateinit var loginLauncher: ActivityResultLauncher<Intent>
+    private lateinit var activity: MainActivity
     private val args: PostNavArgs by navArgs()
     private lateinit var imagesAdapter: MediaPagerAdapter
     private val exoPlayer: ExoPlayer by lazy {
@@ -62,7 +67,30 @@ class PostPageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         Log.d(TAG, "postId: $postId")
+
+        activity = requireActivity() as MainActivity
+        loginLauncher = startActivityResult(object : SelectionResult {
+            override fun onResultOk(data: Intent) {
+
+                val registerSuccess = data.getBooleanExtra("register_success", false)
+
+                Log.i(TAG, "registerSuccess: $registerSuccess")
+
+                if (registerSuccess) {
+                    navigateToReportFragment()
+                } else {
+                    requireContext().toast("please register first", Toast.LENGTH_SHORT)
+                }
+            }
+
+            override fun onResultFailed() {
+                requireContext().toast("please register first", Toast.LENGTH_SHORT)
+            }
+
+        })
+
         permissionLauncher = requestPermissionLauncher(object : PermissionResult {
             override fun onGranted() {
                 call(phoneNumber)
@@ -90,12 +118,12 @@ class PostPageFragment : Fragment() {
         binding = FragmentPostPageBinding.inflate(inflater, container, false)
 
         binding.reportButton.setOnClickListener {
-            val connected = CurrentUser.prefs.get() != null
 
-            if (connected) {
+            //TODO get activity for result instead of goToActivity
+            if (CurrentUser.isConnected() || CurrentUser.isUserIdStored()) {
                 navigateToReportFragment()
             } else {
-                goToActivity<UserRegisterActivity>(requireContext())
+                activity.launchRegisterProcess(loginLauncher)
             }
         }
         binding.detailsRv.apply {
@@ -111,60 +139,16 @@ class PostPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postPageModel.apply {
-            seller.observe(viewLifecycleOwner) { seller ->
-                binding.apply {
-                    if (seller != null) {
-                        val commMethod = seller.communicationMethod
-                        val all = CommunicationMethod.ALL.value
-                        val whatsapp = CommunicationMethod.WHATSAPP.value
-                        val callMe = CommunicationMethod.CALL.value
-
-                        ownerTextView.defineField(seller.name, requireContext())
-
-                        phoneNumber = seller.phone
-
-                        message.apply {
-                            isEnabled = commMethod == all || commMethod == whatsapp
-                            if (isEnabled) {
-                                message.setOnClickListener {
-                                    //whatsapp message
-                                    openWhatsapp(phoneNumber)
-                                }
-                            }
-                        }
-
-                        call.apply {
-                            isEnabled = commMethod == all || commMethod == callMe
-                            setOnClickListener {
-                                //directly call
-                                requireActivity().handlePermission(object : PermissionResult {
-                                    override fun onGranted() {
-                                        call(phoneNumber)
-                                    }
-
-                                    override fun onNonGranted() {
-                                        permissionLauncher.requestCallPermission()
-                                    }
-
-                                }, listOf(android.Manifest.permission.CALL_PHONE))
-
-                            }
-                        }
-                    } else {
-                        //TODO
-                    }
-                }
-            }
             post.observe(viewLifecycleOwner) { post ->
 
                 if (post != null) {
                     Log.d(TAG, "post: $post")
-                    //get the owner
-                    getUserById(post.ownerId)
 
+                    val contact = post.contact
+                    val owner = post.owner
                     //bind the data
                     binding.apply {
-                        imagePlaceholder.isVisible = false
+//                        imagePlaceholder.isVisible = false
                         priceTextView.defineField(
                             getString(R.string.price, post.price.toString()),
                             requireContext()
@@ -207,6 +191,42 @@ class PostPageFragment : Fragment() {
                             adapter = imagesAdapter
                             setPageTransformer(ZoomOutPageTransformer())
                         }
+
+                        //handle call button
+                        if (!contact.call.isNullOrEmpty()) {
+                            call.apply {
+                                isEnabled = true
+                                setOnClickListener {
+                                    //directly call
+                                    requireActivity().handlePermission(object : PermissionResult {
+                                        override fun onGranted() {
+                                            call(phoneNumber)
+                                        }
+
+                                        override fun onNonGranted() {
+                                            permissionLauncher.requestCallPermission()
+                                        }
+
+                                    }, listOf(android.Manifest.permission.CALL_PHONE))
+                                }
+                            }
+                        }
+
+                        //handle whatsapp button
+                        if (!contact.whatsapp.isNullOrEmpty()) {
+                            message.apply {
+                                isEnabled = true
+                                setOnClickListener {
+                                    openWhatsapp(contact.whatsapp!!)
+                                }
+                            }
+                        }
+
+                        owner?.apply {
+                            ownerImage.loadImage(image)
+                            ownerTv.defineField(name, requireContext(), getString(R.string.error))
+                        }
+
                     }
 
                 } else {
@@ -221,7 +241,7 @@ class PostPageFragment : Fragment() {
                     binding.scrollView.disableSkeletonLoading()
                 }
                 binding.postProgressBar.isVisible = loading
-                binding.imagePlaceholder.isVisible = loading
+//                binding.imagePlaceholder.isVisible = loading
             }
         }
     }

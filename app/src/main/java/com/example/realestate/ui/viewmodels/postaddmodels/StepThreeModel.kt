@@ -60,19 +60,9 @@ class StepThreeModel(
 
 
     val isDataValid = MediatorLiveData(false).apply {
-
-        addSource(_countryLiveData) { country ->
-            this.value = validateTheData(
-                country,
-                _cityLiveData.value
-            )
-        }
-        addSource(_cityLiveData) { city ->
-            this.value = validateTheData(
-                _countryLiveData.value,
-                city
-            )
-        }
+        addSource(_countryLiveData) { validateForm() }
+        addSource(_cityLiveData) { validateForm() }
+        addSource(_descriptionLiveData) { validateForm() }
     }
 
     val countryLiveData: LiveData<String>
@@ -101,12 +91,23 @@ class StepThreeModel(
     private fun validateTheData(
         country: String?,
         city: String?,
+        description: String?
     ): Boolean {
-        val isValidCountry = !country.isNullOrBlank()
-        val isValidCity = !city.isNullOrBlank()
+        val isValidCountry = !country.isNullOrEmpty()
+        val isValidCity = !city.isNullOrEmpty()
+        val isValidDescription = !description.isNullOrEmpty()
 
 //        return isValidType && isValidCountry && isValidCity
-        return isValidCountry && isValidCity
+        return isValidCountry && isValidCity && isValidDescription
+    }
+
+    private fun validateForm() {
+        val isValid = validateTheData(
+            _countryLiveData.value,
+            _cityLiveData.value,
+            _descriptionLiveData.value
+        )
+        isDataValid.value = isValid
     }
 
 }

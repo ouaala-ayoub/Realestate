@@ -15,3 +15,14 @@ data class LocationData(
     @SerializedName("area")
     var area: String? = null
 ) : Parcelable
+
+data class Location(
+    @SerializedName("country")
+    var country: String? = null,
+
+    @SerializedName("city")
+    var city: String? = null,
+
+    @SerializedName("area")
+    var area: String? = null
+)

@@ -21,6 +21,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="vertical">
 
             <!--            <com.hbb20.CountryCodePicker-->
@@ -47,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:hint="@string/country"
-                app:helperText="@string/obligatory"
+                app:helperText="@string/required"
                 app:helperTextTextColor="@color/red">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -66,9 +67,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:enabled="false"
                 android:hint="@string/city"
-                app:helperText="@string/obligatory"
+                app:helperText="@string/required"
                 app:helperTextTextColor="@color/red">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -87,7 +87,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:enabled="false"
                 android:hint="@string/street">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -100,23 +99,23 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/or"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+            <!--            <TextView-->
+            <!--                android:id="@+id/textView4"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:gravity="center"-->
+            <!--                android:text="@string/or"-->
+            <!--                android:textSize="16sp"-->
+            <!--                android:textStyle="bold" />-->
 
-            <Button
-                android:id="@+id/get_location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:text="@string/automatically_get_location"
-                app:icon="@drawable/baseline_location_on_24" />
+            <!--            <Button-->
+            <!--                android:id="@+id/get_location"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginTop="5dp"-->
+            <!--                android:layout_marginBottom="5dp"-->
+            <!--                android:text="@string/automatically_get_location"-->
+            <!--                app:icon="@drawable/baseline_location_on_24" />-->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/descriptionTextField"
@@ -124,7 +123,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:hint="@string/add_description">
+                android:hint="@string/add_description"
+                app:helperText="@string/required"
+                app:helperTextTextColor="@color/red">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/descriptionEditText"

@@ -197,7 +197,38 @@
                 android:textSize="16sp"
                 android:visibility="gone" />
 
-<!--            TODO fix the style-->
+            <RadioGroup
+                android:id="@+id/propriety_condition_rg"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RadioButton
+                    android:id="@+id/lux"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/luxury" />
+
+                <RadioButton
+                    android:id="@+id/excellent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/excellent" />
+
+                <RadioButton
+                    android:id="@+id/good"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/good" />
+
+                <RadioButton
+                    android:id="@+id/normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/normal" />
+
+            </RadioGroup>
+
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/extras_chip_grp"
                 android:layout_width="match_parent"

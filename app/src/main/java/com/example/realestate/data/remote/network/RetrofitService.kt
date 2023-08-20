@@ -1,7 +1,6 @@
 package com.example.realestate.data.remote.network
 
 import com.example.realestate.data.models.*
-import com.google.gson.annotations.SerializedName
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -43,13 +42,13 @@ interface RetrofitService {
         @Query("type") type: String? = null,
         @Query("n") filterByDate: String? = null,
         @Query("pg") page: String? = null
-    ): Call<MutableList<Post>>
+    ): Call<MutableList<PostWithOwnerId>>
 
     @POST("posts")
     fun addPost(@Body post: PostWithoutId): Call<MessageResponse>
 
     @GET("posts/{id}")
-    fun getPostById(@Path("id") postId: String): Call<Post>
+    fun getPostById(@Path("id") postId: String): Call<PostWithWholeOwner>
 
     @DELETE("posts/{id}")
     fun deletePost(@Path("id") postId: String): Call<IdResponse>
@@ -71,10 +70,10 @@ interface RetrofitService {
     fun addPhoneNumber(@Path("id") userId: String, @Body dataToAdd: PhoneNumber): Call<MessageResponse>
 
     @POST("login")
-    fun login(@Header("Authorization") token: String): Call<UserId>
+    fun login(@Header("Authorization") token: String): Call<User>
 
     @GET("users/{id}/likes")
-    fun getLikedPosts(@Path("id") userId: String): Call<List<Post>>
+    fun getLikedPosts(@Path("id") userId: String): Call<List<PostWithOwnerId>>
 
     @PATCH("posts/{id}/like")
     fun like(

@@ -61,8 +61,8 @@ class SmsSendFragment : Fragment() {
             //block back button when user send verification sms
             requireActivity().disableBackButton(viewLifecycleOwner)
 
-            val code = binding.countryCode.selectedCountryCodeWithPlus
-            val phone = binding.phoneEditText.text.toString()
+            val code = binding.phoneInput.countryCode.selectedCountryCodeWithPlus
+            val phone = binding.phoneInput.phoneEditText.text.toString()
             val phoneNumber = code + phone
 
             Log.d(TAG, "phoneNumber: $phoneNumber")
@@ -87,8 +87,8 @@ class SmsSendFragment : Fragment() {
     private fun updateUi(loading: Boolean) {
         binding.apply {
             send.isEnabled = !loading
-            countryCode.setCcpClickable(!loading)
-            phoneEditText.isEnabled = !loading
+            phoneInput.countryCode.setCcpClickable(!loading)
+            phoneInput.phoneEditText.isEnabled = !loading
         }
     }
 
@@ -116,10 +116,10 @@ class SmsSendFragment : Fragment() {
                     if (tokenId != null) {
                         Log.d(TAG, "tokenId: $tokenId")
                         smsSendModel.login(tokenId)
-                        smsSendModel.userId.observe(viewLifecycleOwner) { userId ->
-                            Log.d(TAG, "userId: $userId")
-                            if (userId != null) {
-                                goToAddInfo(userId.id, tokenId)
+                        smsSendModel.user.observe(viewLifecycleOwner) { user ->
+                            Log.d(TAG, "userId: $user")
+                            if (user != null) {
+                                goToAddInfo(user.id!!, tokenId)
                             } else {
                                 onFail()
                             }

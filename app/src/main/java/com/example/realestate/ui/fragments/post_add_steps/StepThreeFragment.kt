@@ -35,8 +35,9 @@ class StepThreeFragment : FragmentStep() {
     }
 
     private lateinit var binding: FragmentStepThreeBinding
-    private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var countriesData: CountriesData? = null
+//    private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
+//    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val stepThreeModel: StepThreeModel by lazy {
         val retrofit = Retrofit.getInstance()
         StepThreeModel(PostsRepository(retrofit), StaticDataRepository(retrofit)).also {
@@ -49,29 +50,29 @@ class StepThreeFragment : FragmentStep() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        locationPermissionRequest = requestMultiplePermissions(object : LocationPermission {
-            @SuppressLint("MissingPermission")
-            override fun onGrantedPrecise() {
-                handleLocation()
-            }
-
-            override fun onGrantedApproximate() {
-                locationPermissionRequest.requestLocationPermission()
-            }
-
-            override fun onNonGranted() {
-                val snackBar = makeSnackBar(
-                    requireView(),
-                    getString(R.string.permission),
-                    Snackbar.LENGTH_INDEFINITE
-                )
-                snackBar.setAction(R.string.OK) {
-                    snackBar.dismiss()
-                }.show()
-            }
-
-        })
+//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+//        locationPermissionRequest = requestMultiplePermissions(object : LocationPermission {
+//            @SuppressLint("MissingPermission")
+//            override fun onGrantedPrecise() {
+//                handleLocation()
+//            }
+//
+//            override fun onGrantedApproximate() {
+//                locationPermissionRequest.requestLocationPermission()
+//            }
+//
+//            override fun onNonGranted() {
+//                val snackBar = makeSnackBar(
+//                    requireView(),
+//                    getString(R.string.permission),
+//                    Snackbar.LENGTH_INDEFINITE
+//                )
+//                snackBar.setAction(R.string.OK) {
+//                    snackBar.dismiss()
+//                }.show()
+//            }
+//
+//        })
     }
 
     override fun onCreateView(
@@ -83,29 +84,29 @@ class StepThreeFragment : FragmentStep() {
 
 
 
-        binding.getLocation.setOnClickListener {
-            requireActivity().handlePermission(
-                object : PermissionResult {
-                    @SuppressLint("MissingPermission")
-                    override fun onGranted() {
-                        handleLocation()
-                    }
-
-                    override fun onNonGranted() {
-                        locationPermissionRequest.requestLocationPermission()
-                    }
-
-                },
-                listOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            )
-        }
+//        binding.getLocation.setOnClickListener {
+//            requireActivity().handlePermission(
+//                object : PermissionResult {
+//                    @SuppressLint("MissingPermission")
+//                    override fun onGranted() {
+//                        handleLocation()
+//                    }
+//
+//                    override fun onNonGranted() {
+//                        locationPermissionRequest.requestLocationPermission()
+//                    }
+//
+//                },
+//                listOf(
+//                    Manifest.permission.ACCESS_COARSE_LOCATION,
+//                    Manifest.permission.ACCESS_FINE_LOCATION
+//                )
+//            )
+//        }
 
 
         setEditTexts()
-        handleLocationEditText()
+
 
         return binding.root
     }
@@ -127,12 +128,10 @@ class StepThreeFragment : FragmentStep() {
                     (requireActivity() as AddPostActivity).post.apply {
                         if (CurrentUser.isConnected()) {
                             stepThreeModel.apply {
-                                val l = PostLocationData(
-                                    country = countryLiveData.value.toString()
+                                val l = Location(
+                                    country = countryLiveData.value.toString(),
+                                    city = cityLiveData.value.toString()
                                 )
-
-                                if (cityLiveData.value != null)
-                                    l.city = cityLiveData.value.toString()
 
                                 if (streetLiveData.value != null)
                                     l.area = streetLiveData.value.toString()
@@ -140,6 +139,7 @@ class StepThreeFragment : FragmentStep() {
                                 location = l
                                 description = descriptionLiveData.value.toString()
                             }
+                            Log.i(TAG, "post: $this")
                             stepThreeModel.addPost(this)
                         } else {
                             doOnFail()
@@ -197,6 +197,7 @@ class StepThreeFragment : FragmentStep() {
         super.onViewCreated(view, savedInstanceState)
 
         stepThreeModel.apply {
+            handleLocationEditText()
 
             isDataValid.observe(viewLifecycleOwner) { isValid ->
                 Log.d(TAG, "isValidData : $isValid")
@@ -222,39 +223,49 @@ class StepThreeFragment : FragmentStep() {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    fun handleLocation() {
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                // Got last known location. In some rare situations this can be null.
-
-                if (location == null) {
-                    requireContext().toast(
-                        getString(R.string.no_gps),
-                        Toast.LENGTH_SHORT
-                    )
-                } else {
-                    //get the location and
-                    location.apply {
-
-
-                        val geoLocationUtils = GeoLocationUtils(requireContext())
-                        val address = geoLocationUtils.getAddress(
-                            this
-                        )
-
-                        binding.apply {
-                            address?.apply {
-                                cityEditText.setText(locality)
-                                streetEditText.setText(thoroughfare)
-                            }
-                        }
-
-                    }
-                }
-
-            }
-    }
+//    @SuppressLint("MissingPermission")
+//    fun handleLocation() {
+//        fusedLocationClient.lastLocation
+//            .addOnSuccessListener { location: Location? ->
+//                // Got last known location. In some rare situations this can be null.
+//
+//                if (location == null) {
+//                    requireContext().toast(
+//                        getString(R.string.no_gps),
+//                        Toast.LENGTH_SHORT
+//                    )
+//                } else {
+//                    //get the location and
+//                    location.apply {
+//
+//
+//                        val geoLocationUtils = GeoLocationUtils(requireContext())
+//                        val address = geoLocationUtils.getAddress(
+//                            this
+//                        )
+//
+//                        binding.apply {
+//                            address?.apply {
+//                                //country set
+//                                val myCountry = countriesData?.find { country ->
+//                                    country.code == address.countryCode
+//                                }
+//                                if (myCountry != null) {
+//                                    countryEditText.setText(myCountry.name)
+//                                } else {
+//                                    countryEditText.setText(address.countryName)
+//                                }
+//
+//                                cityEditText.setText(locality)
+//                                streetEditText.setText(thoroughfare)
+//                            }
+//                        }
+//
+//                    }
+//                }
+//
+//            }
+//    }
 
     private fun handleLocationEditText() {
         stepThreeModel.apply {
@@ -263,9 +274,11 @@ class StepThreeFragment : FragmentStep() {
                 countries.observe(viewLifecycleOwner) { countries ->
                     Log.d(TAG, "cities: $countries")
 
+                    countriesData = countries
+
                     countries?.apply {
                         countryEditText.apply {
-                            val names = map { data -> data.name?:"____" }
+                            val names = map { data -> data.name ?: "____" }
                             val adapter = setUpAndHandleSearch(names)
                             setOnItemClickListener { _, view, _, _ ->
                                 val text = (view as TextView).text
@@ -273,7 +286,8 @@ class StepThreeFragment : FragmentStep() {
                                 adapter.filter.filter(null)
                                 getCities(text.toString())
                                 cityEditText.text.clear()
-                                cityEditText.isEnabled = false
+                                streetEditText.text.clear()
+//                                cityEditText.isEnabled = false
                             }
                         }
                     }
@@ -283,7 +297,7 @@ class StepThreeFragment : FragmentStep() {
                 cities.observe(viewLifecycleOwner) { cities ->
                     Log.d(TAG, "cities: $cities")
                     cityEditText.apply {
-                        cityTextField.isEnabled = !cities.isNullOrEmpty()
+//                        cityTextField.isEnabled = !cities.isNullOrEmpty()
                         val adapter = setUpAndHandleSearch(cities)
 
                         setOnItemClickListener { _, view, _, _ ->
@@ -293,14 +307,14 @@ class StepThreeFragment : FragmentStep() {
 //                            getStreets(selectedCity.toString())
                             streetEditText.apply {
                                 this.text.clear()
-                                isEnabled = false
+//                                isEnabled = false
                             }
                         }
                     }
                 }
                 streets.observe(viewLifecycleOwner) { streets ->
                     streetEditText.apply {
-                        streetEditText.isEnabled = !streets.isNullOrEmpty()
+//                        streetEditText.isEnabled = !streets.isNullOrEmpty()
                         val adapter = setUpAndHandleSearch(streets)
                         setOnItemClickListener { _, _, _, _ ->
                             adapter.filter.filter(null)

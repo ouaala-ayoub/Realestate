@@ -33,18 +33,12 @@ class StepTwoModel(private val staticDataRepository: StaticDataRepository) : Vie
     }
 
     val mutableLiveDataWrapper = MutableLiveDataWrapper()
-    private val _isValidData = MediatorLiveData<Boolean>(false).apply {
-        addSource(mutableLiveDataWrapper._categoryLiveData) { category ->
-            this.value = validateTheData(
-                category,
-                mutableLiveDataWrapper._priceLiveData.value,
-            )
-        }
-        addSource(mutableLiveDataWrapper._priceLiveData) { price ->
-            this.value = validateTheData(
-                mutableLiveDataWrapper._categoryLiveData.value,
-                price,
-            )
+    private val _isValidData = MediatorLiveData(false).apply {
+        mutableLiveDataWrapper.apply {
+            addSource(_categoryLiveData) { validateForm() }
+            addSource(_priceLiveData) { validateForm() }
+            addSource(_whatsappNumberLiveData) { validateForm() }
+            addSource(_callNumberLiveData) { validateForm() }
         }
     }
 
@@ -55,24 +49,44 @@ class StepTwoModel(private val staticDataRepository: StaticDataRepository) : Vie
     private fun validateTheData(
         category: String?,
         price: String?,
+        whatsappNumber: String?,
+        callNumber: String?
     ): Boolean {
-        val isValidCategory = !category.isNullOrBlank()
-        val isValidPrice = !price.isNullOrBlank()
+        //TODO handle whatsapp and call numbers
+        val isValidCategory = !category.isNullOrEmpty()
+        val isValidPrice = !price.isNullOrEmpty()
+        val isValidPhone = !whatsappNumber.isNullOrEmpty() || !callNumber.isNullOrEmpty()
 
-        return isValidCategory && isValidPrice
+        return isValidCategory && isValidPrice && isValidPhone
+    }
+
+    private fun validateForm() {
+        mutableLiveDataWrapper.apply {
+            val isValid = validateTheData(
+                _categoryLiveData.value,
+                _priceLiveData.value,
+                _whatsappNumberLiveData.value,
+                _callNumberLiveData.value
+            )
+            _isValidData.value = isValid
+        }
     }
 
 }
 
 class MutableLiveDataWrapper {
+    val _typeLiveData = MutableLiveData<String>()
     val _categoryLiveData = MutableLiveData<String>()
     val _priceLiveData = MutableLiveData<String>()
-    val _typeLiveData = MutableLiveData<String>()
+    val _whatsappNumberLiveData = MutableLiveData<String>()
+    val _callNumberLiveData = MutableLiveData<String>()
 
     override fun toString(): String {
         return "category=${_categoryLiveData.value.toString()}, " +
                 "price=${_priceLiveData.value.toString()}, " +
-                "type=${_typeLiveData.value.toString()}"
+                "type=${_typeLiveData.value.toString()}, " +
+                "whatsappNumber=${_whatsappNumberLiveData.value.toString()}" +
+                "callNumber=${_callNumberLiveData.value.toString()}"
     }
 }
 
@@ -83,4 +97,8 @@ class LiveDataWrapper(private val liveDataWrapper: MutableLiveDataWrapper) {
         get() = liveDataWrapper._priceLiveData
     val typeLiveData: LiveData<String>
         get() = liveDataWrapper._typeLiveData
+    val whatsappNumberLiveData: LiveData<String>
+        get() = liveDataWrapper._whatsappNumberLiveData
+    val callNumberLiveData: LiveData<String>
+        get() = liveDataWrapper._callNumberLiveData
 }

@@ -7,13 +7,13 @@ import kotlin.random.Random
 object RandomGenerator {
     private const val CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
-    fun createUniqueImageName(): String {
+    fun createUniqueImageName(extension: String): String {
         val random = SecureRandom()
         val timeNow = Date().time
         val randomBytes = ByteArray(6)
         random.nextBytes(randomBytes)
         val randomHex = randomBytes.joinToString("") { "%02x".format(it) }
-        return "$timeNow.$randomHex"
+        return "$timeNow.$randomHex.$extension"
     }
     fun generateRandomText(minLength: Int, maxLength: Int): String {
         val length = generateRandomLength(minLength, maxLength)

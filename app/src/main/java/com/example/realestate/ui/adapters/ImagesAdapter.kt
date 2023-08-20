@@ -1,5 +1,6 @@
 package com.example.realestate.ui.adapters
 
+import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -121,8 +122,8 @@ class ImagesAdapter(
         holder.bind(position)
     }
 
-    fun addImages(listToAdd: List<Uri>, mimeType: List<String?>) {
-        viewModel.addImages(listToAdd, imagesList, this, mimeType)
+    fun addImages(listToAdd: List<Uri>, context: Context) {
+        viewModel.addImages(listToAdd, imagesList, this, context)
     }
 
     fun getUploadedMedia(): List<String> {

@@ -44,13 +44,13 @@ class EmailVerificationFragment : Fragment() {
                     if (tokenId != null) {
                         Log.i(TAG, "tokenId: $tokenId")
                         viewModel.login(tokenId)
-                        viewModel.userId.observe(viewLifecycleOwner) { userId ->
-                            Log.i(TAG, "userId: $userId")
-                            if (userId != null) {
-                                goToAddData(userId.id, tokenId)
-                            } else {
+                        viewModel.user.observe(viewLifecycleOwner) { user ->
+                            Log.i(TAG, "user: $user")
+                            if (user != null)
+                                goToAddData(user.id!!, tokenId)
+                            else
                                 onFail(getString(R.string.error))
-                            }
+
                         }
                     } else {
                         onFail(getString(R.string.error))

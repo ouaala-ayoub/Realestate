@@ -90,12 +90,14 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     })
     private val registerForPostAddLauncher = registerAnd(object : SelectionResult {
         override fun onResultOk(data: Intent) {
-            val shouldCheckPhone = FirebaseAuth.getInstance().currentUser?.phoneNumber == null
-            if (shouldCheckPhone) {
-                launchPhoneAddProcess()
-            } else {
-                findNavController(R.id.fragment_container).navigate(R.id.addPostActivity)
-            }
+//            val shouldCheckPhone =
+//                FirebaseAuth.getInstance().currentUser?.phoneNumber.isNullOrEmpty()
+//            if (shouldCheckPhone) {
+//                launchPhoneAddProcess()
+//            } else {
+//                findNavController(R.id.fragment_container).navigate(R.id.addPostActivity)
+//            }
+            findNavController(R.id.fragment_container).navigate(R.id.addPostActivity)
 
         }
 
@@ -121,6 +123,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
             override fun onResultFailed() {
                 Log.d(TAG, "onResultFailed()")
                 toast("please register first", Toast.LENGTH_SHORT)
+                selectionResult.onResultFailed()
             }
 
         })
@@ -192,21 +195,29 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
             when (menuItem.itemId) {
                 R.id.addPostActivity -> {
-                    //to change
-                    if (userConnected) {
-                        // User is connected, open PostAddActivity
-                        val hasPhoneNumber =
-                            FirebaseAuth.getInstance().currentUser?.phoneNumber != null
-                        if (hasPhoneNumber) {
-                            navController.navigate(R.id.addPostActivity)
-                        } else {
-                            launchPhoneAddProcess()
-                        }
 
+                    if (userConnected) {
+                        navController.navigate(R.id.addPostActivity)
                     } else {
-                        // User is not connected, open UserRegisterActivity
                         launchRegisterProcess(registerForPostAddLauncher)
                     }
+
+//                    if (userConnected) {
+//                        // User is connected, open PostAddActivity
+//                        val phoneNumber = FirebaseAuth.getInstance().currentUser?.phoneNumber
+//                        val hasPhoneNumber = !phoneNumber.isNullOrEmpty()
+//                        Log.i(TAG, "phoneNumber: $phoneNumber")
+//
+//                        if (hasPhoneNumber) {
+//                            navController.navigate(R.id.addPostActivity)
+//                        } else {
+//                            launchPhoneAddProcess()
+//                        }
+//
+//                    } else {
+//                        // User is not connected, open UserRegisterActivity
+//                        launchRegisterProcess(registerForPostAddLauncher)
+//                    }
                 }
                 R.id.likedFragment -> {
                     if (userConnected) {
@@ -240,7 +251,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         }
     }
 
-    private fun launchRegisterProcess(
+    fun launchRegisterProcess(
         registerLauncher: ActivityResultLauncher<Intent>
     ) {
         val addPhoneIntent = Intent(this, UserRegisterActivity::class.java)
@@ -249,6 +260,14 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
     override fun onResume() {
         super.onResume()
+
+        val uri = FirebaseAuth.getInstance().currentUser?.photoUrl
+        Log.i(TAG, "uri: $uri")
+        if (uri != null) {
+            profileImage.loadImageUri(uri)
+        } else {
+            profileImage.setImageResource(R.drawable.baseline_person_24)
+        }
 
         // Manually set the selected item in the bottom navigation view based on the current destination
         val navDestination = findNavController(R.id.fragment_container).currentDestination
@@ -270,26 +289,28 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
         val view = binding.navView.getHeaderView(0)
         val emailTv = view.findViewById<TextView>(R.id.user_email)
-        val imageView = view.findViewById<ImageView>(R.id.user_image)
         val phoneTv = view.findViewById<TextView>(R.id.user_phone)
 
-        handleUser(FirebaseAuth.getInstance().currentUser, emailTv, imageView, phoneTv)
+        handleUser(FirebaseAuth.getInstance().currentUser, emailTv, phoneTv)
         FirebaseAuth.getInstance().currentUser
 
         FirebaseAuth.getInstance().addAuthStateListener { auth ->
-            handleUser(auth.currentUser, emailTv, imageView, phoneTv)
+            handleUser(auth.currentUser, emailTv, phoneTv)
         }
 
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.logout -> {
-                    logout()
-                }
-                R.id.instagram -> {
+                R.id.dashboard -> {
                     //TODO
                 }
                 R.id.email -> {
                     //TODO
+                }
+                R.id.instagram -> {
+                    //TODO
+                }
+                R.id.logout -> {
+                    logout()
                 }
             }
             true
@@ -301,12 +322,10 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     private fun handleUser(
         user: FirebaseUser?,
         emailTv: TextView,
-        imageView: ImageView,
         phoneTv: TextView
     ) {
 
         if (user != null) {
-            //TODO fix this bug where email is deleted after sign with phone
 
             emailTv.text = user.email
             phoneTv.defineField(user.phoneNumber, this)
@@ -352,17 +371,6 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         super.onStop()
 
         Glide.with(this).clear(profileImage)
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        val uri = FirebaseAuth.getInstance().currentUser?.photoUrl
-        if (uri != null) {
-            profileImage.loadImageUri(uri)
-        } else {
-            profileImage.setImageResource(R.drawable.baseline_person_24)
-        }
     }
 
 }

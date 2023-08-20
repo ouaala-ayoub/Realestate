@@ -7,7 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.R
 import com.example.realestate.data.models.DetailsType
 import com.example.realestate.data.models.MediaType
-import com.example.realestate.data.models.Post
+import com.example.realestate.data.models.PostWithOwnerId
+import com.example.realestate.data.models.PostWithWholeOwner
 import com.example.realestate.databinding.SingleLikedBinding
 import com.example.realestate.utils.OnLikedClickListener
 import com.example.realestate.utils.getMediaType
@@ -15,7 +16,7 @@ import com.example.realestate.utils.loadImage
 
 class LikedAdapter(private val likedClickListener: OnLikedClickListener) :
     RecyclerView.Adapter<LikedAdapter.FavouritesHolder>() {
-    private var likedList: List<Post> = listOf()
+    private var likedList: List<PostWithOwnerId> = listOf()
 
     inner class FavouritesHolder(private val binding: SingleLikedBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -79,7 +80,7 @@ class LikedAdapter(private val likedClickListener: OnLikedClickListener) :
         }
     }
 
-    fun setList(list: List<Post>) {
+    fun setList(list: List<PostWithOwnerId>) {
         likedList = list
         notifyDataSetChanged()
     }

@@ -18,13 +18,18 @@ class DetailsAdapter(private val detailsType: DetailsType) :
     RecyclerView.Adapter<DetailsAdapter.DetailsHolder>() {
 
     companion object {
-        private const val TAG = "DetailsShortAdapter"
+        private const val TAG = "DetailsAdapter"
     }
 
     private var availableDetailsList = listOf<Pair<String, Any>>()
 
     fun setDetails(details: Details) {
-        availableDetailsList = details.getAvailableDetails()
+        availableDetailsList = if (detailsType == DetailsType.LONG) {
+            details.getAvailableDetails()
+        } else {
+            details.getShortDetails()
+        }
+
         notifyDataSetChanged()
     }
 
@@ -39,7 +44,10 @@ class DetailsAdapter(private val detailsType: DetailsType) :
                 Log.d(TAG, "currentDetail: $currentDetail")
 
                 binding.apply {
-                    detailBody.text = currentDetail.second.toString()
+
+                    if (currentDetail.second != true)
+                        detailBody.text = currentDetail.second.toString()
+
                     detailBody.setCompoundDrawablesWithIntrinsicBounds(
                         getDetailIcon(currentDetail.first),
                         null,
@@ -57,8 +65,12 @@ class DetailsAdapter(private val detailsType: DetailsType) :
                 Log.d(TAG, "currentDetail: $currentDetail")
 
                 binding.apply {
-                    detailTitle.text = currentDetail.first
-                    detailBody.text = currentDetail.second.toString()
+
+                    if (currentDetail.second != true)
+                        detailTitle.text = "${currentDetail.first} : ${currentDetail.second}"
+                    else
+                        detailTitle.text = currentDetail.first
+
                     detailTitle.setCompoundDrawablesWithIntrinsicBounds(
                         getDetailIcon(currentDetail.first),
                         null,
@@ -78,8 +90,35 @@ class DetailsAdapter(private val detailsType: DetailsType) :
 
         fun getDetailIcon(key: String): Drawable? {
             val drawableRes = when (key) {
-                "Number Of Beds" -> {
+                "Property Condition" -> {
+                    R.drawable.baseline_content_paste_search_24
+                }
+                "Furnished" -> {
+                    R.drawable.furniture_svgrepo_com
+                }
+                "Balcony" -> {
+                    R.drawable.antique_balcony_svgrepo_com
+                }
+                "New" -> {
+                    R.drawable.baseline_fiber_new_24
+                }
+                "Gym" -> {
+                    R.drawable.gym_svgrepo_com
+                }
+                "Swimming Pool" -> {
+                    R.drawable.baseline_pool_24
+                }
+                "Parking" -> {
+                    R.drawable.baseline_local_parking_24
+                }
+                "Number Of Bedrooms" -> {
                     R.drawable.baseline_bed_24
+                }
+                "Floor Number" -> {
+                    R.drawable.skyscraper_svgrepo_com
+                }
+                "Space" -> {
+                    R.drawable.measure_area_svgrepo_com
                 }
                 else -> {
                     R.drawable.baseline_broken_image_24

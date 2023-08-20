@@ -4,10 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.realestate.data.models.MessageResponse
-import com.example.realestate.data.models.Post
-import com.example.realestate.data.models.SearchParams
-import com.example.realestate.data.models.User
+import com.example.realestate.data.models.*
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.data.repositories.UsersRepository
@@ -30,8 +27,8 @@ class HomeViewModel(
 
     private val _user = MutableLiveData<User?>()
     private val _categoriesList = MutableLiveData<List<String>?>()
-    private val _countries = MutableLiveData<List<String>?>()
-    private val _postsList = MutableLiveData<MutableList<Post>?>()
+    private val _countries = MutableLiveData<CountriesData?>()
+    private val _postsList = MutableLiveData<MutableList<PostWithOwnerId>?>()
     private val _isLoading = MutableLiveData<Boolean>()
     private val _postsMessage = MutableLiveData<String>()
     private val _categoriesMessage = MutableLiveData<String>()
@@ -43,11 +40,11 @@ class HomeViewModel(
         get() = _user
     val isProgressBarTurning: LiveData<Boolean>
         get() = _isLoading
-    val postsList: LiveData<MutableList<Post>?>
+    val postsList: LiveData<MutableList<PostWithOwnerId>?>
         get() = _postsList
     val categoriesList: LiveData<List<String>?>
         get() = _categoriesList
-    val countries: LiveData<List<String>?>
+    val countries: LiveData<CountriesData?>
         get() = _countries
     val postsMessage: LiveData<String>
         get() = _postsMessage
@@ -62,15 +59,15 @@ class HomeViewModel(
     fun getPosts(
         searchParams: SearchParams = SearchParams(),
         source: String
-    ): MutableLiveData<MutableList<Post>?> {
+    ): MutableLiveData<MutableList<PostWithOwnerId>?> {
         Log.i(TAG, "requested data yes source = $source")
         handleApiRequest(
             postsRepository.getPosts(searchParams),
             _isLoading,
             _postsList,
             TAG,
-            object : AdditionalCode<MutableList<Post>> {
-                override fun onResponse(responseBody: Response<MutableList<Post>>) {
+            object : AdditionalCode<MutableList<PostWithOwnerId>> {
+                override fun onResponse(responseBody: Response<MutableList<PostWithOwnerId>>) {
                     if (responseBody.isSuccessful) {
                         if (responseBody.body()!!.isEmpty()) {
                             _postsMessage.postValue(NO_POST)
@@ -121,6 +118,11 @@ class HomeViewModel(
 
     fun getUserById(userId: String) {
         handleApiRequest(usersRepository.getUserById(userId), null, _user, TAG)
+    }
+
+    fun getCountries() {
+        //TODO fix
+        handleApiRequest(staticDataRepository.getCountries(), _isLoading, _countries, TAG)
     }
 
     fun like(postId: String) {

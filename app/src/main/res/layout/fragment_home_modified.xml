@@ -87,20 +87,38 @@
 
             </LinearLayout>
 
-            <com.hbb20.CountryCodePicker
-                android:id="@+id/countryPicker"
+<!--            <com.hbb20.CountryCodePicker-->
+<!--                android:id="@+id/countryPicker"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="5dp"-->
+<!--                android:background="@color/colorText"-->
+<!--                android:gravity="center"-->
+<!--                app:ccpDialog_textColor="@color/stroke_button_color"-->
+<!--                app:ccp_autoDetectCountry="true"-->
+<!--                app:ccp_contentColor="@color/colorBackground"-->
+<!--                app:ccp_showFullName="true"-->
+<!--                app:ccp_showNameCode="false"-->
+<!--                app:ccp_showPhoneCode="false"-->
+<!--                app:cp_initialSelectionMode="autoDetectCounty" />-->
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/countryTextField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="@color/colorText"
-                android:gravity="center"
-                app:ccpDialog_textColor="@color/stroke_button_color"
-                app:ccp_autoDetectCountry="true"
-                app:ccp_contentColor="@color/colorBackground"
-                app:ccp_showFullName="true"
-                app:ccp_showNameCode="false"
-                app:ccp_showPhoneCode="false"
-                app:cp_initialSelectionMode="autoDetectCounty" />
+                android:layout_margin="10dp"
+                android:hint="@string/country">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/countryEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:lines="1"
+                    android:textStyle="bold" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 

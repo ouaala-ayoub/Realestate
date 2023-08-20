@@ -1,11 +1,13 @@
 package com.example.realestate.ui.viewmodels.userregistermodels
 
 import android.app.Activity
+import android.nfc.Tag
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.realestate.data.models.CurrentUser
+import com.example.realestate.data.models.User
 import com.example.realestate.data.models.UserId
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.utils.AdditionalCode
@@ -23,17 +25,18 @@ open class LoginModel(private val repository: UsersRepository) : ViewModel() {
     }
 
     val _isLoading = MutableLiveData<Boolean>()
-    val _userId = MutableLiveData<UserId?>()
+    val _user = MutableLiveData<User?>()
 
-    val userId: LiveData<UserId?>
-        get() = _userId
+    val user: LiveData<User?>
+        get() = _user
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
 
-    fun addPhoneToUser(){
+    fun addPhoneToUser() {
 
     }
+
     fun signInWithPhoneAuthCredential(
         activity: Activity,
         credential: PhoneAuthCredential,
@@ -84,18 +87,41 @@ open class LoginModel(private val repository: UsersRepository) : ViewModel() {
         handleApiRequest(
             repository.login(token),
             _isLoading,
-            _userId,
+            _user,
             TAG,
-            object : AdditionalCode<UserId> {
-                override fun onResponse(responseBody: Response<UserId>) {
-                    val userId = (responseBody.body())?.id
-                    Log.d(TAG, "userId: $userId")
-                    //store user id in the prefs
-                    if (userId != null)
-                        CurrentUser.prefs.set(userId)
+            object : AdditionalCode<User> {
+                override fun onResponse(responseBody: Response<User>) {
+                    val user = responseBody.body()
+                    Log.d(TAG, "user: $user")
+                    //store user in the memory
+                    if (user != null) {
+                        CurrentUser.apply {
+                            set(user)
+                            prefs.set(user.id!!)
+                        }
+                    }
+
                 }
 
                 override fun onFailure() {}
-            })
+
+            }
+        )
+//        handleApiRequest(
+//            repository.login(token),
+//            _isLoading,
+//            _user,
+//            TAG,
+//            object : AdditionalCode<User> {
+//                override fun onResponse(responseBody: Response<User>) {
+//                    val userId = (responseBody.body())?.id
+//                    Log.d(TAG, "userId: $userId")
+//                    //store user id in the prefs
+//                    if (userId != null)
+//                        CurrentUser.prefs.set(userId)
+//                }
+//
+//                override fun onFailure() {}
+//            })
     }
 }

@@ -3,11 +3,13 @@ package com.example.realestate.ui.fragments
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.Editable
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.SearchView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -61,9 +63,10 @@ class HomeFragment : Fragment(), ActivityResultListener {
             UsersRepository(retrofit)
         ).also {
             it.apply {
-                if (CurrentUser.isConnected())
+                if (CurrentUser.isUserIdStored() && !CurrentUser.isConnected())
                     getUserById(CurrentUser.prefs.get()!!)
 
+                getCountries()
                 getCategories()
                 getPosts(source = "lazy")
             }
@@ -75,6 +78,14 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
         Log.i(TAG, "count: $count")
         count++
+        val activity = (requireActivity() as MainActivity)
+        //initialise filter params
+        searchParams = activity.params
+
+
+        //set the listener
+        activity.setActivityResultListener(this)
+
 
         postsAdapter = PostsAdapter(
             object : OnPostClickListener {
@@ -101,17 +112,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
         savedInstanceState: Bundle?
     ): View {
 
-        val activity = (requireActivity() as MainActivity)
-        binding = FragmentHomeModifiedBinding.inflate(inflater, container, false)
-
-        //initialise filter params
-        searchParams = activity.params
-        searchParams.location?.country =
-            CountriesDataItem(
-                name = binding.countryPicker.selectedCountryName,
-                code = binding.countryPicker.defaultCountryNameCode
-            )
-
+        //back button handling
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -142,6 +143,14 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
             })
 
+        binding = FragmentHomeModifiedBinding.inflate(inflater, container, false)
+//        val countryPicker = binding.countryPicker
+        searchParams.location?.country =
+            CountriesDataItem(
+//                name = countryPicker.selectedCountryName,
+//                code = countryPicker.selectedCountryNameCode
+            )
+
         binding.apply {
 
             selectedChipId = binding.all.id
@@ -168,15 +177,15 @@ class HomeFragment : Fragment(), ActivityResultListener {
                     isAtTop && !postRv.canScrollVertically(-1)
             }
             //get the current country and send the request to get the posts of this country
-            countryPicker.setOnCountryChangeListener {
-                // your code to handle selected country
-                countryPicker.selectedCountryName.apply {
-                    searchParams.location?.country?.name = this
-                    viewModel.getPosts(searchParams, source = "countryPicker")
-                }
-                val code = countryPicker.selectedCountryNameCode
-                searchParams.location?.country?.code = code
-            }
+//            countryPicker.setOnCountryChangeListener {
+//                // your code to handle selected country
+//                countryPicker.selectedCountryName.apply {
+//                    searchParams.location?.country?.name = this
+//                    viewModel.getPosts(searchParams, source = "countryPicker")
+//                }
+//                val code = countryPicker.selectedCountryNameCode
+//                searchParams.location?.country?.code = code
+//            }
         }
 
         return binding.root
@@ -192,11 +201,37 @@ class HomeFragment : Fragment(), ActivityResultListener {
         binding.categoriesChipGroup.addVeilElements(5)
         binding.shimmerFrameLayout.startShimmer()
 
-        val activity = (requireActivity() as MainActivity)
-        activity.setActivityResultListener(this)
 
         binding.apply {
+            viewModel.countries.observe(viewLifecycleOwner) { data ->
+                if (data != null) {
+                    val countries = data.map { element -> element.name }.toMutableList().also {
+                        it.add(0, "All")
+                    }
+                    binding.countryEditText.apply {
+                        setText(countries[0])
+                        val adapter = setUpAndHandleSearch(countries)
+                        setOnItemClickListener { _, view, i, _ ->
+                            val tv = view as TextView
+                            val query = tv.text.toString()
+                            adapter.filter.filter(null)
 
+                            if (query.isNotEmpty()) {
+                                if (query == "All") {
+                                    searchParams.setCountry(null)
+                                } else {
+                                    searchParams.setCountry(query)
+                                    searchParams.location?.country?.code = data[i - 1].code
+                                }
+                            } else
+                                searchParams.setCountry(null)
+
+                            viewModel.getPosts(searchParams, "countryEditText changed")
+                        }
+                    }
+                }
+
+            }
             viewModel.liked.observe(viewLifecycleOwner) { message ->
                 if (message == null)
                     requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
@@ -215,6 +250,9 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
             viewModel.user.observe(viewLifecycleOwner) { user ->
                 if (user != null) {
+                    if (!CurrentUser.isConnected()) {
+                        CurrentUser.set(user)
+                    }
 //                    user.likes = listOf()
                     postsAdapter.setLiked(user.likes)
                 } else {
@@ -303,7 +341,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
     }
 
     private fun requestTheUser() {
-        val connected = CurrentUser.isConnected()
+        val connected = CurrentUser.isUserIdStored()
         if (connected)
             viewModel.getUserById(CurrentUser.prefs.get()!!)
     }
@@ -445,10 +483,11 @@ class HomeFragment : Fragment(), ActivityResultListener {
         //TODO fix this shit
         val code = countryData?.code
         Log.i(TAG, "code: $code")
-        if (code == null) {
-            binding.countryPicker.setAutoDetectedCountry(false)
+        val country = countryData?.name
+        if (country == null) {
+            binding.countryEditText.setText("All")
         } else {
-            binding.countryPicker.setCountryForNameCode(code)
+            binding.countryEditText.setText(country)
         }
     }
 
@@ -491,5 +530,10 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        firstTime = true
     }
 }

@@ -1,5 +1,6 @@
 package com.example.realestate.ui.viewmodels.postaddmodels
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -10,9 +11,12 @@ import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
 import com.example.realestate.data.models.Media
+import com.example.realestate.data.models.MediaType
 import com.example.realestate.data.models.UriHolder
 import com.example.realestate.ui.adapters.ImagesAdapter
 import com.example.realestate.utils.RandomGenerator
+import com.example.realestate.utils.getFileExtensionFromUri
+import com.example.realestate.utils.getMediaTypeFromUri
 import com.example.realestate.utils.swap
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.OnPausedListener
@@ -31,7 +35,7 @@ class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
     private val storage = Firebase.storage
     private val storageRef = storage.reference
 
-    private fun uploadTest(fileUri: Uri, media: Media, position: Int) {
+    private fun uploadTest(fileUri: Uri, media: Media, position: Int, context: Context) {
         // File or Blob
 //        val file = Uri.fromFile(File("path/to/mountains.jpg"))
 
@@ -39,16 +43,35 @@ class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
 //        val metadata = storageMetadata {
 //            contentType = "image/jpeg"
 //        }
-        val fileName = RandomGenerator.createUniqueImageName()
 
-        // Upload file and metadata to the path 'images/mountains.jpg'
-        val uploadTask = storageRef.child("images/${fileName}").putFile(fileUri)
+        val ext = getFileExtensionFromUri(context, fileUri)
+        val fileName = RandomGenerator.createUniqueImageName(ext!!)
+        val path: String? = when(getMediaTypeFromUri(context, fileUri)){
+            MediaType.IMAGE -> {
+                "images/${fileName}"
+            }
+            MediaType.VIDEO -> {
+                "videos/${fileName}"
+            }
+            MediaType.UNKNOWN -> {
+                null
+            }
+        }
 
-        // Listen for state changes, errors, and completion of the upload.
-        // You'll need to import com.google.firebase.storage.ktx.component1 and
-        // com.google.firebase.storage.ktx.component2
+        try {
+            // Upload file and metadata to the path 'images/mountains.jpg'
+            val uploadTask = storageRef.child(path!!).putFile(fileUri)
 
-        uploadTask.addCallBacks(media, position)
+            // Listen for state changes, errors, and completion of the upload.
+            // You'll need to import com.google.firebase.storage.ktx.component1 and
+            // com.google.firebase.storage.ktx.component2
+
+            uploadTask.addCallBacks(media, position)
+        } catch (e: NullPointerException){
+            e.printStackTrace()
+            _uploading.postValue(false)
+        }
+
 
     }
 
@@ -76,7 +99,6 @@ class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
 
                 urlsList.add(downloadUrl)
                 updateIsValid(urlsList, images)
-                _uploading.postValue(false)
                 _progressList[position].postValue(100)
                 _uploading.postValue(false)
             }
@@ -188,13 +210,13 @@ class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
         listToAdd: List<Uri>,
         images: Media,
         rv: RecyclerView.Adapter<ImagesAdapter.ImagesHolder>,
-        mimeTypes: List<String?>
+        context: Context
     ) {
         val startIndex = images.uriHolders.indexOf(UriHolder())
         for (i in listToAdd.indices) {
             if (startIndex + i <= images.uriHolders.lastIndex && startIndex + i >= 0) {
                 images.uriHolders[startIndex + i].uri = listToAdd[i]
-                newUpload(listToAdd[i], mimeTypes[i], startIndex + i, images)
+                newUpload(listToAdd[i], startIndex + i, images, context)
                 rv.notifyItemChanged(startIndex + i)
             } else {
                 break
@@ -237,8 +259,8 @@ class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
         }
     }
 
-    fun newUpload(uri: Uri, mimeType: String?, position: Int, imagesList: Media){
-        uploadTest(uri, imagesList, position)
+    fun newUpload(uri: Uri, position: Int, imagesList: Media, context: Context) {
+        uploadTest(uri, imagesList, position, context)
     }
 
     fun cancelAllUploads(): Int {

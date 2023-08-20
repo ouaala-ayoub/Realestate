@@ -4,7 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.realestate.data.models.MessageResponse
-import com.example.realestate.data.models.Post
+import com.example.realestate.data.models.PostWithOwnerId
+import com.example.realestate.data.models.PostWithWholeOwner
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.utils.AdditionalCode
 import com.example.realestate.utils.handleApiRequest
@@ -17,13 +18,13 @@ class LikedViewModel(private val repository: UsersRepository) : ViewModel() {
         private const val ERROR = "Unexpected Error"
     }
 
-    private val _savedList = MutableLiveData<List<Post>?>()
+    private val _savedList = MutableLiveData<List<PostWithOwnerId>?>()
     private val _loading = MutableLiveData<Boolean>()
     private val _unliked = MutableLiveData<MessageResponse?>()
     private val _postsMessage = MutableLiveData<String>()
 
 
-    val savedList: LiveData<List<Post>?>
+    val savedList: LiveData<List<PostWithOwnerId>?>
         get() = _savedList
     val loading: LiveData<Boolean>
         get() = _loading
@@ -38,8 +39,8 @@ class LikedViewModel(private val repository: UsersRepository) : ViewModel() {
             _loading,
             _savedList,
             TAG,
-            object : AdditionalCode<List<Post>> {
-                override fun onResponse(responseBody: Response<List<Post>>) {
+            object : AdditionalCode<List<PostWithOwnerId>> {
+                override fun onResponse(responseBody: Response<List<PostWithOwnerId>>) {
                     if (responseBody.isSuccessful) {
                         if (responseBody.body()!!.isEmpty()) {
                             _postsMessage.postValue(NO_FAVOURITES)

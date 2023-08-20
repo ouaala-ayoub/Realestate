@@ -27,7 +27,7 @@
 
         <TextView
             android:id="@+id/detail_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="5dp"
             android:ellipsize="end"
@@ -36,26 +36,9 @@
             android:maxLines="1"
             android:textSize="16sp"
             android:textStyle="bold"
-            tools:drawableStart="@drawable/baseline_home_24"
             app:drawableTint="@color/colorText"
+            tools:drawableStart="@drawable/baseline_home_24"
             tools:text="title" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="@string/detail_separator" />
-
-        <TextView
-            android:id="@+id/detail_body"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:textSize="16sp"
-            android:textStyle="normal"
-            tools:text="body" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

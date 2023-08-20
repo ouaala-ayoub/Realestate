@@ -243,7 +243,7 @@ fun circularProgressBar(context: Context): CircularProgressDrawable {
     return circularProgressDrawable
 }
 
-fun ImageView.loadImage(imageName: String) {
+fun ImageView.loadImage(imageName: String?) {
     val imageUrl = context.getString(R.string.image_url, imageName)
     Glide.with(this)
 //        .load(imageUrl)
@@ -531,17 +531,17 @@ fun makeSnackBar(
 }
 
 fun MaterialAutoCompleteTextView.setWithList(
-    list: List<String>,
-): ArrayAdapter<String> {
+    list: List<String?>,
+): ArrayAdapter<String?> {
     val adapter = ArrayAdapter(context, R.layout.list_item, list)
     setAdapter(adapter)
     return adapter
 }
 
 fun MaterialAutoCompleteTextView.setUpAndHandleSearch(
-    list: List<String>,
+    list: List<String?>,
     onSelected: OnSelected? = null,
-): ArrayAdapter<String> {
+): ArrayAdapter<String?> {
     val adapter = setWithList(list)
     addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(
@@ -682,6 +682,24 @@ fun getMediaType(url: String, TAG: String): MediaType {
     }
 }
 
+fun getFileExtensionFromUri(context: Context, uri: Uri): String? {
+    val contentResolver = context.contentResolver
+    val mimeType = contentResolver.getType(uri)
+    return mimeType?.let {
+        MimeTypeMap.getSingleton().getExtensionFromMimeType(it)?.lowercase()
+    }
+}
+
+fun getMediaTypeFromUri(context: Context, uri: Uri): MediaType {
+    val contentResolver = context.contentResolver
+    val mimeType = contentResolver.getType(uri)
+    return when {
+        mimeType?.startsWith("image/") == true -> MediaType.IMAGE
+        mimeType?.startsWith("video/") == true -> MediaType.VIDEO
+        else -> MediaType.UNKNOWN
+    }
+}
+
 fun TextView.defineField(value: String?, context: Context, fillWith: String? = null) {
     text = if (value.isNullOrEmpty()) {
         fillWith ?: context.getString(R.string.no_defined)
@@ -704,5 +722,9 @@ fun ChipGroup.initialiseCategoryChip(category: String?, TAG: String) {
     } as Chip?
     Log.d(TAG, "initialiseCategoryChip ${chip?.text}: ")
     chip?.isChecked = true
+}
+
+fun String.isNumeric(): Boolean {
+    return all { char -> char.isDigit() } && !isNullOrEmpty()
 }
 

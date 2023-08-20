@@ -53,13 +53,13 @@
                 android:nestedScrollingEnabled="true" />
 
 
-            <ImageView
-                android:id="@+id/image_placeholder"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/post_image_height"
-                android:layout_margin="5dp"
-                android:contentDescription="@string/image_placeholder"
-                android:src="@drawable/skeleton_background" />
+<!--            <ImageView-->
+<!--                android:id="@+id/image_placeholder"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="@dimen/post_image_height"-->
+<!--                android:layout_margin="5dp"-->
+<!--                android:contentDescription="@string/image_placeholder"-->
+<!--                android:src="@drawable/skeleton_background" />-->
 
             <TextView
                 android:id="@+id/category_type_rv"
@@ -96,11 +96,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                android:visibility="visible"
                 android:text="@string/details"
                 android:textColor="@color/yellow"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="visible" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/details_rv"
@@ -131,25 +131,44 @@
 
             <!-- Post Owner -->
 
-            <LinearLayout
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/owner_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@tools:sample/avatars"
+                    android:contentDescription="@string/owner_photo" />
 
                 <TextView
-                    android:id="@+id/ownerTextView"
+                    android:id="@+id/owner_tv"
                     style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
                     android:gravity="center"
                     android:textSize="18sp"
+                    app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/owner_image"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="Ayoub Ouaala" />
 
                 <LinearLayout
+                    android:id="@+id/linearLayout3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent">
 
                     <Button
                         android:id="@+id/call"
@@ -158,13 +177,13 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:layout_weight="1"
-                        android:enabled="false"
                         android:backgroundTint="@color/stroke_button_color"
+                        android:enabled="false"
                         android:text="@string/call"
+                        android:textColor="@color/colorBackground"
                         app:icon="@drawable/baseline_call_24"
                         app:iconGravity="start"
-                        app:iconTint="@color/colorBackground"
-                        android:textColor="@color/colorBackground" />
+                        app:iconTint="@color/colorBackground" />
 
                     <Button
                         android:id="@+id/message"
@@ -173,17 +192,17 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:layout_weight="1"
-                        android:enabled="false"
                         android:backgroundTint="@color/stroke_button_color"
+                        android:enabled="false"
                         android:text="@string/message"
+                        android:textColor="@color/colorBackground"
                         app:icon="@drawable/icon"
                         app:iconGravity="start"
-                        app:iconTint="@color/colorBackground"
-                        android:textColor="@color/colorBackground" />
+                        app:iconTint="@color/colorBackground" />
                 </LinearLayout>
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </LinearLayout>
 
             <Button
                 android:id="@+id/report_button"

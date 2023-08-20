@@ -5,7 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.viewpager2.widget.ViewPager2
+import com.example.realestate.data.models.Contact
 import com.example.realestate.data.models.FragmentStep
 import com.example.realestate.data.models.Type
 import com.example.realestate.data.models.categories
@@ -74,11 +76,14 @@ class StepTwoFragment : FragmentStep() {
             //user input
             categoryEditText.updateLiveData(wrapper._categoryLiveData)
             priceEditText.updateLiveData(wrapper._priceLiveData)
+            whatsappPhoneInput.phoneEditText.updateLiveData(wrapper._whatsappNumberLiveData)
+            callPhoneInput.phoneEditText.updateLiveData(wrapper._callNumberLiveData)
 
-            //currencies
-            wrapper._typeLiveData.value = typeDefault
-            rent.setOnClickListener { wrapper._typeLiveData.value = rent.text.toString() }
-            forSell.setOnClickListener { wrapper._typeLiveData.value = forSell.text.toString() }
+            wrapper._typeLiveData.apply {
+                value = typeDefault
+                rent.setOnClickListener { value = rent.text.toString() }
+                forSell.setOnClickListener { value = forSell.text.toString() }
+            }
 
         }
 
@@ -90,12 +95,33 @@ class StepTwoFragment : FragmentStep() {
     }
 
     override fun onNextClicked(viewPager: ViewPager2) {
+        val post = (requireActivity() as AddPostActivity).post
 //        add logic
-        (requireActivity() as AddPostActivity).post.apply {
+        post.apply {
             stepTwoModel.liveDataWrapper.apply {
+
                 category = categoryLiveData.value.toString()
                 price = priceLiveData.value!!.toInt()
                 type = typeLiveData.value.toString()
+
+                val contactInfo = Contact()
+                val whatsappNumber = whatsappNumberLiveData.value
+                val callNumber = callNumberLiveData.value
+
+                if (!whatsappNumber.isNullOrEmpty()) {
+                    val code = binding.whatsappPhoneInput.countryCode.selectedCountryCodeWithPlus
+                    contactInfo.whatsapp = code + whatsappNumber
+                }
+
+                if (!callNumber.isNullOrEmpty()) {
+                    val code = binding.callPhoneInput.countryCode.selectedCountryCodeWithPlus
+                    contactInfo.call = code + callNumber
+                }
+
+
+                contact = contactInfo
+
+                Log.d(TAG, "psot: $post")
 
                 //TODO change with a call to the local database
                 if (category == categories[0] || category == categories[1] || category == categories[2]) {

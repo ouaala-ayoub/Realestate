@@ -57,7 +57,7 @@
     <string name="usd">USD</string>
     <string name="eu">EU</string>
     <string name="currency">Currency</string>
-    <string name="type">Type</string>
+    <string name="type">Type :</string>
 
     <!--    step three strings-->
     <string name="add_description">Add a description</string>
@@ -65,7 +65,7 @@
     <string name="placeholder_description">Real estate is defined as the land and any permanent structures, like a home, or improvements attached to the land, whether natural or man-made.</string>
     <string name="country">Choose a Country</string>
     <string name="city">Cities</string>
-    <string name="street">Areas</string>
+    <string name="street">Area</string>
     <string name="error">Unexpected Error</string>
     <string name="wrong_code">Wrong verification code</string>
     <string name="finish_dialog_title">Last Step</string>
@@ -123,15 +123,20 @@
     <string name="building_age">Building Age</string>
     <string name="is_furnished">Furnished</string>
     <string name="has_balcony">Balcony</string>
-    <string name="is_new">New Property</string>
+    <string name="is_new">New</string>
     <string name="has_gym">Gym</string>
     <string name="has_swimming_pool">Swimming Pool</string>
     <string name="has_parking">Parking</string>
-    <string name="number_of_bedrooms">Number of Bedrooms</string>
+    <string name="elevator">Elevator</string>
+    <string name="security">Security</string>
+    <string name="number_of_floors">Number of floors in the building</string>
+    <string name="number_of_rooms">Number of rooms</string>
+    <string name="number_of_bathrooms">Number of bathrooms</string>
     <string name="floor_number">Floor Number</string>
     <string name="space">Space</string>
     <string name="max_string">Media selection limit exceeded</string>
-    <string name="property_condition">Property Condition</string>
+    <string name="property_condition">Property Condition <font fgcolor='@color/red'>(required *)</font></string>
+    <string name="required">required *</string>
     <string name="luxury">luxury</string>
     <string name="excellent">excellent</string>
     <string name="good">good</string>
@@ -143,6 +148,8 @@
     <string name="zero">0</string>
     <string name="instagram">Instagram</string>
     <string name="email_us">Email us</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="owner_photo">Owner photo</string>
 
 
 </resources>

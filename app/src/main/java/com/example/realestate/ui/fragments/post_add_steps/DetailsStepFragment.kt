@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.RadioButton
 import androidx.core.view.forEach
 import androidx.core.widget.doOnTextChanged
@@ -31,10 +32,6 @@ class DetailsStepFragment : FragmentStep() {
         DetailsStepViewModel()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,16 +43,18 @@ class DetailsStepFragment : FragmentStep() {
             viewModel.apply {
                 // Set up listeners for user input changes
 
-                extrasDetailsChipGrp.setOnCheckedStateChangeListener { group, checkedIds ->
-                    extrasDetailsChipGrp.forEach { view ->
-                        val chip = view as Chip
-                        val text = chip.text
-                        val lambda = mapOfFunctions["$text"]
-                        val isChecked = chip.isChecked
+                proprietyDetailsCg.forEach { view ->
+                    val checkBox = view as CheckBox
 
-                        lambda?.invoke(isChecked)
+                    checkBox.setOnClickListener {
+                        val text = checkBox.text
+                        Log.d(TAG, "text: $text")
+                        val function = mapOfFunctions["$text"]
+                        val isChecked = checkBox.isChecked
+
+                        function?.invoke(isChecked)
+
                     }
-
                 }
 
                 proprietyConditionRg.setOnCheckedChangeListener { radioGroup, i ->
@@ -66,17 +65,26 @@ class DetailsStepFragment : FragmentStep() {
                     setProprietyState(state)
                 }
 
-                numberOfBedroomsEditText.doOnTextChanged { text, _, _, _ ->
-                    setNumberOfBedrooms(text.toString())
+                numberOfRoomsEditText.doOnTextChanged { text, _, _, _ ->
+                    setNumberOfRooms(text.toString())
+                }
+
+                numberOfBathroomsEditText.doOnTextChanged { text, _, _, _ ->
+                    setNumberOfBathrooms(text.toString())
                 }
 
                 floorNumberEditText.doOnTextChanged { text, _, _, _ ->
                     setFloorNumber(text.toString())
                 }
 
+                numberOfFloorsEditText.doOnTextChanged { text, _, _, _ ->
+                    setNumberOfFloors(text.toString())
+                }
+
                 converter.apply {
                     spaceMeterEditText.doOnTextChanged { text, _, _, _ ->
                         updateValue(text, spaceFootEditText, ::squareMeterToSquareFoot, ::setSpace)
+                        setSpace(text.toString())
                     }
                     spaceFootEditText.doOnTextChanged { text, _, _, _ ->
                         updateValue(text, spaceMeterEditText, ::squareFeetToSquareMeters)
@@ -119,13 +127,13 @@ class DetailsStepFragment : FragmentStep() {
         sourceText: CharSequence?,
         targetInput: TextInputEditText,
         converter: (Double) -> Double,
-        setLiveData: ((Number?) -> Unit)? = null
+        setLiveData: ((String?) -> Unit)? = null
     ) {
         if (!isConverting) {
             isConverting = true
 
             val inputValue = sourceText.toString().toDoubleOrNull()
-            setLiveData?.invoke(inputValue)
+            setLiveData?.invoke(sourceText.toString())
 
             if (inputValue != null) {
                 val convertedValue = converter(inputValue)

@@ -51,6 +51,7 @@ class LikedFragment : Fragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.i(TAG, "created liked fragment")
         super.onCreate(savedInstanceState)
         //get user saved posts
         val userId = CurrentUser.prefs.get()
@@ -70,6 +71,12 @@ class LikedFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
         }
 
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel.apply {
             unliked.observe(viewLifecycleOwner) { message ->
                 if (message == null)
@@ -98,8 +105,6 @@ class LikedFragment : Fragment() {
                 binding.savedLoading.isVisible = loading
             }
         }
-
-        return binding.root
     }
 
     private fun openPostFragment(postId: String) {

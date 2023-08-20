@@ -106,8 +106,7 @@ class ImagesSelectFragment : FragmentStep() {
                 .buttonBackground(R.drawable.yellow_drawable)
                 .buttonTextColor(R.color.colorBackground)
                 .startMultiImage { uriList ->
-                    val mediaTypes = uriList.map { uri -> requireContext().getType(uri) }
-                    imagesAdapter.addImages(uriList, mediaTypes)
+                    imagesAdapter.addImages(uriList, requireContext())
                 }
 
             //handle permissions and open the gallery

@@ -6,10 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.R
-import com.example.realestate.data.models.CurrentUser
-import com.example.realestate.data.models.DetailsType
-import com.example.realestate.data.models.MediaType
-import com.example.realestate.data.models.Post
+import com.example.realestate.data.models.*
 import com.example.realestate.databinding.SinglePostBinding
 import com.example.realestate.utils.OnAddToFavClicked
 import com.example.realestate.utils.OnPostClickListener
@@ -20,7 +17,7 @@ class PostsAdapter(
 
     private val postClickListener: OnPostClickListener,
     private val addToFavClicked: OnAddToFavClicked,
-    private var postsList: MutableList<Post> = mutableListOf()
+    private var postsList: MutableList<PostWithOwnerId> = mutableListOf()
 
 ) : RecyclerView.Adapter<PostsAdapter.PostHolder>() {
     companion object {
@@ -29,7 +26,7 @@ class PostsAdapter(
 
 //    private var postsList: MutableList<Post> = mutableListOf()
     private var favourites: MutableList<String> = mutableListOf()
-    fun setPostsList(list: List<Post>) {
+    fun setPostsList(list: List<PostWithOwnerId>) {
         postsList = list.toMutableList()
         notifyDataSetChanged()
     }

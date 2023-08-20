@@ -23,6 +23,7 @@ import com.example.realestate.databinding.FragmentAddInfoBinding
 import com.example.realestate.ui.viewmodels.userregistermodels.AddInfoModel
 import com.example.realestate.utils.doOnFail
 import com.example.realestate.utils.toast
+import com.google.firebase.auth.FirebaseAuth
 
 class AddInfoFragment : Fragment() {
 
@@ -74,7 +75,7 @@ class AddInfoFragment : Fragment() {
                         user.name?.apply {
                             nameEditText.setText(this)
                         }
-                        updateCommMethod(user.communicationMethod)
+//                        updateCommMethod(user.communicationMethod)
                     }
                 }
             }
@@ -84,23 +85,25 @@ class AddInfoFragment : Fragment() {
                 addInfoModel.updateName(name.toString())
             }
 
-            radioGroup.setOnCheckedChangeListener { _, checkedId ->
-                val selectedMethod = when (checkedId) {
-                    R.id.whatsapp -> CommunicationMethod.WHATSAPP
-                    R.id.call -> CommunicationMethod.CALL
-                    R.id.both -> CommunicationMethod.ALL
-                    else -> null
-                }
-                selectedMethod?.let { addInfoModel.updateCommMethod(it.value) }
-            }
+//            radioGroup.setOnCheckedChangeListener { _, checkedId ->
+//                val selectedMethod = when (checkedId) {
+//                    R.id.whatsapp -> CommunicationMethod.WHATSAPP
+//                    R.id.call -> CommunicationMethod.CALL
+//                    R.id.both -> CommunicationMethod.ALL
+//                    else -> null
+//                }
+//                selectedMethod?.let { addInfoModel.updateCommMethod(it.value) }
+//            }
 
             finish.apply {
 
                 setOnClickListener {
                     val name = addInfoModel.name.value!!
-                    val method = addInfoModel.commMethod.value!!
 
-                    addInfoModel.addInfoToUser(userId, AdditionalInfo(name, method))
+                    //TODO add the image to the additional info
+                    val image = FirebaseAuth.getInstance().currentUser?.photoUrl
+
+                    addInfoModel.addInfoToUser(userId, AdditionalInfo(name))
                 }
             }
         }
@@ -116,11 +119,7 @@ class AddInfoFragment : Fragment() {
         }
         addInfoModel.messageResponse.observe(viewLifecycleOwner) { message ->
             Log.d(TAG, "message response: ${message?.message}")
-            if (message != null) {
-                finishActivity()
-            } else {
-                requireActivity().doOnFail()
-            }
+            finishActivity(message != null)
         }
         addInfoModel.isValid.observe(viewLifecycleOwner) { isValid ->
             Log.d(TAG, "isValid: $isValid")
@@ -129,9 +128,9 @@ class AddInfoFragment : Fragment() {
         }
     }
 
-    private fun finishActivity() {
+    private fun finishActivity(result: Boolean) {
         val intent = requireActivity().intent
-        intent.putExtra("register_success", true)
+        intent.putExtra("register_success", result)
         requireActivity().setResult(Activity.RESULT_OK, intent)
         requireActivity().finish()
     }
@@ -140,9 +139,9 @@ class AddInfoFragment : Fragment() {
         binding.apply {
             finish.isEnabled = !loading
             nameEditText.isEnabled = !loading
-            for (e in radioGroup.children) {
-                e.isEnabled = !loading
-            }
+//            for (e in radioGroup.children) {
+//                e.isEnabled = !loading
+//            }
         }
     }
 }
