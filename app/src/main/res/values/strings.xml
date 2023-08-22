@@ -156,5 +156,4 @@
     <string name="up_to_59_seconds">up to 59 seconds</string>
     <string name="less_than_100_mb">less than 100 Mb</string>
     <string name="failed_media_selection">Please choose a video with size less than 100 Mb and duration less then 59 second</string>
-
 </resources>

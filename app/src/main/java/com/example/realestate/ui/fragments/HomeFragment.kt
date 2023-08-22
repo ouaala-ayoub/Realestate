@@ -2,7 +2,6 @@ package com.example.realestate.ui.fragments
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.Editable
 import android.util.Log
 import android.view.*
 import android.widget.SearchView
@@ -15,7 +14,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.R
 import com.example.realestate.data.models.CountriesDataItem
 import com.example.realestate.data.models.CurrentUser
@@ -162,23 +160,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
             }
 
-            val layoutManager = postRv.getRecyclerView().layoutManager
-            val scrollListener = object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    if (!recyclerView.canScrollVertically(1) &&
-                        newState == RecyclerView.SCROLL_STATE_IDLE &&
-                        !postsAdapter.isListEmpty()
-                    ) {
-//                        viewModel.getPosts(searchParams, "onScrollStateChanged", false)
-                        Log.d(TAG, "got to the bottom")
-                    }
-                }
-            }
-//            postRv.getRecyclerView().addOnScrollListener(scrollListener)
-//            scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-//
-//            }
 
             //disable swipe refresh if not on top
             scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
@@ -192,7 +173,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
                 if (isAtBottom) {
                     // Reached the bottom of the ScrollView
-                    // Perform your action here
                     if (viewModel.isProgressBarTurning.value != true) {
                         viewModel.getPosts(searchParams, "onScrollStateChanged", false)
                     }
@@ -234,7 +214,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
             viewModel.countries.observe(viewLifecycleOwner) { data ->
                 if (data != null) {
                     val countries = data.map { element -> element.name }.toMutableList().also {
-                        it.add(0, "All")
+                        it.add(0, getString(R.string.all))
                     }
                     binding.countryEditText.apply {
                         setText(countries[0])
@@ -245,7 +225,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
                             adapter.filter.filter(null)
 
                             if (query.isNotEmpty()) {
-                                if (query == "All") {
+                                if (query == getString(R.string.all)) {
                                     searchParams.setCountry(null)
                                 } else {
                                     searchParams.setCountry(query)
@@ -511,7 +491,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
         Log.i(TAG, "code: $code")
         val country = countryData?.name
         if (country == null) {
-            binding.countryEditText.setText("All")
+            binding.countryEditText.setText(getString(R.string.all))
         } else {
             binding.countryEditText.setText(country)
         }

@@ -90,6 +90,10 @@ class HomeViewModel(
                             if (responseBody.body()!!.isEmpty()) {
                                 //TODO request posts ?
 //                                currentPage.postValue(1)
+//                                getPosts(
+//                                    source = "responseBody.body()!!.isEmpty()",
+//                                    searchParams = searchParams, override = false
+//                                )
                             } else {
                                 currentPage.value = currentPage.value!! + 1
                                 val posts = _postsList.value
