@@ -95,6 +95,7 @@ dependencies {
 
     //image picker
     implementation 'io.github.ParkSangGwon:tedimagepicker:1.4.2'
+    implementation 'com.github.Mindinventory:Lassi:1.2.0'
 
     //skeleton view
     implementation "com.github.skydoves:androidveil:1.1.3"

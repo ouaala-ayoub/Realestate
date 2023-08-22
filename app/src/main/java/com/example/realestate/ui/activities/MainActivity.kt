@@ -261,10 +261,10 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     override fun onResume() {
         super.onResume()
 
-        val uri = FirebaseAuth.getInstance().currentUser?.photoUrl
+        val uri = CurrentUser.get()?.image
         Log.i(TAG, "uri: $uri")
         if (uri != null) {
-            profileImage.loadImageUri(uri)
+            profileImage.loadImage(uri)
         } else {
             profileImage.setImageResource(R.drawable.baseline_person_24)
         }
@@ -359,7 +359,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     private fun logout() {
         FirebaseAuth.getInstance().signOut()
         SessionCookie.prefs.delete()
-        CurrentUser.prefs.delete()
+        CurrentUser.logout()
     }
 
     private fun launchPhoneAddProcess() {

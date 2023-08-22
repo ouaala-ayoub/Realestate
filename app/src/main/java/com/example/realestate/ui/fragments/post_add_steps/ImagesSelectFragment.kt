@@ -1,32 +1,29 @@
 package com.example.realestate.ui.fragments.post_add_steps
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
-import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.R
 import com.example.realestate.data.models.FragmentStep
 import com.example.realestate.databinding.FragmentImagesSelectBinding
-import com.example.realestate.databinding.LoadingLayoutBinding
 import com.example.realestate.ui.activities.AddPostActivity
 import com.example.realestate.ui.adapters.ImagesAdapter
 import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
 import com.example.realestate.utils.*
 import com.google.android.material.snackbar.Snackbar
-import gun0912.tedimagepicker.builder.TedImagePicker
-import gun0912.tedimagepicker.builder.type.MediaType
+import java.util.concurrent.TimeUnit
 
 class ImagesSelectFragment : FragmentStep() {
     companion object {
@@ -36,9 +33,8 @@ class ImagesSelectFragment : FragmentStep() {
     }
 
     private lateinit var binding: FragmentImagesSelectBinding
-
-    //    private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
-//    private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
+    private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
     private val viewModel: ImagesSelectModel by lazy {
         ImagesSelectModel(MAX_INPUT_SIZE)
     }
@@ -49,38 +45,51 @@ class ImagesSelectFragment : FragmentStep() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        permissionRequestLauncher = requestPermissionLauncher(
-//            object : PermissionResult {
-//                override fun onGranted() {
-//                    imageResultLauncher.openGallery()
-//                }
-//
-//                override fun onNonGranted() {
-//                    val snackBar = makeSnackBar(
-//                        requireView(),
-//                        getString(R.string.permission),
-//                        Snackbar.LENGTH_INDEFINITE
-//                    )
-//                    snackBar.setAction(R.string.OK) {
-//                        snackBar.dismiss()
-//                    }.show()
-//                }
-//            }
-//        )
-//        imageResultLauncher = startActivityResult(
-//            object : SelectionResult {
-//                override fun onResultOk(data: Intent) {
-//                    val uris = data.getContentAsList()
-//                    val mediaTypes = uris.map { uri -> requireContext().getType(uri) }
-//
-//                    imagesAdapter.addImages(uris, mediaTypes)
-//                }
-//
-//                override fun onResultFailed() {
-//                    Log.e(TAG, "imageResultLauncher onResultFailed")
-//                }
-//            }
-//        )
+        permissionRequestLauncher = requestPermissionLauncher(
+            object : PermissionResult {
+                override fun onGranted() {
+                    imageResultLauncher.openGallery()
+                }
+
+                override fun onNonGranted() {
+                    val snackBar = makeSnackBar(
+                        requireView(),
+                        getString(R.string.permission),
+                        Snackbar.LENGTH_INDEFINITE
+                    )
+                    snackBar.setAction(R.string.OK) {
+                        snackBar.dismiss()
+                    }.show()
+                }
+            }
+        )
+        imageResultLauncher = startActivityResult(
+            object : SelectionResult {
+                override fun onResultOk(data: Intent) {
+                    val uris = data.getContentAsList()
+                    val urisToUpload = uris.filter { uri -> isValidMedia(uri) }
+
+                    //in case not all uri got accepted
+                    if (urisToUpload.size != uris.size) {
+                        val snackBar = makeSnackBar(
+                            binding.root,
+                            getString(R.string.failed_media_selection),
+                            Snackbar.LENGTH_INDEFINITE
+                        )
+                        snackBar.setAction(getString(R.string.OK)) {
+                            snackBar.dismiss()
+                        }.show()
+                    }
+
+
+                    imagesAdapter.addImages(urisToUpload, requireContext())
+                }
+
+                override fun onResultFailed() {
+                    Log.e(TAG, "imageResultLauncher onResultFailed")
+                }
+            }
+        )
     }
 
     override fun onCreateView(
@@ -89,6 +98,7 @@ class ImagesSelectFragment : FragmentStep() {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentImagesSelectBinding.inflate(layoutInflater, container, false)
+
 
         binding.imagesRv.apply {
             setHasFixedSize(true)
@@ -99,32 +109,23 @@ class ImagesSelectFragment : FragmentStep() {
         binding.select.setOnClickListener {
 
             //TODO more readable code
-            TedImagePicker
-                .with(requireContext())
-                .mediaType(MediaType.IMAGE_AND_VIDEO)
-                .max(10, getString(R.string.max_string))
-                .buttonBackground(R.drawable.yellow_drawable)
-                .buttonTextColor(R.color.colorBackground)
-                .startMultiImage { uriList ->
-                    imagesAdapter.addImages(uriList, requireContext())
+
+//            handle permissions and open the gallery
+            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_IMAGES
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+
+            requireActivity().handlePermission(object : PermissionResult {
+                override fun onGranted() {
+                    imageResultLauncher.openGallery()
                 }
 
-            //handle permissions and open the gallery
-//            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                Manifest.permission.READ_MEDIA_IMAGES
-//            } else {
-//                Manifest.permission.READ_EXTERNAL_STORAGE
-//            }
-//
-//            requireActivity().handlePermission(object : PermissionResult {
-//                override fun onGranted() {
-//                    imageResultLauncher.openGallery()
-//                }
-//
-//                override fun onNonGranted() {
-//                    permissionRequestLauncher.requestStoragePermission()
-//                }
-//            }, listOf(permission))
+                override fun onNonGranted() {
+                    permissionRequestLauncher.requestStoragePermission()
+                }
+            }, listOf(permission))
         }
 
         viewModel.isFull.observe(viewLifecycleOwner) { isFull ->
@@ -134,16 +135,6 @@ class ImagesSelectFragment : FragmentStep() {
         viewModel.isValid.observe(viewLifecycleOwner) { isValid ->
             (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValid)
         }
-
-//        viewModel.uploading.observe(viewLifecycleOwner) { uploading ->
-//            Log.d(TAG, "uploading: $uploading")
-//            if (uploading) {
-//                showLoadingDialog()
-//                updateProgress(0)
-//            } else {
-//                hideLoadingDialog()
-//            }
-//        }
 
 
         viewModel.progress.forEachIndexed { index, progressLiveData ->
@@ -191,6 +182,33 @@ class ImagesSelectFragment : FragmentStep() {
         super.onResume()
         val lastState = viewModel.isValid.value!!
         (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(lastState)
+    }
+
+    // Function to validate selected media
+    @SuppressLint("Range")
+    private fun isValidMedia(uri: Uri): Boolean {
+        val projection = arrayOf(
+            MediaStore.MediaColumns.SIZE,
+            MediaStore.Video.VideoColumns.DURATION
+        )
+
+        requireActivity().contentResolver.query(uri, projection, null, null, null)?.use {
+            if (it.moveToFirst()) {
+                val size = it.getLong(it.getColumnIndex(MediaStore.MediaColumns.SIZE))
+                val duration = it.getLong(it.getColumnIndex(MediaStore.Video.VideoColumns.DURATION))
+                val maxFileSize = 100 * 1024 * 1024
+                val maxVideoDuration = TimeUnit.SECONDS.toMillis(59)
+
+                if (size >= 0 && duration >= 0) {
+                    // Check size and duration criteria
+                    if (size <= maxFileSize && duration <= maxVideoDuration) {
+                        return true // Media is valid
+                    }
+                }
+            }
+        }
+
+        return false // Media is invalid
     }
 }
 

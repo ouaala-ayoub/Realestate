@@ -30,6 +30,11 @@ class ImagesAdapter(
         }
     )
 
+    fun setMedia(media: Media) {
+        imagesList = media
+        notifyDataSetChanged()
+    }
+
     inner class ImagesHolder(private val binding: SingleImageBinding) :
         RecyclerView.ViewHolder(binding.root) {
 

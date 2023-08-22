@@ -70,6 +70,8 @@ class FilterActivity : AppCompatActivity() {
                                 searchParams?.category = item
                                 binding.apply {
                                     val show = extras.contains(item)
+                                    proprietyCdTv.isVisible = show
+                                    proprietyConditionRg.isVisible = show
                                     extrasTv.isVisible = show
                                     extrasChipGrp.isVisible = show
                                 }

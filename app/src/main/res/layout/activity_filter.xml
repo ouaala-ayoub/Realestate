@@ -186,22 +186,23 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
-                android:id="@+id/extras_tv"
+                android:id="@+id/propriety_cd_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
-                android:text="@string/extras"
+                android:text="@string/property_condition_text"
                 android:textColor="@color/yellow"
                 android:textSize="16sp"
                 android:visibility="gone" />
 
             <RadioGroup
                 android:id="@+id/propriety_condition_rg"
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <RadioButton
                     android:id="@+id/lux"
@@ -229,6 +230,18 @@
 
             </RadioGroup>
 
+            <TextView
+                android:id="@+id/extras_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/extras"
+                android:textColor="@color/yellow"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/extras_chip_grp"
                 android:layout_width="match_parent"
@@ -238,44 +251,44 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/furnished"
+                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/YellowChipStyle"
                     android:text="@string/is_furnished" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/balcony"
+                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/YellowChipStyle"
                     android:text="@string/has_balcony" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/new_property"
+                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/YellowChipStyle"
                     android:text="@string/is_new" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/gym"
+                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/YellowChipStyle"
                     android:text="@string/has_gym" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/swimming_pool"
+                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/YellowChipStyle"
                     android:text="@string/has_swimming_pool" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/parking"
+                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/YellowChipStyle"
                     android:text="@string/has_parking" />
 
 

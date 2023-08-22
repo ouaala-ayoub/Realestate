@@ -38,7 +38,7 @@
 
     <!--    search fragment-->
     <string name="search">Search</string>
-    <string name="select">Select</string>
+    <string name="select">Select Files</string>
 
     <!--    add post activity-->
     <string name="back">Back</string>
@@ -136,6 +136,7 @@
     <string name="space">Space</string>
     <string name="max_string">Media selection limit exceeded</string>
     <string name="property_condition">Property Condition <font fgcolor='@color/red'>(required *)</font></string>
+    <string name="property_condition_text">Property Condition</string>
     <string name="required">required *</string>
     <string name="luxury">luxury</string>
     <string name="excellent">excellent</string>
@@ -150,6 +151,10 @@
     <string name="email_us">Email us</string>
     <string name="dashboard">Dashboard</string>
     <string name="owner_photo">Owner photo</string>
-
+    <string name="long_detail">%1$s : %2$s</string>
+    <string name="jpg_jpeg_png_webp_mp4_or_webm">Jpg, Jpeg, Png, WebP, Mp4 or WebM</string>
+    <string name="up_to_59_seconds">up to 59 seconds</string>
+    <string name="less_than_100_mb">less than 100 Mb</string>
+    <string name="failed_media_selection">Please choose a video with size less than 100 Mb and duration less then 59 second</string>
 
 </resources>

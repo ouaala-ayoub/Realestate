@@ -18,7 +18,6 @@ import com.eudycontreras.boneslibrary.extensions.disableSkeletonLoading
 import com.eudycontreras.boneslibrary.extensions.enableSkeletonLoading
 import com.example.realestate.PostNavArgs
 import com.example.realestate.R
-import com.example.realestate.data.models.CommunicationMethod
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.DetailsType
 import com.example.realestate.data.remote.network.Retrofit
@@ -26,14 +25,12 @@ import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.FragmentPostPageBinding
 import com.example.realestate.ui.activities.MainActivity
-import com.example.realestate.ui.activities.UserRegisterActivity
 import com.example.realestate.ui.adapters.DetailsAdapter
 import com.example.realestate.ui.adapters.MediaPagerAdapter
 import com.example.realestate.ui.viewmodels.PostPageModel
 import com.example.realestate.utils.*
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.material.snackbar.Snackbar
-import okhttp3.internal.readFieldOrNull
 
 
 class PostPageFragment : Fragment() {
@@ -146,6 +143,7 @@ class PostPageFragment : Fragment() {
 
                     val contact = post.contact
                     val owner = post.owner
+
                     //bind the data
                     binding.apply {
 //                        imagePlaceholder.isVisible = false
@@ -195,6 +193,7 @@ class PostPageFragment : Fragment() {
                         //handle call button
                         if (!contact.call.isNullOrEmpty()) {
                             call.apply {
+                                phoneNumber = contact.call!!
                                 isEnabled = true
                                 setOnClickListener {
                                     //directly call

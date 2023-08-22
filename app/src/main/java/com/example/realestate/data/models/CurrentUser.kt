@@ -17,6 +17,7 @@ class CurrentUser {
 
         fun logout() {
             current = null
+            prefs.delete()
         }
 
         fun isUserIdStored() = prefs.get() != null

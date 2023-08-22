@@ -19,11 +19,8 @@ import com.example.realestate.utils.getFileExtensionFromUri
 import com.example.realestate.utils.getMediaTypeFromUri
 import com.example.realestate.utils.swap
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.OnPausedListener
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
-import com.google.firebase.storage.ktx.storageMetadata
-import java.io.File
 
 
 class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
@@ -259,7 +256,7 @@ class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
         }
     }
 
-    fun newUpload(uri: Uri, position: Int, imagesList: Media, context: Context) {
+    private fun newUpload(uri: Uri, position: Int, imagesList: Media, context: Context) {
         uploadTest(uri, imagesList, position, context)
     }
 

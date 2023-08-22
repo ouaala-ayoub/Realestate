@@ -66,9 +66,14 @@ class DetailsAdapter(private val detailsType: DetailsType) :
 
                 binding.apply {
 
-                    if (currentDetail.second != true)
-                        detailTitle.text = "${currentDetail.first} : ${currentDetail.second}"
-                    else
+                    if (currentDetail.second != true) {
+                        val title = binding.root.context.getString(
+                            R.string.long_detail,
+                            currentDetail.first,
+                            currentDetail.second
+                        )
+                        detailTitle.text = title
+                    } else
                         detailTitle.text = currentDetail.first
 
                     detailTitle.setCompoundDrawablesWithIntrinsicBounds(
@@ -93,14 +98,32 @@ class DetailsAdapter(private val detailsType: DetailsType) :
                 "Property Condition" -> {
                     R.drawable.baseline_content_paste_search_24
                 }
-                "Furnished" -> {
-                    R.drawable.furniture_svgrepo_com
+                "Number Of rooms" -> {
+                    R.drawable.baseline_bed_24
+                }
+                "Number of bathrooms" -> {
+                    R.drawable.baseline_bathroom_24
+                }
+                "Floor Info" -> {
+                    R.drawable.skyscraper_svgrepo_com
+                }
+                "Space" -> {
+                    R.drawable.measure_area_svgrepo_com
                 }
                 "Balcony" -> {
                     R.drawable.antique_balcony_svgrepo_com
                 }
+                "Furnished" -> {
+                    R.drawable.furniture_svgrepo_com
+                }
                 "New" -> {
                     R.drawable.baseline_fiber_new_24
+                }
+                "Elevator" -> {
+                    R.drawable.elevator_svgrepo_com
+                }
+                "Security" -> {
+                    R.drawable.secure_shield_password_protect_safe_svgrepo_com
                 }
                 "Gym" -> {
                     R.drawable.gym_svgrepo_com
@@ -110,15 +133,6 @@ class DetailsAdapter(private val detailsType: DetailsType) :
                 }
                 "Parking" -> {
                     R.drawable.baseline_local_parking_24
-                }
-                "Number Of Bedrooms" -> {
-                    R.drawable.baseline_bed_24
-                }
-                "Floor Number" -> {
-                    R.drawable.skyscraper_svgrepo_com
-                }
-                "Space" -> {
-                    R.drawable.measure_area_svgrepo_com
                 }
                 else -> {
                     R.drawable.baseline_broken_image_24
