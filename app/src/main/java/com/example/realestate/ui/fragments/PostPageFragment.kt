@@ -222,7 +222,7 @@ class PostPageFragment : Fragment() {
                         }
 
                         owner?.apply {
-                            ownerImage.loadImage(image)
+                            ownerImage.loadImage(image, R.drawable.baseline_person_24)
                             ownerTv.defineField(name, requireContext(), getString(R.string.error))
                         }
 

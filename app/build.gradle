@@ -93,10 +93,6 @@ android {
 
 dependencies {
 
-    //image picker
-    implementation 'io.github.ParkSangGwon:tedimagepicker:1.4.2'
-    implementation 'com.github.Mindinventory:Lassi:1.2.0'
-
     //skeleton view
     implementation "com.github.skydoves:androidveil:1.1.3"
     implementation 'com.github.EudyContreras:Skeleton-Bones:1.4.5'

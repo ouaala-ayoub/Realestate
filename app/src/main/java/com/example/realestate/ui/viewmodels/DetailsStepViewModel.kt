@@ -165,9 +165,11 @@ class DetailsStepViewModel : ViewModel() {
         result["isFurnished"] = _isFurnished.value!!
         result["hasBalcony"] = _hasBalcony.value!!
         result["isNewProperty"] = _isNew.value!!
-        result["hasGym"] = _hasGym.value!!
         result["hasSwimmingPool"] = _hasSwimmingPool.value!!
+        result["hasGym"] = _hasGym.value!!
         result["hasParking"] = _hasParking.value!!
+        result["hasElevator"] = _hasElevator.value!!
+        result["hasSecurity"] = _hasSecurity.value!!
 
         if (_proprietyState.value != null)
             result["propertyCondition"] = _proprietyState.value.toString()

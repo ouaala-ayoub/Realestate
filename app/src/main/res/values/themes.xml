@@ -25,8 +25,6 @@
     <style name="AppTheme" parent="Theme.RealEstate">
         <item name="materialButtonStyle">@style/OutlinedButtonStyle
         </item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="CustomToolbarStyle" parent="Widget.MaterialComponents.Toolbar">

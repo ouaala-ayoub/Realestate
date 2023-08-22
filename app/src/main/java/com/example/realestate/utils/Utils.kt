@@ -243,14 +243,14 @@ fun circularProgressBar(context: Context): CircularProgressDrawable {
     return circularProgressDrawable
 }
 
-fun ImageView.loadImage(imageName: String?) {
+fun ImageView.loadImage(imageName: String?, errorImage: Int = R.drawable.baseline_broken_image_24) {
     val imageUrl = context.getString(R.string.image_url, imageName)
     Glide.with(this)
 //        .load(imageUrl)
         .load(imageName)
         .centerCrop()
         .placeholder(circularProgressBar(context))
-        .error(R.drawable.baseline_broken_image_24)
+        .error(errorImage)
         .into(this)
 }
 
