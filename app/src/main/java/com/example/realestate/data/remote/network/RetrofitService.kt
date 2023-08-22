@@ -38,14 +38,18 @@ interface RetrofitService {
         @Query("search") title: String? = null,
         @Query("p") price: Number? = null,
         @Query("country") country: String? = null,
+        @Query("city") city: String? = null,
         @Query("category") category: String? = null,
         @Query("type") type: String? = null,
         @Query("n") filterByDate: String? = null,
-        @Query("pg") page: String? = null
+        @Query("page") page: String? = null
     ): Call<MutableList<PostWithOwnerId>>
 
     @POST("posts")
     fun addPost(@Body post: PostWithoutId): Call<MessageResponse>
+
+    @GET("posts/count")
+    fun getPostsCount(): Call<Int>
 
     @GET("posts/{id}")
     fun getPostById(@Path("id") postId: String): Call<PostWithWholeOwner>
@@ -67,7 +71,10 @@ interface RetrofitService {
     fun addData(@Path("id") userId: String, @Body dataToAdd: AdditionalInfo): Call<MessageResponse>
 
     @PUT("users/{id}")
-    fun addPhoneNumber(@Path("id") userId: String, @Body dataToAdd: PhoneNumber): Call<MessageResponse>
+    fun addPhoneNumber(
+        @Path("id") userId: String,
+        @Body dataToAdd: PhoneNumber
+    ): Call<MessageResponse>
 
     @POST("login")
     fun login(@Header("Authorization") token: String): Call<User>

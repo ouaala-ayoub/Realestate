@@ -25,10 +25,12 @@ class HomeViewModel(
         private const val ERROR = "Unexpected Error"
     }
 
+    var currentPage = MutableLiveData(1)
     private val _user = MutableLiveData<User?>()
     private val _categoriesList = MutableLiveData<List<String>?>()
     private val _countries = MutableLiveData<CountriesData?>()
-    private val _postsList = MutableLiveData<MutableList<PostWithOwnerId>?>()
+    private val _postsList =
+        MutableLiveData(mutableListOf<PostWithOwnerId>())
     private val _isLoading = MutableLiveData<Boolean>()
     private val _postsMessage = MutableLiveData<String>()
     private val _categoriesMessage = MutableLiveData<String>()
@@ -58,29 +60,54 @@ class HomeViewModel(
     // no filters by default
     fun getPosts(
         searchParams: SearchParams = SearchParams(),
-        source: String
+        source: String,
+        override: Boolean = true
     ): MutableLiveData<MutableList<PostWithOwnerId>?> {
         Log.i(TAG, "requested data yes source = $source")
+        Log.d(TAG, "search params page: ${searchParams.page}")
+        Log.d(TAG, "currentPage: $currentPage")
+        if (override) currentPage.value = 1
         handleApiRequest(
             postsRepository.getPosts(searchParams),
             _isLoading,
-            _postsList,
+            null,
             TAG,
             object : AdditionalCode<MutableList<PostWithOwnerId>> {
                 override fun onResponse(responseBody: Response<MutableList<PostWithOwnerId>>) {
+                    Log.d(TAG, "size: ${responseBody.body()?.size}")
                     if (responseBody.isSuccessful) {
-                        if (responseBody.body()!!.isEmpty()) {
-                            _postsMessage.postValue(NO_POST)
+                        if (override) {
+                            Log.d(TAG, "override: yes")
+                            currentPage.postValue(2)
+                            if (responseBody.body()!!.isEmpty()) {
+                                _postsMessage.postValue(NO_POST)
+                            } else {
+                                _postsMessage.postValue("")
+                            }
+                            _postsList.postValue(responseBody.body())
                         } else {
-                            _postsMessage.postValue("")
+                            Log.d(TAG, "override: no")
+                            if (responseBody.body()!!.isEmpty()) {
+                                //TODO request posts ?
+//                                currentPage.postValue(1)
+                            } else {
+                                currentPage.value = currentPage.value!! + 1
+                                val posts = _postsList.value
+                                posts?.apply {
+                                    this.addAll(responseBody.body()!!)
+                                    _postsList.postValue(this)
+                                }
+                            }
                         }
                     } else {
                         _postsMessage.postValue(ERROR)
+                        _postsList.postValue(null)
                     }
                 }
 
                 override fun onFailure() {
                     _postsMessage.postValue(ERROR)
+                    _postsList.postValue(null)
                 }
             }
         )
@@ -121,7 +148,6 @@ class HomeViewModel(
     }
 
     fun getCountries() {
-        //TODO fix
         handleApiRequest(staticDataRepository.getCountries(), _isLoading, _countries, TAG)
     }
 

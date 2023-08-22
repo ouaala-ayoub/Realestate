@@ -183,7 +183,7 @@ fun FragmentActivity.disableBackButton(viewLifecycleOwner: LifecycleOwner) {
 fun <T> handleApiRequest(
     apiCall: Call<T>,
     loadingLiveData: MutableLiveData<Boolean>?,
-    dataLiveData: MutableLiveData<T?>,
+    dataLiveData: MutableLiveData<T?>? = null,
     TAG: String,
     additionalCode: AdditionalCode<T>? = null
 ) {
@@ -193,11 +193,11 @@ fun <T> handleApiRequest(
         override fun onResponse(call: Call<T>, response: Response<T>) {
 
             if (response.isSuccessful) {
-                dataLiveData.postValue(response.body())
-                Log.d(TAG, "onResponse: ${response.body()}")
+                dataLiveData?.postValue(response.body())
+//                Log.d(TAG, "onResponse: ${response.body()}")
             } else {
                 getError(TAG, response.errorBody(), response.code())
-                dataLiveData.postValue(null)
+                dataLiveData?.postValue(null)
             }
             additionalCode?.onResponse(response)
             loadingLiveData?.postValue(false)
@@ -205,7 +205,7 @@ fun <T> handleApiRequest(
 
         override fun onFailure(call: Call<T>, t: Throwable) {
             loadingLiveData?.postValue(false)
-            dataLiveData.postValue(null)
+            dataLiveData?.postValue(null)
             Log.e(TAG, "onFailure: ${t.message}")
             additionalCode?.onFailure()
         }

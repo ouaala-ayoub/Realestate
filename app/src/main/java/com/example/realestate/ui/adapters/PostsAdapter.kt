@@ -31,6 +31,8 @@ class PostsAdapter(
         notifyDataSetChanged()
     }
 
+    fun isListEmpty() = postsList.isEmpty()
+
     fun setLiked(list: List<String>) {
         favourites = list.toMutableList()
         notifyDataSetChanged()

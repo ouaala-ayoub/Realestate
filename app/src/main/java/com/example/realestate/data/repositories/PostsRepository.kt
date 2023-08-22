@@ -8,6 +8,7 @@ class PostsRepository(private val retrofit: RetrofitService) {
     fun getPosts(searchParams: SearchParams) = retrofit.getPosts(
         title = searchParams.title,
         country = searchParams.location?.country?.name,
+        city = searchParams.location?.city,
         price = searchParams.price,
         category = searchParams.category,
         type = searchParams.type,
@@ -17,5 +18,7 @@ class PostsRepository(private val retrofit: RetrofitService) {
     fun addPost(post: PostWithoutId) = retrofit.addPost(post)
 
     fun getPostById(postId: String) = retrofit.getPostById(postId)
+
+    fun getPostsCount() = retrofit.getPostsCount()
 
 }

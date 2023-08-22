@@ -1,25 +1,21 @@
 package com.example.realestate.ui.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.Editable
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
-import android.widget.AutoCompleteTextView
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
-import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.R
 import com.example.realestate.data.models.CountriesDataItem
 import com.example.realestate.data.models.CurrentUser
@@ -37,7 +33,6 @@ import com.example.realestate.ui.adapters.PostsAdapter
 import com.example.realestate.ui.viewmodels.HomeViewModel
 import com.example.realestate.utils.*
 import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipDrawable
 import com.google.android.material.chip.ChipGroup
 
 
@@ -96,12 +91,10 @@ class HomeFragment : Fragment(), ActivityResultListener {
             object : OnAddToFavClicked {
                 override fun onChecked(postId: String) {
                     viewModel.unlike(postId)
-//                    postsAdapter.unlike(postId)
                 }
 
                 override fun onUnChecked(postId: String) {
                     viewModel.like(postId)
-//                    postsAdapter.like(postId)
                 }
             }
         )
@@ -169,12 +162,43 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
             }
 
+            val layoutManager = postRv.getRecyclerView().layoutManager
+            val scrollListener = object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (!recyclerView.canScrollVertically(1) &&
+                        newState == RecyclerView.SCROLL_STATE_IDLE &&
+                        !postsAdapter.isListEmpty()
+                    ) {
+//                        viewModel.getPosts(searchParams, "onScrollStateChanged", false)
+                        Log.d(TAG, "got to the bottom")
+                    }
+                }
+            }
+//            postRv.getRecyclerView().addOnScrollListener(scrollListener)
+//            scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+//
+//            }
 
             //disable swipe refresh if not on top
             scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
                 val isAtTop = scrollY == 0
+                val contentHeight = scrollView.getChildAt(0).height
+                val scrollViewHeight = scrollView.height
+                val isAtBottom = scrollY >= contentHeight - scrollViewHeight
+
                 swipeRefreshLayout.isEnabled =
                     isAtTop && !postRv.canScrollVertically(-1)
+
+                if (isAtBottom) {
+                    // Reached the bottom of the ScrollView
+                    // Perform your action here
+                    if (viewModel.isProgressBarTurning.value != true) {
+                        viewModel.getPosts(searchParams, "onScrollStateChanged", false)
+                    }
+
+                }
+
             }
             //get the current country and send the request to get the posts of this country
 //            countryPicker.setOnCountryChangeListener {
@@ -201,6 +225,10 @@ class HomeFragment : Fragment(), ActivityResultListener {
         binding.categoriesChipGroup.addVeilElements(5)
         binding.shimmerFrameLayout.startShimmer()
 
+        viewModel.currentPage.observe(viewLifecycleOwner) { currentPage ->
+            Log.d(TAG, "currentPage: $currentPage")
+            searchParams.page = currentPage
+        }
 
         binding.apply {
             viewModel.countries.observe(viewLifecycleOwner) { data ->
@@ -262,7 +290,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
             //handle error message
             viewModel.postsMessage.observe(viewLifecycleOwner) { postsMessage ->
-                Log.d(TAG, "message: $postsMessage")
                 if (postsMessage.isEmpty()) {
                     this.postsMessage.visibility = View.GONE
                 } else {
@@ -272,7 +299,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
             }
             viewModel.categoriesMessage.observe(viewLifecycleOwner) { categoriesMessage ->
-                Log.d(TAG, "message: $categoriesMessage")
                 if (categoriesMessage.isEmpty()) {
                     this.categoriesMessage.visibility = View.GONE
                 } else {
@@ -284,9 +310,9 @@ class HomeFragment : Fragment(), ActivityResultListener {
             //handle loading
             viewModel.isProgressBarTurning.observe(viewLifecycleOwner) { loading ->
                 binding.progressBar.isVisible = loading
-                if (loading && !binding.postRv.isVeiled) {
-                    binding.postRv.veil()
-                }
+//                if (loading && !binding.postRv.isVeiled) {
+//                    binding.postRv.veil()
+//                }
             }
 
 
