@@ -16,6 +16,20 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/post_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/yellow"
+            android:elevation="2dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Apartment, rent" />
+
         <ImageView
             android:id="@+id/post_image"
             android:layout_width="match_parent"
@@ -36,10 +50,11 @@
             android:padding="10dp"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             android:textColor="@color/yellow"
-            app:layout_constraintBottom_toTopOf="@+id/post_location"
+            app:layout_constraintBottom_toTopOf="@+id/location_cl"
             app:layout_constraintEnd_toStartOf="@+id/add_to_fav"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/post_image" />
+            app:layout_constraintTop_toBottomOf="@+id/post_image"
+            tools:text="1,000,000" />
 
         <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/add_to_fav"
@@ -51,33 +66,60 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/location_cl"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/post_image" />
 
-        <TextView
-            android:id="@+id/post_location"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/location_cl"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            app:drawableStartCompat="@drawable/baseline_location_on_24"
-            app:drawableTint="@color/yellow"
+            android:layout_height="match_parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/add_to_fav">
+            app:layout_constraintTop_toBottomOf="@+id/post_price">
 
-        </TextView>
+            <ImageView
+                android:id="@+id/country_flag"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/country_flag"
+                android:scaleType="centerCrop"
+                android:padding="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.5"
+/>
+
+            <TextView
+                android:id="@+id/post_location"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/country_flag"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.5">
+
+            </TextView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/details_short_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/post_location" />
+            app:layout_constraintTop_toBottomOf="@+id/location_cl" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

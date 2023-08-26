@@ -6,6 +6,9 @@
         <item name="strokeColor">@color/stroke_button_color</item>
         <item name="strokeWidth">@dimen/button_stroke_size</item>
     </style>
+    <style name="NewPostButtonStyle" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="textAllCaps">false</item>
+    </style>
 
     <style name="ChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
         <item name="chipCornerRadius">9dp</item>

@@ -28,9 +28,7 @@ class HomeViewModel(
     var currentPage = MutableLiveData(1)
     private val _user = MutableLiveData<User?>()
     private val _categoriesList = MutableLiveData<List<String>?>()
-    private val _countries = MutableLiveData<CountriesData?>()
-    private val _postsList =
-        MutableLiveData(mutableListOf<PostWithOwnerId>())
+    private val _postsList = MutableLiveData(mutableListOf<PostWithOwnerId>())
     private val _isLoading = MutableLiveData<Boolean>()
     private val _postsMessage = MutableLiveData<String>()
     private val _categoriesMessage = MutableLiveData<String>()
@@ -46,8 +44,6 @@ class HomeViewModel(
         get() = _postsList
     val categoriesList: LiveData<List<String>?>
         get() = _categoriesList
-    val countries: LiveData<CountriesData?>
-        get() = _countries
     val postsMessage: LiveData<String>
         get() = _postsMessage
     val categoriesMessage: LiveData<String>
@@ -151,9 +147,6 @@ class HomeViewModel(
         handleApiRequest(usersRepository.getUserById(userId), null, _user, TAG)
     }
 
-    fun getCountries() {
-        handleApiRequest(staticDataRepository.getCountries(), _isLoading, _countries, TAG)
-    }
 
     fun like(postId: String) {
         handleApiRequest(

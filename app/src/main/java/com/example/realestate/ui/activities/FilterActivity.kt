@@ -7,10 +7,12 @@ import android.os.Bundle
 import android.text.Editable
 import android.util.Log
 import android.view.View
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.view.children
+import androidx.core.view.forEach
 import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
+import com.example.realestate.data.models.PriceFilter
 import com.example.realestate.data.models.SearchParams
 import com.example.realestate.data.models.Type
 import com.example.realestate.data.models.extras
@@ -18,9 +20,7 @@ import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.ActivityFilterBinding
 import com.example.realestate.ui.viewmodels.FilterModel
-import com.example.realestate.utils.OnSelected
-import com.example.realestate.utils.hideKeyboard
-import com.example.realestate.utils.setUpAndHandleSearch
+import com.example.realestate.utils.*
 import com.google.android.material.chip.Chip
 
 class FilterActivity : AppCompatActivity() {
@@ -49,25 +49,40 @@ class FilterActivity : AppCompatActivity() {
         }
         Log.i(TAG, "params: $searchParams")
 
-        binding.extrasChipGrp.setOnCheckedStateChangeListener { group, checkedIds ->
-            checkedIds.map { id ->
-                val chip = group.findViewById<Chip>(id)
-                val text = chip.text
+        binding.extrasChipGrp.forEach { view ->
+            val checkBox = view as CheckBox
+
+            checkBox.setOnClickListener {
+                val text = checkBox.text
                 Log.d(TAG, "chip text: $text")
             }
+        }
 
+        binding.priceFilterRg.setOnCheckedChangeListener { _, checkedId ->
+            searchParams?.price = when (checkedId) {
+                binding.up.id -> {
+                    PriceFilter.UP
+                }
+                binding.down.id -> {
+                    PriceFilter.DOWN
+                }
+                else -> PriceFilter.NONE
+            }
         }
 
         filterModel.apply {
             categoriesList.observe(this@FilterActivity) { categories ->
                 Log.i(TAG, "categories: $categories")
                 categories?.apply {
+                    val categoriesToShow = this.capitalizeFirstLetter().sorted()
                     binding.categoryEditText.apply {
                         binding.categoryTextField.isEnabled = true
-                        val adapter = setUpAndHandleSearch(categories, object : OnSelected {
+                        val adapter = setUpAndHandleSearch(categoriesToShow, object : OnSelected {
                             override fun onSelected(selectedItem: Editable?) {
-                                val item = selectedItem.toString()
-                                searchParams?.category = item
+                                val item = selectedItem.toString().lowerFirstLetter()
+                                if (categories.contains(item))
+                                    searchParams?.category = item
+                                
                                 binding.apply {
                                     val show = extras.contains(item)
                                     proprietyCdTv.isVisible = show
@@ -75,16 +90,17 @@ class FilterActivity : AppCompatActivity() {
                                     extrasTv.isVisible = show
                                     extrasChipGrp.isVisible = show
                                 }
-                                hideKeyboard()
+
                             }
 
                         })
                         searchParams?.category?.apply {
-                            setText(this)
+                            setText(this.upperFirstLetter())
                             adapter.filter.filter(null)
                         }
                         setOnItemClickListener { _, _, _, _ ->
                             adapter.filter.filter(null)
+                            hideKeyboard()
                         }
                     }
                 }
@@ -95,18 +111,20 @@ class FilterActivity : AppCompatActivity() {
                 countries?.apply {
                     Log.d(TAG, "countries: $countries")
                     //Initialise country data
-                    searchParams?.location?.country.apply {
+                    searchParams?.location?.country?.name?.apply {
                         Log.d(TAG, "country data: $this")
-                        val code = this?.code
-
-                        code?.apply {
-                            val country = countries.find { data -> data.code == code }
-                            Log.d(TAG, "country with code $code: $country")
-                            country?.name?.apply {
-                                binding.countryEditText.setText(this)
-                                getCities(this)
-                            }
-                        }
+                        binding.countryEditText.setText(this)
+                        getCities(this)
+//                        val code = this?.code
+//
+//                        code?.apply {
+//                            val country = countries.find { data -> data.code == code }
+//                            Log.d(TAG, "country with code $code: $country")
+//                            country?.name?.apply {
+//                                binding.countryEditText.setText(this)
+//                                getCities(this)
+//                            }
+//                        }
 
                     }
 
@@ -191,7 +209,6 @@ class FilterActivity : AppCompatActivity() {
 
 
         binding.search.setOnClickListener {
-            Log.d(TAG, "searchParams: $searchParams")
             intent.putExtra("search_params", searchParams)
             setResult(Activity.RESULT_OK, intent)
             finish()

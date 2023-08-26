@@ -16,6 +16,7 @@ import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.FragmentStepTwoBinding
 import com.example.realestate.ui.activities.AddPostActivity
 import com.example.realestate.ui.viewmodels.postaddmodels.StepTwoModel
+import com.example.realestate.utils.capitalizeFirstLetter
 import com.example.realestate.utils.doOnFail
 import com.example.realestate.utils.setUpAndHandleSearch
 import com.example.realestate.utils.updateLiveData
@@ -41,10 +42,11 @@ class StepTwoFragment : FragmentStep() {
         stepTwoModel.categories.observe(viewLifecycleOwner) { categories ->
             if (categories != null) {
                 binding.categoryEditText.apply {
+                    val categoriesToShow = categories.capitalizeFirstLetter().sorted()
                     //initial values
-                    setText(categories[0])
+                    setText(categoriesToShow[0])
 
-                    val adapter = setUpAndHandleSearch(categories)
+                    val adapter = setUpAndHandleSearch(categoriesToShow)
 
                     //clear filter after user choose one item
                     setOnItemClickListener { _, _, _, _ ->
@@ -74,7 +76,7 @@ class StepTwoFragment : FragmentStep() {
             val wrapper = stepTwoModel.mutableLiveDataWrapper
 
             //user input
-            categoryEditText.updateLiveData(wrapper._categoryLiveData)
+            categoryEditText.updateLiveData(wrapper._categoryLiveData, true)
             priceEditText.updateLiveData(wrapper._priceLiveData)
             whatsappPhoneInput.phoneEditText.updateLiveData(wrapper._whatsappNumberLiveData)
             callPhoneInput.phoneEditText.updateLiveData(wrapper._callNumberLiveData)

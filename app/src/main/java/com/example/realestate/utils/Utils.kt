@@ -11,6 +11,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
 import android.widget.*
@@ -32,15 +33,20 @@ import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import com.example.realestate.R
-import com.example.realestate.data.models.*
+import com.example.realestate.data.models.Error
+import com.example.realestate.data.models.ErrorResponse
+import com.example.realestate.data.models.MediaType
+import com.example.realestate.data.models.SearchParams
+import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.firebase.FirebaseException
@@ -51,6 +57,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.NumberFormat
 import java.util.*
 
 
@@ -180,6 +187,16 @@ fun FragmentActivity.disableBackButton(viewLifecycleOwner: LifecycleOwner) {
         })
 }
 
+fun formatNumberWithCommas(number: Int): String {
+    val numberFormat = NumberFormat.getNumberInstance(Locale.US)
+    return numberFormat.format(number)
+}
+
+fun formatNumberWithSpaces(number: Int): String {
+    val numberFormat = NumberFormat.getInstance(Locale.getDefault())
+    return numberFormat.format(number)
+}
+
 fun <T> handleApiRequest(
     apiCall: Call<T>,
     loadingLiveData: MutableLiveData<Boolean>?,
@@ -194,7 +211,7 @@ fun <T> handleApiRequest(
 
             if (response.isSuccessful) {
                 dataLiveData?.postValue(response.body())
-//                Log.d(TAG, "onResponse: ${response.body()}")
+                Log.d(TAG, "onResponse: ${response.body()}")
             } else {
                 getError(TAG, response.errorBody(), response.code())
                 dataLiveData?.postValue(null)
@@ -252,6 +269,40 @@ fun ImageView.loadImage(imageName: String?, errorImage: Int = R.drawable.baselin
         .placeholder(circularProgressBar(context))
         .error(errorImage)
         .into(this)
+}
+
+fun ImageView.loadSvg(imageUrl: String, errorImage: Int = R.drawable.baseline_broken_image_24) {
+    val requestBuilder = GlideToVectorYou
+        .init()
+        .with(context)
+        .requestBuilder
+
+    requestBuilder
+        .load(imageUrl)
+        .transition(DrawableTransitionOptions.withCrossFade())
+        .apply(
+            RequestOptions()
+                .centerCrop()
+                .placeholder(circularProgressBar(context))
+                .error(errorImage)
+        )
+        .into(this)
+
+//    GlideToVectorYou
+//        .init()
+//        .with(context)
+//        .withListener(object : GlideToVectorYouListener {
+//            override fun onLoadFailed() {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onResourceReady() {
+//                TODO("Not yet implemented")
+//            }
+//
+//        })
+//        .setPlaceHolder(circularProgressBar(context), R.drawable.baseline_broken_image_24)
+//        .load(Uri.parse(imageUrl), this)
 }
 
 fun StyledPlayerView.loadVideo(videoName: String, myPlayer: ExoPlayer) {
@@ -569,9 +620,13 @@ fun MaterialAutoCompleteTextView.setUpAndHandleSearch(
 }
 
 
-fun EditText.updateLiveData(liveData: MutableLiveData<String>) {
+fun EditText.updateLiveData(liveData: MutableLiveData<String>, lower: Boolean = false) {
     this.doOnTextChanged { text, _, _, _ ->
-        liveData.value = text.toString()
+        val textRes = text.toString()
+        liveData.value = if (lower)
+            textRes.lowerFirstLetter()
+        else
+            textRes
     }
 }
 
@@ -701,13 +756,14 @@ fun getMediaTypeFromUri(context: Context, uri: Uri): MediaType {
 }
 
 fun TextView.defineField(value: String?, context: Context, fillWith: String? = null) {
-    text = if (value.isNullOrEmpty()) {
-        fillWith ?: context.getString(R.string.no_defined)
-    } else {
-        value
-    }
+    val test = getValueOrDefault(value)
+    Log.d(TAG, "test: $test")
+    text = test
 }
 
+fun getValueOrDefault(value: String?): String {
+    return value.takeIf { it?.isNotEmpty() == true } ?: "-"
+}
 
 fun squareMeterToSquareFoot(meter: Double) = meter * 10.7633911105
 fun squareFeetToSquareMeters(squareFeet: Double) = squareFeet * 0.092903
@@ -715,13 +771,29 @@ fun formatDecimal(value: Double): String {
     return String.format(Locale.US, "%.3f", value)
 }
 
-fun ChipGroup.initialiseCategoryChip(category: String?, TAG: String) {
+fun ViewGroup.initialiseCategoryButtons(category: String?, TAG: String) {
     val chip = children.find { view ->
-        val chip = view as Chip
+        val chip = view as RadioButton
         chip.text == category
     } as Chip?
     Log.d(TAG, "initialiseCategoryChip ${chip?.text}: ")
     chip?.isChecked = true
+}
+
+fun List<String>.sortToAdd(): MutableList<String> {
+    val result = mutableListOf<String>()
+    val mid = size / 2
+
+    for (i in 0 until mid) {
+        result.add(this[i])
+        result.add(this[size - 1 - i])
+    }
+
+    if (size % 2 != 0) {
+        result.add(this[mid])
+    }
+
+    return result
 }
 
 fun String.isNumeric(): Boolean {

@@ -8,7 +8,7 @@ data class SearchParams(
     var title: String? = null,
     var type: String? = null,
     var category: String? = null,
-    var price: Number? = null,
+    var price: PriceFilter? = PriceFilter.NONE,
     var location: LocationData? = LocationData(),
     var page: Number? = null
 ) : Parcelable {
@@ -23,4 +23,8 @@ data class SearchParams(
     fun setArea(area: String?) {
         location?.area = area
     }
+}
+
+enum class PriceFilter {
+    NONE, UP, DOWN
 }

@@ -8,10 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.R
 import com.example.realestate.data.models.*
 import com.example.realestate.databinding.SinglePostBinding
-import com.example.realestate.utils.OnAddToFavClicked
-import com.example.realestate.utils.OnPostClickListener
-import com.example.realestate.utils.getMediaType
-import com.example.realestate.utils.loadImage
+import com.example.realestate.utils.*
 
 class PostsAdapter(
 
@@ -24,8 +21,9 @@ class PostsAdapter(
         const val TAG = "PostAdapter"
     }
 
-//    private var postsList: MutableList<Post> = mutableListOf()
+    //    private var postsList: MutableList<Post> = mutableListOf()
     private var favourites: MutableList<String> = mutableListOf()
+    private var countriesData: CountriesData? = null
     fun setPostsList(list: List<PostWithOwnerId>) {
         postsList = list.toMutableList()
         notifyDataSetChanged()
@@ -38,21 +36,32 @@ class PostsAdapter(
         notifyDataSetChanged()
     }
 
+    fun setCountriesData(data: CountriesData?) {
+        countriesData = data
+        notifyDataSetChanged()
+    }
+
     inner class PostHolder(private val binding: SinglePostBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         private val detailsShortAdapter = DetailsAdapter(DetailsType.SHORT)
-
         fun bind(position: Int) {
             val currentPost = postsList[position]
             val context = binding.root.context
             val isChecked = currentPost.id in favourites
+            val countryData =
+                countriesData?.find { country -> country.name == currentPost.location.country }
 
             binding.apply {
 
                 //load the first image if nothing found load first media
                 val firstImage =
-                    currentPost.media.find { image -> getMediaType(image, TAG) == MediaType.IMAGE }
+                    currentPost.media.find { image ->
+                        getMediaType(
+                            image,
+                            TAG
+                        ) == MediaType.IMAGE
+                    }
 
                 if (firstImage != null) {
                     postImage.loadImage(firstImage)
@@ -63,15 +72,25 @@ class PostsAdapter(
                 }
 
                 postWhole.setOnClickListener {
-                    Log.d(TAG, "clicked post at $position with id: ${currentPost.id} ")
                     postClickListener.onClick(currentPost.id!!)
+                }
+
+                postInfo.apply {
+                    defineField(
+                        context.getString(
+                            R.string.category_type,
+                            currentPost.category.upperFirstLetter(),
+                            currentPost.type.upperFirstLetter()
+                        ), context
+                    )
                 }
                 postPrice.text =
                     context.getString(
                         R.string.price,
-                        currentPost.price.toString()
+                        formatNumberWithCommas(currentPost.price)
                     )
                 currentPost.location.apply {
+                    countryFlag.loadImage(countryData?.image)
                     postLocation.text =
                         context.getString(
                             R.string.location,
@@ -106,7 +125,8 @@ class PostsAdapter(
                 if (details != null) {
                     detailsShortRv.apply {
                         adapter = detailsShortAdapter
-                        layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+                        layoutManager =
+                            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
                         detailsShortAdapter.setDetails(details)
                     }
                 }

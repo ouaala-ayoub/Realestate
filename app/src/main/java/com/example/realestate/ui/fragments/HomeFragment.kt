@@ -4,34 +4,32 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
 import android.view.*
+import android.widget.RadioButton
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
+import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.realestate.R
-import com.example.realestate.data.models.CountriesDataItem
-import com.example.realestate.data.models.CurrentUser
-import com.example.realestate.data.models.SearchParams
-import com.example.realestate.data.models.Type
+import com.example.realestate.data.models.*
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.ChipVeilledBinding
 import com.example.realestate.databinding.FragmentHomeModifiedBinding
-import com.example.realestate.databinding.SingleCategoryChipBinding
 import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.adapters.PostsAdapter
 import com.example.realestate.ui.viewmodels.HomeViewModel
 import com.example.realestate.utils.*
 import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 
 
 class HomeFragment : Fragment(), ActivityResultListener {
@@ -47,6 +45,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
     private lateinit var binding: FragmentHomeModifiedBinding
     private lateinit var postsAdapter: PostsAdapter
     private lateinit var searchParams: SearchParams
+    private var selectedOption: RadioButton? = null
     private var selectedChipId: Int = -1
     val viewModel: HomeViewModel by lazy {
         val retrofit = Retrofit.getInstance()
@@ -59,7 +58,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 if (CurrentUser.isUserIdStored() && !CurrentUser.isConnected())
                     getUserById(CurrentUser.prefs.get()!!)
 
-                getCountries()
                 getCategories()
                 getPosts(source = "lazy")
             }
@@ -160,6 +158,21 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
             }
 
+            newPost.setOnClickListener {
+                val userConnected = CurrentUser.isConnected()
+                val navHost =
+                    requireActivity().supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+                val navController = navHost.navController
+
+                if (userConnected) {
+                    navController.navigate(R.id.addPostActivity)
+                } else {
+                    val activity = (requireActivity() as MainActivity)
+                    activity.launchRegisterProcess(
+                        activity.registerForPostAddLauncher
+                    )
+                }
+            }
 
             //disable swipe refresh if not on top
             scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
@@ -211,7 +224,8 @@ class HomeFragment : Fragment(), ActivityResultListener {
         }
 
         binding.apply {
-            viewModel.countries.observe(viewLifecycleOwner) { data ->
+            (requireActivity() as MainActivity).countriesModel.countries.observe(viewLifecycleOwner) { data ->
+                postsAdapter.setCountriesData(data)
                 if (data != null) {
                     val countries = data.map { element -> element.name }.toMutableList().also {
                         it.add(0, getString(R.string.all))
@@ -228,8 +242,9 @@ class HomeFragment : Fragment(), ActivityResultListener {
                                 if (query == getString(R.string.all)) {
                                     searchParams.setCountry(null)
                                 } else {
+                                    Log.i(TAG, "data: $data")
                                     searchParams.setCountry(query)
-                                    searchParams.location?.country?.code = data[i - 1].code
+//                                    searchParams.location?.country?.code = data[i - 1].code
                                 }
                             } else
                                 searchParams.setCountry(null)
@@ -299,26 +314,44 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
             viewModel.categoriesList.observe(viewLifecycleOwner) { categories ->
                 if (categories == null) return@observe
+                binding.shimmerFrameLayout.hideShimmer()
                 categoriesChipGroup.apply {
-                    removeAllViews()
-                    binding.shimmerFrameLayout.hideShimmer()
-                    fillWith(categories)
-                    setOnCheckedStateChangeListener { group, checkedId ->
-                        if (checkedId.isEmpty()) {
-                            searchParams.category = null
-                            viewModel.getPosts(
-                                searchParams,
-                                source = "setOnCheckedStateChangeListener isEmpty = true"
-                            )
-                        } else {
-                            val selectedChip: Chip? = group.findViewById(checkedId[0])
-                            val selectedCategory: String? = selectedChip?.text?.toString()
+                    val list =
+                        categories.capitalizeFirstLetter().sortedByDescending { it.length }
 
-                            searchParams.category = selectedCategory
-                            viewModel.getPosts(
-                                searchParams,
-                                source = "setOnCheckedStateChangeListener isEmpty = false"
-                            )
+                    val categoriesToShow = list.sortToAdd()
+
+                    removeAllViews()
+                    fillWith(categoriesToShow)
+
+                    forEach { view ->
+                        val radioButton = view as RadioButton
+
+                        radioButton.setOnClickListener {
+                            val newSelectedOption = radioButton.text.toString()
+                            Log.d(TAG, "text: $newSelectedOption")
+
+                            if (radioButton == selectedOption) {
+                                radioButton.isChecked = false
+                                selectedOption = null
+
+                                searchParams.category = null
+                                viewModel.getPosts(
+                                    searchParams,
+                                    source = "setOnCheckedStateChangeListener isEmpty = true"
+                                )
+                            } else {
+                                selectedOption?.isChecked = false
+                                selectedOption = radioButton
+
+                                Log.d(TAG, "selectedCategory: $newSelectedOption")
+
+                                searchParams.category = newSelectedOption.lowerFirstLetter()
+                                viewModel.getPosts(
+                                    searchParams,
+                                    source = "setOnCheckedStateChangeListener isEmpty = false"
+                                )
+                            }
 
                         }
                     }
@@ -328,6 +361,22 @@ class HomeFragment : Fragment(), ActivityResultListener {
             viewModel.postsList.observe(viewLifecycleOwner) { posts ->
 
                 handleHomeButton()
+
+
+                when (searchParams.price) {
+                    PriceFilter.DOWN -> {
+                        posts?.sortBy { it.price }
+                        searchParams.price = PriceFilter.NONE
+                    }
+                    PriceFilter.UP -> {
+                        posts?.sortByDescending { it.price }
+                        searchParams.price = PriceFilter.NONE
+                    }
+                    else -> {
+                        //do nothing
+                    }
+                }
+
 
                 posts?.apply {
 
@@ -401,19 +450,24 @@ class HomeFragment : Fragment(), ActivityResultListener {
     }
 
 
-    private fun ChipGroup.fillWith(categories: List<String>) {
+    private fun ViewGroup.fillWith(categories: List<String>) {
 
         categories.forEach { category ->
-            val chipLayout = SingleCategoryChipBinding.inflate(layoutInflater, this, false)
-            chipLayout.chip.apply {
+            val radioButton = RadioButton(context)
+            radioButton.apply {
                 text = category
                 id = ViewCompat.generateViewId()
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                setPadding(5, 5, 5, 5)
             }
-            addView(chipLayout.root)
+            addView(radioButton)
         }
     }
 
-    private fun ChipGroup.addVeilElements(number: Int) {
+    private fun ViewGroup.addVeilElements(number: Int) {
         for (i in 0..number) {
             val veiledChip = ChipVeilledBinding.inflate(layoutInflater)
             val randomText = RandomGenerator.generateRandomEmptyString(10, 20)
@@ -459,6 +513,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
     private fun handleChips() {
 
         for (chip in binding.chips.children) {
+            if (chip.id == R.id.new_post) continue
             chip.setOnClickListener {
                 isUserClick = true
                 if (selectedChipId == chip.id) {
@@ -478,7 +533,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
         this.searchParams = searchParams
         initialiseTypeChips(searchParams.type)
 
-        binding.categoriesChipGroup.initialiseCategoryChip(searchParams.category, TAG)
+        binding.categoriesChipGroup.initialiseCategoryButtons(searchParams.category, TAG)
 
         initialiseCountryPicker(searchParams.location?.country)
 

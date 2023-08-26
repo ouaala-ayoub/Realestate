@@ -36,7 +36,6 @@ interface RetrofitService {
     @GET("posts")
     fun getPosts(
         @Query("search") title: String? = null,
-        @Query("p") price: Number? = null,
         @Query("country") country: String? = null,
         @Query("city") city: String? = null,
         @Query("category") category: String? = null,

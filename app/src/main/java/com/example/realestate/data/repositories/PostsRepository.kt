@@ -9,7 +9,6 @@ class PostsRepository(private val retrofit: RetrofitService) {
         title = searchParams.title,
         country = searchParams.location?.country?.name,
         city = searchParams.location?.city,
-        price = searchParams.price,
         category = searchParams.category,
         type = searchParams.type,
         page = searchParams.page.toString()

@@ -1,6 +1,7 @@
 package com.example.realestate.ui.activities
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -21,11 +23,15 @@ import com.bumptech.glide.Glide
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.SearchParams
+import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.ActivityMainBinding
+import com.example.realestate.ui.fragments.HomeFragmentDirections
+import com.example.realestate.ui.viewmodels.CountriesModel
 import com.example.realestate.utils.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import retrofit2.Retrofit
 
 class MainActivity : AppCompatActivity(), ActivityResultListener {
 
@@ -35,9 +41,13 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
     var params: SearchParams = SearchParams()
     private lateinit var resultListener: ActivityResultListener
+    val countriesModel: CountriesModel = CountriesModel(
+        StaticDataRepository(com.example.realestate.data.remote.network.Retrofit.getInstance())
+    )
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var profileImage: ImageView
+    private lateinit var navController: NavController
     lateinit var bottomNavView: BottomNavigationView
     private val searchLauncher = startActivityResult(
         object : SelectionResult {
@@ -88,7 +98,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         override fun onResultFailed() {}
 
     })
-    private val registerForPostAddLauncher = registerAnd(object : SelectionResult {
+    val registerForPostAddLauncher = registerAnd(object : SelectionResult {
         override fun onResultOk(data: Intent) {
 //            val shouldCheckPhone =
 //                FirebaseAuth.getInstance().currentUser?.phoneNumber.isNullOrEmpty()
@@ -131,13 +141,29 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        val navHost =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+        val view = binding.navView.getHeaderView(0)
+        val data = intent.data
+
+
         drawerLayout = binding.drawerLayout
         bottomNavView = binding.bottomNav
-        val view = binding.navView.getHeaderView(0)
         profileImage = view.findViewById(R.id.user_image)
+        navController = navHost.navController
+
+        //check for deep link
+        if (data != null) {
+            val postId = data.lastPathSegment // Extract the post ID from the URL
+            // Use postId to navigate to the specific post within your app
+            postId?.apply {
+                val action = HomeFragmentDirections.actionHomeFragmentToPostNav(this)
+                navController.navigate(action)
+            }
+        }
 
         initialiseDrawerLayout(drawerLayout)
         setTheBottomNav()
@@ -182,9 +208,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     }
 
     private fun setTheBottomNav() {
-        val navHost =
-            supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
-        val navController = navHost.navController
+
 
         binding.bottomNav.setupWithNavController(navController)
 
@@ -300,7 +324,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.dashboard -> {
+                R.id.settings -> {
                     //TODO
                 }
                 R.id.email -> {

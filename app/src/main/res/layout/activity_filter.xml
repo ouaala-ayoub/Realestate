@@ -89,14 +89,14 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
-                app:drawableStartCompat="@drawable/baseline_location_on_24"
-                app:drawableTint="@color/yellow"
+                android:layout_marginBottom="5dp"
                 android:text="@string/location_tv"
                 android:textColor="@color/yellow"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                app:drawableStartCompat="@drawable/baseline_location_on_24"
+                app:drawableTint="@color/yellow" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/countryTextField"
@@ -160,9 +160,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
                 android:text="@string/type"
                 android:textColor="@color/yellow"
                 android:textSize="16sp" />
@@ -184,6 +184,43 @@
                     android:lines="1"
                     android:textStyle="bold" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/price_filter"
+                android:textColor="@color/yellow"
+                android:textSize="16sp" />
+
+            <RadioGroup
+                android:id="@+id/price_filter_rg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checkedButton="@id/none"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/none"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/none" />
+
+                <RadioButton
+                    android:id="@+id/up"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/up" />
+
+                <RadioButton
+                    android:id="@+id/down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/down" />
+
+            </RadioGroup>
 
             <TextView
                 android:id="@+id/propriety_cd_tv"
@@ -242,55 +279,112 @@
                 android:textSize="16sp"
                 android:visibility="gone" />
 
+            <!--            <com.google.android.material.chip.ChipGroup-->
+            <!--                android:id="@+id/extras_chip_grp"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:visibility="visible"-->
+            <!--                app:singleSelection="false">-->
+
+            <!--                <com.google.android.material.chip.Chip-->
+            <!--                    android:id="@+id/furnished"-->
+            <!--                    style="@style/YellowChipStyle"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:text="@string/is_furnished" />-->
+
+            <!--                <com.google.android.material.chip.Chip-->
+            <!--                    android:id="@+id/balcony"-->
+            <!--                    style="@style/YellowChipStyle"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:text="@string/has_balcony" />-->
+
+            <!--                <com.google.android.material.chip.Chip-->
+            <!--                    android:id="@+id/new_property"-->
+            <!--                    style="@style/YellowChipStyle"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:text="@string/is_new" />-->
+
+            <!--                <com.google.android.material.chip.Chip-->
+            <!--                    android:id="@+id/gym"-->
+            <!--                    style="@style/YellowChipStyle"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:text="@string/has_gym" />-->
+
+            <!--                <com.google.android.material.chip.Chip-->
+            <!--                    android:id="@+id/swimming_pool"-->
+            <!--                    style="@style/YellowChipStyle"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:text="@string/has_swimming_pool" />-->
+
+            <!--                <com.google.android.material.chip.Chip-->
+            <!--                    android:id="@+id/parking"-->
+            <!--                    style="@style/YellowChipStyle"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:text="@string/has_parking" />-->
+
+
+            <!--            </com.google.android.material.chip.ChipGroup>-->
+
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/extras_chip_grp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:singleSelection="false">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
-                <com.google.android.material.chip.Chip
+                <CheckBox
                     android:id="@+id/furnished"
-                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/is_furnished" />
 
-                <com.google.android.material.chip.Chip
+                <CheckBox
                     android:id="@+id/balcony"
-                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/has_balcony" />
 
-                <com.google.android.material.chip.Chip
+                <CheckBox
                     android:id="@+id/new_property"
-                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/is_new" />
 
-                <com.google.android.material.chip.Chip
+                <CheckBox
                     android:id="@+id/gym"
-                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/has_gym" />
 
-                <com.google.android.material.chip.Chip
+                <CheckBox
                     android:id="@+id/swimming_pool"
-                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/has_swimming_pool" />
 
-                <com.google.android.material.chip.Chip
+                <CheckBox
                     android:id="@+id/parking"
-                    style="@style/YellowChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/has_parking" />
 
+                <CheckBox
+                    android:id="@+id/elevator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/elevator" />
+
+                <CheckBox
+                    android:id="@+id/security"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/security" />
 
             </com.google.android.material.chip.ChipGroup>
 

@@ -15,6 +15,7 @@ import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.FragmentSavedBinding
+import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.adapters.LikedAdapter
 import com.example.realestate.ui.viewmodels.LikedViewModel
 import com.example.realestate.utils.OnLikedClickListener
@@ -103,6 +104,9 @@ class LikedFragment : Fragment() {
             }
             loading.observe(viewLifecycleOwner) { loading ->
                 binding.savedLoading.isVisible = loading
+            }
+            (requireActivity() as MainActivity).countriesModel.countries.observe(viewLifecycleOwner) { data ->
+                likedAdapter.setCountriesData(data)
             }
         }
     }

@@ -3,12 +3,14 @@ package com.example.realestate.ui.fragments
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Spanned
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -143,30 +145,42 @@ class PostPageFragment : Fragment() {
 
                     val contact = post.contact
                     val owner = post.owner
+                    val deepLink = "https://realestatefy.vercel.app/posts/${post.id}"
+                    val country = getString(R.string.country_res, post.location.country)
+                    val city = getString(R.string.city_res, post.location.city)
+                    val area = if (!post.location.area.isNullOrEmpty()) {
+                        getString(R.string.area_res, post.location.area)
+                    } else {
+                        getString(R.string.area_res, "-")
+                    }
 
                     //bind the data
                     binding.apply {
 //                        imagePlaceholder.isVisible = false
-                        priceTextView.defineField(
-                            getString(R.string.price, post.price.toString()),
-                            requireContext()
-                        )
+
                         categoryTypeRv.defineField(
                             getString(
                                 R.string.category_type,
-                                post.category,
-                                post.type
+                                post.category.upperFirstLetter(),
+                                post.type.upperFirstLetter()
                             ), requireContext()
                         )
-                        locationTextView.defineField(
-                            getString(
-                                R.string.location,
-                                post.location.country,
-                                post.location.city,
-                                post.location.area
-                            ),
+
+                        numberOfLikes.text = formatNumberWithSpaces(post.likes)
+
+                        priceTextView.defineField(
+                            getString(R.string.price, formatNumberWithCommas(post.price)),
                             requireContext()
                         )
+
+                        share.setOnClickListener {
+                            shareDeepLink(deepLink)
+                        }
+
+                        countryTv.text = loadHtml(country)
+                        cityTv.text = loadHtml(city)
+                        areaTv.text = loadHtml(area)
+
                         descriptionRv.defineField(post.description, requireContext())
                         val details = post.details
 
@@ -264,8 +278,22 @@ class PostPageFragment : Fragment() {
         startActivity(intent)
     }
 
+    private fun loadHtml(value: String): Spanned {
+        return HtmlCompat.fromHtml(value, HtmlCompat.FROM_HTML_MODE_COMPACT)
+    }
+
     override fun onStop() {
         super.onStop()
         exoPlayer.release()
+    }
+
+    private fun shareDeepLink(deepLink: String) {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "Shared Post")
+            putExtra(Intent.EXTRA_TEXT, deepLink)
+        }
+        startActivity(Intent.createChooser(shareIntent, "Share using"))
     }
 }
