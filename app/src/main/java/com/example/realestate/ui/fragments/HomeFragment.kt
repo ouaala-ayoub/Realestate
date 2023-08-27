@@ -233,7 +233,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
                     binding.countryEditText.apply {
                         setText(countries[0])
                         val adapter = setUpAndHandleSearch(countries)
-                        setOnItemClickListener { _, view, i, _ ->
+                        setOnItemClickListener { _, view, _, _ ->
                             val tv = view as TextView
                             val query = tv.text.toString()
                             adapter.filter.filter(null)
