@@ -297,6 +297,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 if (categoriesMessage.isEmpty()) {
                     this.categoriesMessage.visibility = View.GONE
                 } else {
+                    binding.categoriesChipGroup.removeAllViews()
                     this.categoriesMessage.visibility = View.VISIBLE
                     this.categoriesMessage.text = categoriesMessage
                 }
@@ -336,10 +337,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
                                 selectedOption = null
 
                                 searchParams.category = null
-                                viewModel.getPosts(
-                                    searchParams,
-                                    source = "setOnCheckedStateChangeListener isEmpty = true"
-                                )
+
                             } else {
                                 selectedOption?.isChecked = false
                                 selectedOption = radioButton
@@ -347,12 +345,11 @@ class HomeFragment : Fragment(), ActivityResultListener {
                                 Log.d(TAG, "selectedCategory: $newSelectedOption")
 
                                 searchParams.category = newSelectedOption.lowerFirstLetter()
-                                viewModel.getPosts(
-                                    searchParams,
-                                    source = "setOnCheckedStateChangeListener isEmpty = false"
-                                )
                             }
-
+                            viewModel.getPosts(
+                                searchParams,
+                                source = "radioButton.setOnClickListener"
+                            )
                         }
                     }
                 }
@@ -533,7 +530,15 @@ class HomeFragment : Fragment(), ActivityResultListener {
         this.searchParams = searchParams
         initialiseTypeChips(searchParams.type)
 
-        binding.categoriesChipGroup.initialiseCategoryButtons(searchParams.category, TAG)
+        val selected = binding.categoriesChipGroup.initialiseCategoryButtons(
+            searchParams.category,
+            selectedOption,
+            TAG
+        )
+        selected?.apply {
+            selectedOption?.isChecked = false
+            selectedOption = this
+        }
 
         initialiseCountryPicker(searchParams.location?.country)
 

@@ -46,7 +46,6 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.firebase.FirebaseException
@@ -771,13 +770,20 @@ fun formatDecimal(value: Double): String {
     return String.format(Locale.US, "%.3f", value)
 }
 
-fun ViewGroup.initialiseCategoryButtons(category: String?, TAG: String) {
-    val chip = children.find { view ->
-        val chip = view as RadioButton
-        chip.text == category
-    } as Chip?
-    Log.d(TAG, "initialiseCategoryChip ${chip?.text}: ")
-    chip?.isChecked = true
+fun ViewGroup.initialiseCategoryButtons(
+    category: String?,
+    lastSelected: RadioButton?,
+    TAG: String
+): RadioButton? {
+    val selected = children.find { view ->
+        val selected = view as RadioButton
+        selected.text.toString().lowerFirstLetter() == category
+    } as RadioButton?
+
+    if (lastSelected != selected)
+        selected?.isChecked = true
+
+    return selected
 }
 
 fun List<String>.sortToAdd(): MutableList<String> {
