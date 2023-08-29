@@ -193,16 +193,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
 
             }
-            //get the current country and send the request to get the posts of this country
-//            countryPicker.setOnCountryChangeListener {
-//                // your code to handle selected country
-//                countryPicker.selectedCountryName.apply {
-//                    searchParams.location?.country?.name = this
-//                    viewModel.getPosts(searchParams, source = "countryPicker")
-//                }
-//                val code = countryPicker.selectedCountryNameCode
-//                searchParams.location?.country?.code = code
-//            }
         }
 
         return binding.root
@@ -405,20 +395,22 @@ class HomeFragment : Fragment(), ActivityResultListener {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener,
                 androidx.appcompat.widget.SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
-                    viewModel.apply {
-                        searchByQuery(query, "onQueryTextSubmit")
-                    }
+                    searchByQuery(query, "onQueryTextSubmit")
                     return false
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    if (firstTime) {
-                        firstTime = false
-                    } else {
-                        viewModel.apply {
-                            searchByQuery(newText, "onQueryTextChange")
-                        }
+//                    if (firstTime) {
+//                        firstTime = false
+//                    } else {
+//                        searchByQuery(newText, "onQueryTextChange")
+//                    }
+                    if (newText.isNullOrBlank()) {
+                        searchParams.title = null
+                        viewModel.getPosts(searchParams, source = "onQueryTextChange")
                     }
+
+
                     return false
                 }
 
@@ -536,8 +528,10 @@ class HomeFragment : Fragment(), ActivityResultListener {
             TAG
         )
         selected?.apply {
-            selectedOption?.isChecked = false
-            selectedOption = this
+            if (selectedOption != this) {
+                selectedOption?.isChecked = false
+                selectedOption = this
+            }
         }
 
         initialiseCountryPicker(searchParams.location?.country)

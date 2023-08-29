@@ -81,7 +81,6 @@ class ImagesSelectFragment : FragmentStep() {
                         }.show()
                     }
 
-
                     imagesAdapter.addImages(urisToUpload, requireContext())
                 }
 

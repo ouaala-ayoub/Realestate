@@ -78,7 +78,7 @@ class PostPageFragment : Fragment() {
                 Log.i(TAG, "registerSuccess: $registerSuccess")
 
                 if (registerSuccess) {
-                    navigateToReportFragment()
+                    navigateToReportFragment(postId)
                 } else {
                     requireContext().toast("please register first", Toast.LENGTH_SHORT)
                 }
@@ -120,7 +120,7 @@ class PostPageFragment : Fragment() {
 
             //TODO get activity for result instead of goToActivity
             if (CurrentUser.isConnected() || CurrentUser.isUserIdStored()) {
-                navigateToReportFragment()
+                navigateToReportFragment(postId)
             } else {
                 activity.launchRegisterProcess(loginLauncher)
             }
@@ -259,9 +259,9 @@ class PostPageFragment : Fragment() {
         }
     }
 
-    private fun navigateToReportFragment() {
+    private fun navigateToReportFragment(postsId: String) {
         val action =
-            PostPageFragmentDirections.actionPostPageFragmentToReportFragment()
+            PostPageFragmentDirections.actionPostPageFragmentToReportFragment(postsId)
         findNavController().navigate(action)
     }
 

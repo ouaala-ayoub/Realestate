@@ -10,7 +10,7 @@ data class Report(
     val userId: String,
 
     @SerializedName("reason")
-    val reason: String,
+    val reasons: List<String>,
 
     @SerializedName("message")
     var message: String? = null

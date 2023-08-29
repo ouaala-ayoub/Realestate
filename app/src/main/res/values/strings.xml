@@ -165,6 +165,6 @@
     <string name="choose_a_category">Choose a Category</string>
     <string name="price_filter">Price Filter</string>
     <string name="none">None</string>
-    <string name="up">Up</string>
-    <string name="down">Down</string>
+    <string name="up">High</string>
+    <string name="down">Low</string>
 </resources>

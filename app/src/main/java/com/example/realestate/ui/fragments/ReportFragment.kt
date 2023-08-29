@@ -7,12 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.forEach
 import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.realestate.PostNavArgs
-import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.Report
 import com.example.realestate.data.remote.network.Retrofit
@@ -21,7 +20,6 @@ import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.FragmentReportBinding
 import com.example.realestate.ui.viewmodels.ReportModel
 import com.example.realestate.utils.doOnFail
-import com.example.realestate.utils.setWithList
 import com.example.realestate.utils.toast
 
 class ReportFragment : Fragment() {
@@ -43,7 +41,9 @@ class ReportFragment : Fragment() {
         reportModel = ReportModel(
             ReportsRepository(retrofitService),
             StaticDataRepository(retrofitService)
-        )
+        ).also {
+            it.getReasons()
+        }
     }
 
     override fun onCreateView(
@@ -53,74 +53,88 @@ class ReportFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentReportBinding.inflate(inflater, container, false)
 
-        val list = listOf(
-            "test1",
-            "test2",
-            "test3",
-            "other"
-        )
-        binding.reasonEditText.setWithList(list)
-
-        reportModel.apply {
-
-            //temporary
-            binding.reasonEditText.doOnTextChanged { text, _, _, _ ->
-                binding.submit.isEnabled = list.contains(text.toString())
-                //To change
-                binding.messageEditText.isEnabled = text.toString() == list.last()
-            }
-            loading.observe(viewLifecycleOwner) { loading ->
-                binding.reportProgressBar.isVisible = loading
-            }
-            reasonsList.observe(viewLifecycleOwner) { reasonsList ->
-                if (reasonsList != null) {
-                    binding.reasonEditText.apply {
-                        //initialise the choice
-                        setText(reasonsList[0])
-
-                        //then set the other choices
-                        setWithList(reasonsList)
-
-                        binding.reasonEditText.doOnTextChanged { text, _, _, _ ->
-                            binding.submit.isEnabled = reasonsList.contains(text.toString())
-
-                            //To change
-                            binding.messageEditText.isEnabled =
-                                text.toString() == reasonsList.last()
-                        }
-                    }
-                } else {
-//                    doOnFail()
-                }
-            }
-            reported.observe(viewLifecycleOwner) { message ->
-                if (message != null) {
-                    Log.d(TAG, "message: $message")
-                    requireContext().toast(message.message, Toast.LENGTH_SHORT)
-                } else {
-                    doOnFail()
-                }
-                findNavController().popBackStack()
-            }
-        }
+        Log.d(TAG, "postId: $postId")
 
         binding.submit.setOnClickListener {
-            val userId = CurrentUser.prefs.get()
-            userId?.apply {
-                val reason = binding.reasonEditText.text.toString()
-                val message = binding.messageEditText.text.toString()
+            if (CurrentUser.isConnected()) {
+                val userId = CurrentUser.prefs.get()
+                userId?.apply {
+                    val reasons = reportModel.userReasons.value?.toList()
+                    val message = reportModel.message.value
 
-                val report = Report(postId, userId, reason)
+                    val report = Report(postId, userId, reasons!!)
 
-                if (message.isNotEmpty()) {
-                    report.message = message
+                    if (!message.isNullOrEmpty()) {
+                        report.message = message
+                    }
+
+                    reportModel.addReport(report)
                 }
-
-                reportModel.addReport(report)
+            } else {
+                doOnFail()
             }
-
         }
 
         return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        reportModel.apply {
+
+            isDataValid.observe(viewLifecycleOwner) { valid ->
+                binding.submit.isEnabled = valid
+            }
+
+            reasonsList.observe(viewLifecycleOwner) { reasonsList ->
+
+                if (reasonsList != null) {
+
+                    binding.reasonsContainer.apply {
+                        fillWithCheckBoxes(reasonsList)
+                        userReasons.observe(viewLifecycleOwner) { userReasons ->
+                            Log.i(TAG, "userReasons: $userReasons")
+                            if (userReasons != null) {
+                                binding.messageEditText.isEnabled =
+                                    userReasons.contains(reasonsList.last())
+                            }
+
+                        }
+                    }
+
+                } else {
+//                    doOnFail()
+                }
+            }
+
+            loading.observe(viewLifecycleOwner) { loading ->
+                binding.reportProgressBar.isVisible = loading
+                blockUi(loading)
+            }
+
+            reported.observe(viewLifecycleOwner) { message ->
+                if (message != null) {
+                    Log.d(TAG, "message: $message")
+                    requireContext().toast(message.message, Toast.LENGTH_SHORT)
+                    findNavController().popBackStack()
+                } else {
+                    doOnFail()
+                }
+
+            }
+
+        }
+
+    }
+
+    private fun blockUi(loading: Boolean) {
+        binding.apply {
+            reasonsContainer.forEach { view ->
+                view.isEnabled = loading
+            }
+            messageEditText.isEnabled = loading
+            submit.isEnabled = loading
+        }
+    }
 }
+
