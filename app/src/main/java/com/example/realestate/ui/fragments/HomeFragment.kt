@@ -124,8 +124,8 @@ class HomeFragment : Fragment(), ActivityResultListener {
                         positiveText = getString(R.string.Yes)
                     )
                     dialog.apply {
-                        show()
                         separateButtonsBy(10)
+                        show()
                     }
 
                 }
@@ -152,19 +152,21 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
             //handle swipe gesture
             swipeRefreshLayout.setOnRefreshListener {
-                viewModel.getPosts(searchParams, source = "swipeRefreshLayout.setOnRefreshListener")
+                viewModel.getPosts(
+                    searchParams,
+                    source = "swipeRefreshLayout.setOnRefreshListener",
+                )
                 if (viewModel.categoriesList.value.isNullOrEmpty()) {
                     viewModel.getCategories()
                 }
             }
 
             newPost.setOnClickListener {
-                val userConnected = CurrentUser.isConnected()
                 val navHost =
                     requireActivity().supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
                 val navController = navHost.navController
 
-                if (userConnected) {
+                if (CurrentUser.isConnected()) {
                     navController.navigate(R.id.addPostActivity)
                 } else {
                     val activity = (requireActivity() as MainActivity)
@@ -186,7 +188,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
                 if (isAtBottom) {
                     // Reached the bottom of the ScrollView
-                    if (viewModel.isProgressBarTurning.value != true) {
+                    if (viewModel.isProgressBarTurning.value != true && viewModel.shouldVeil.value != true) {
                         viewModel.getPosts(searchParams, "onScrollStateChanged", false)
                     }
 
@@ -205,7 +207,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
             setLayoutManager(LinearLayoutManager(requireContext()))
             addVeiledItems(10)
         }
-        binding.categoriesChipGroup.addVeilElements(5)
+        binding.categoriesChipGroup.addVeilElements(10)
         binding.shimmerFrameLayout.startShimmer()
 
         viewModel.currentPage.observe(viewLifecycleOwner) { currentPage ->
@@ -293,9 +295,18 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
             }
 
+            viewModel.shouldVeil.observe(viewLifecycleOwner) { shouldVeil ->
+                Log.d(TAG, "shouldVeil: $shouldVeil")
+                if (shouldVeil)
+                    binding.postRv.veil()
+
+            }
+
             //handle loading
             viewModel.isProgressBarTurning.observe(viewLifecycleOwner) { loading ->
                 binding.progressBar.isVisible = loading
+                if (!loading)
+                    binding.postRv.unVeil()
 //                if (loading && !binding.postRv.isVeiled) {
 //                    binding.postRv.veil()
 //                }
@@ -349,7 +360,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
                 handleHomeButton()
 
-
                 when (searchParams.price) {
                     PriceFilter.DOWN -> {
                         posts?.sortBy { it.price }
@@ -366,6 +376,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
 
                 posts?.apply {
+                    Log.d(TAG, "posts: $posts")
 
 //                    recyclerViewState =
 //                        binding.postRv.getRecyclerView().layoutManager?.onSaveInstanceState()
@@ -374,6 +385,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
                         recyclerViewState
                     )
                     binding.postRv.unVeil()
+                    viewModel.setShouldVeil(false)
 
                     swipeRefreshLayout.isRefreshing = false
                 }
@@ -459,7 +471,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
     private fun ViewGroup.addVeilElements(number: Int) {
         for (i in 0..number) {
             val veiledChip = ChipVeilledBinding.inflate(layoutInflater)
-            val randomText = RandomGenerator.generateRandomEmptyString(10, 20)
+            val randomText = RandomGenerator.generateRandomEmptyString(20, 30)
             veiledChip.chipVeiled.text = randomText
             addView(veiledChip.root)
         }

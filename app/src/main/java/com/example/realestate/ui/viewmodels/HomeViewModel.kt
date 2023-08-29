@@ -30,6 +30,7 @@ class HomeViewModel(
     private val _categoriesList = MutableLiveData<List<String>?>()
     private val _postsList = MutableLiveData(mutableListOf<PostWithOwnerId>())
     private val _isLoading = MutableLiveData<Boolean>()
+    private val _shouldVeil = MutableLiveData<Boolean>()
     private val _postsMessage = MutableLiveData<String>()
     private val _categoriesMessage = MutableLiveData<String>()
     private val _liked = MutableLiveData<MessageResponse?>()
@@ -40,6 +41,8 @@ class HomeViewModel(
         get() = _user
     val isProgressBarTurning: LiveData<Boolean>
         get() = _isLoading
+    val shouldVeil: LiveData<Boolean>
+        get() = _shouldVeil
     val postsList: LiveData<MutableList<PostWithOwnerId>?>
         get() = _postsList
     val categoriesList: LiveData<List<String>?>
@@ -54,14 +57,19 @@ class HomeViewModel(
         get() = _unliked
 
     // no filters by default
+
+    fun setShouldVeil(shouldVeil: Boolean) {
+        _shouldVeil.postValue(shouldVeil)
+    }
+
     fun getPosts(
         searchParams: SearchParams = SearchParams(),
         source: String,
-        override: Boolean = true
+        override: Boolean = true,
+        shouldVeil: Boolean = true,
     ): MutableLiveData<MutableList<PostWithOwnerId>?> {
         Log.i(TAG, "requested data yes source = $source")
-        Log.d(TAG, "search params page: ${searchParams.page}")
-        Log.d(TAG, "currentPage: $currentPage")
+        if (shouldVeil) _shouldVeil.postValue(true)
         if (override) currentPage.value = 1
         handleApiRequest(
             postsRepository.getPosts(searchParams),
