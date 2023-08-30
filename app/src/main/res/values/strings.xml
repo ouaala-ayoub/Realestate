@@ -6,7 +6,7 @@
 
     <!-- main activity -->
     <string name="rent">Rent</string>
-    <string name="sell">For sell</string>
+    <string name="sell">For sale</string>
 
     <!--dialog-->
     <string name="Yes">Yes</string>
@@ -167,4 +167,5 @@
     <string name="none">None</string>
     <string name="up">High</string>
     <string name="down">Low</string>
+    <string name="no_call_msg">No phone number provided by the owner</string>
 </resources>

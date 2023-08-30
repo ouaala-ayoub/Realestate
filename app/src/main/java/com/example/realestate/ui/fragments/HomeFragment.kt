@@ -189,7 +189,12 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 if (isAtBottom) {
                     // Reached the bottom of the ScrollView
                     if (viewModel.isProgressBarTurning.value != true && viewModel.shouldVeil.value != true) {
-                        viewModel.getPosts(searchParams, "onScrollStateChanged", false)
+                        viewModel.getPosts(
+                            searchParams,
+                            "onScrollStateChanged",
+                            shouldVeil = false,
+                            override = false
+                        )
                     }
 
                 }
@@ -299,14 +304,16 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 Log.d(TAG, "shouldVeil: $shouldVeil")
                 if (shouldVeil)
                     binding.postRv.veil()
+                else
+                    binding.postRv.unVeil()
 
             }
 
             //handle loading
             viewModel.isProgressBarTurning.observe(viewLifecycleOwner) { loading ->
                 binding.progressBar.isVisible = loading
-                if (!loading)
-                    binding.postRv.unVeil()
+//                if (!loading)
+//                    binding.postRv.unVeil()
 //                if (loading && !binding.postRv.isVeiled) {
 //                    binding.postRv.veil()
 //                }
@@ -384,8 +391,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
                     binding.postRv.getRecyclerView().layoutManager?.onRestoreInstanceState(
                         recyclerViewState
                     )
-                    binding.postRv.unVeil()
-                    viewModel.setShouldVeil(false)
 
                     swipeRefreshLayout.isRefreshing = false
                 }
@@ -412,15 +417,15 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-//                    if (firstTime) {
-//                        firstTime = false
-//                    } else {
-//                        searchByQuery(newText, "onQueryTextChange")
-//                    }
-                    if (newText.isNullOrBlank()) {
-                        searchParams.title = null
-                        viewModel.getPosts(searchParams, source = "onQueryTextChange")
+                    if (firstTime) {
+                        firstTime = false
+                    } else {
+                        if (newText.isNullOrBlank()) {
+                            searchParams.title = null
+                            viewModel.getPosts(searchParams, source = "onQueryTextChange")
+                        }
                     }
+
 
 
                     return false

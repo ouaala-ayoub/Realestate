@@ -119,7 +119,7 @@ class PostPageFragment : Fragment() {
         binding.reportButton.setOnClickListener {
 
             //TODO get activity for result instead of goToActivity
-            if (CurrentUser.isConnected() || CurrentUser.isUserIdStored()) {
+            if (CurrentUser.isConnected()) {
                 navigateToReportFragment(postId)
             } else {
                 activity.launchRegisterProcess(loginLauncher)
@@ -208,7 +208,6 @@ class PostPageFragment : Fragment() {
                         if (!contact.call.isNullOrEmpty()) {
                             call.apply {
                                 phoneNumber = contact.call!!
-                                isEnabled = true
                                 setOnClickListener {
                                     //directly call
                                     requireActivity().handlePermission(object : PermissionResult {
@@ -223,15 +222,28 @@ class PostPageFragment : Fragment() {
                                     }, listOf(android.Manifest.permission.CALL_PHONE))
                                 }
                             }
+                        } else {
+                            call.setOnClickListener {
+                                requireContext().toast(
+                                    getString(R.string.no_call_msg),
+                                    Toast.LENGTH_SHORT
+                                )
+                            }
                         }
 
                         //handle whatsapp button
                         if (!contact.whatsapp.isNullOrEmpty()) {
                             message.apply {
-                                isEnabled = true
                                 setOnClickListener {
                                     openWhatsapp(contact.whatsapp!!)
                                 }
+                            }
+                        } else {
+                            message.setOnClickListener {
+                                requireContext().toast(
+                                    getString(R.string.no_call_msg),
+                                    Toast.LENGTH_SHORT
+                                )
                             }
                         }
 

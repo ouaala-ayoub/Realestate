@@ -58,10 +58,6 @@ class HomeViewModel(
 
     // no filters by default
 
-    fun setShouldVeil(shouldVeil: Boolean) {
-        _shouldVeil.postValue(shouldVeil)
-    }
-
     fun getPosts(
         searchParams: SearchParams = SearchParams(),
         source: String,
@@ -69,6 +65,8 @@ class HomeViewModel(
         shouldVeil: Boolean = true,
     ): MutableLiveData<MutableList<PostWithOwnerId>?> {
         Log.i(TAG, "requested data yes source = $source")
+        Log.i(TAG, "override = $override")
+        Log.i(TAG, "shouldVeil = $shouldVeil")
         if (shouldVeil) _shouldVeil.postValue(true)
         if (override) currentPage.value = 1
         handleApiRequest(
@@ -78,6 +76,7 @@ class HomeViewModel(
             TAG,
             object : AdditionalCode<MutableList<PostWithOwnerId>> {
                 override fun onResponse(responseBody: Response<MutableList<PostWithOwnerId>>) {
+                    _shouldVeil.postValue(false)
                     Log.d(TAG, "size: ${responseBody.body()?.size}")
                     if (responseBody.isSuccessful) {
                         if (override) {
@@ -116,6 +115,7 @@ class HomeViewModel(
                 override fun onFailure() {
                     _postsMessage.postValue(ERROR)
                     _postsList.postValue(null)
+                    _shouldVeil.postValue(false)
                 }
             }
         )
