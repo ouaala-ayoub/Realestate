@@ -168,4 +168,6 @@
     <string name="up">High</string>
     <string name="down">Low</string>
     <string name="no_call_msg">No phone number provided by the owner</string>
+    <string name="website">Visit our website</string>
+    <string name="real_estate_website">https://realestatefy.vercel.app/</string>
 </resources>

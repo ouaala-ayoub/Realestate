@@ -806,3 +806,9 @@ fun String.isNumeric(): Boolean {
     return all { char -> char.isDigit() } && !isNullOrEmpty()
 }
 
+fun Activity.openTheWebsite(websiteUrl: String) {
+    val openURL = Intent(Intent.ACTION_VIEW)
+    openURL.data = Uri.parse(websiteUrl)
+    startActivity(openURL)
+}
+

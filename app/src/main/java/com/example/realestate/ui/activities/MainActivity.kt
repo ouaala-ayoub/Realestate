@@ -1,7 +1,6 @@
 package com.example.realestate.ui.activities
 
 import android.content.Intent
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -31,7 +30,6 @@ import com.example.realestate.utils.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import retrofit2.Retrofit
 
 class MainActivity : AppCompatActivity(), ActivityResultListener {
 
@@ -225,28 +223,10 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                     } else {
                         launchRegisterProcess(registerForPostAddLauncher)
                     }
-
-//                    if (userConnected) {
-//                        // User is connected, open PostAddActivity
-//                        val phoneNumber = FirebaseAuth.getInstance().currentUser?.phoneNumber
-//                        val hasPhoneNumber = !phoneNumber.isNullOrEmpty()
-//                        Log.i(TAG, "phoneNumber: $phoneNumber")
-//
-//                        if (hasPhoneNumber) {
-//                            navController.navigate(R.id.addPostActivity)
-//                        } else {
-//                            launchPhoneAddProcess()
-//                        }
-//
-//                    } else {
-//                        // User is not connected, open UserRegisterActivity
-//                        launchRegisterProcess(registerForPostAddLauncher)
-//                    }
                 }
                 R.id.likedFragment -> {
                     if (userConnected) {
                         // User is connected, open savedFragment
-//                        navController.navigate(R.id.likedFragment)
                         if (currentDestination?.id != R.id.likedFragment) {
                             val fragmentInBackStack =
                                 navController.popBackStack(R.id.likedFragment, false)
@@ -329,6 +309,9 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                 }
                 R.id.email -> {
                     //TODO
+                }
+                R.id.website -> {
+                    openTheWebsite(getString(R.string.real_estate_website))
                 }
                 R.id.instagram -> {
                     //TODO
