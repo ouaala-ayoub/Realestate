@@ -7,11 +7,10 @@ import androidx.lifecycle.ViewModel
 import com.example.realestate.data.models.AdditionalInfo
 import com.example.realestate.data.models.MessageResponse
 import com.example.realestate.data.models.User
-import com.example.realestate.data.models.UserId
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.utils.handleApiRequest
 
-class AddInfoModel(private val repository: UsersRepository, private val userId: String) :
+class AddInfoModel(private val repository: UsersRepository) :
     ViewModel() {
 
     companion object {
@@ -31,7 +30,7 @@ class AddInfoModel(private val repository: UsersRepository, private val userId: 
     }
 
     val user: LiveData<User?>
-        get() = getUserById(userId)
+        get() = getAuth()
     val name: LiveData<String>
         get() = _name
     val commMethod: LiveData<String>
@@ -41,8 +40,8 @@ class AddInfoModel(private val repository: UsersRepository, private val userId: 
     val loading: LiveData<Boolean>
         get() = _loading
 
-    private fun getUserById(userId: String): MutableLiveData<User?> {
-        handleApiRequest(repository.getUserById(userId), _loading, _user, TAG)
+    private fun getAuth(): MutableLiveData<User?> {
+        handleApiRequest(repository.getAuth(), _loading, _user, TAG)
         return _user
     }
 

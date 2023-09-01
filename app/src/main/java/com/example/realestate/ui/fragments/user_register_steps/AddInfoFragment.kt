@@ -1,28 +1,22 @@
 package com.example.realestate.ui.fragments.user_register_steps
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.navArgs
-import com.example.realestate.R
 import com.example.realestate.data.models.AdditionalInfo
-import com.example.realestate.data.models.CommunicationMethod
+import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.FragmentAddInfoBinding
 import com.example.realestate.ui.viewmodels.userregistermodels.AddInfoModel
-import com.example.realestate.utils.doOnFail
-import com.example.realestate.utils.toast
 import com.google.firebase.auth.FirebaseAuth
 
 class AddInfoFragment : Fragment() {
@@ -37,7 +31,7 @@ class AddInfoFragment : Fragment() {
         args.userId
     }
     private val addInfoModel: AddInfoModel by lazy {
-        AddInfoModel(UsersRepository(Retrofit.getInstance()), userId)
+        AddInfoModel(UsersRepository(Retrofit.getInstance()))
     }
     private val tokenId: String by lazy {
         args.tokenId
@@ -104,6 +98,7 @@ class AddInfoFragment : Fragment() {
                     val image = FirebaseAuth.getInstance().currentUser?.photoUrl
 
                     addInfoModel.addInfoToUser(userId, AdditionalInfo(name))
+
                 }
             }
         }
@@ -119,7 +114,16 @@ class AddInfoFragment : Fragment() {
         }
         addInfoModel.messageResponse.observe(viewLifecycleOwner) { message ->
             Log.d(TAG, "message response: ${message?.message}")
-            finishActivity(message != null)
+
+            val name = addInfoModel.name.value!!
+            val success = message != null
+
+            if (success) {
+                val user = CurrentUser.get()
+                user?.name = name
+                CurrentUser.set(user)
+            }
+            finishActivity(success)
         }
         addInfoModel.isValid.observe(viewLifecycleOwner) { isValid ->
             Log.d(TAG, "isValid: $isValid")

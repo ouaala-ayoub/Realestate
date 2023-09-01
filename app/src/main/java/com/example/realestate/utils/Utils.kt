@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.text.Editable
@@ -24,6 +25,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
+import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -186,14 +188,24 @@ fun FragmentActivity.disableBackButton(viewLifecycleOwner: LifecycleOwner) {
         })
 }
 
-fun formatNumberWithCommas(number: Int): String {
+fun formatNumberWithCommas(number: Number): String {
     val numberFormat = NumberFormat.getNumberInstance(Locale.US)
     return numberFormat.format(number)
 }
 
-fun formatNumberWithSpaces(number: Int): String {
+fun formatNumberWithSpaces(number: Number): String {
     val numberFormat = NumberFormat.getInstance(Locale.getDefault())
     return numberFormat.format(number)
+}
+
+fun reverseFormatNumberWithCommas(formattedNumber: String): Double {
+    val numberFormat = NumberFormat.getInstance(Locale.US)
+    return try {
+        val number = numberFormat.parse(formattedNumber)?.toDouble()
+        number ?: 0.0 // Return 0.0 if parsing fails
+    } catch (e: Exception) {
+        0.0 // Handle parsing errors as needed
+    }
 }
 
 fun <T> handleApiRequest(
@@ -620,7 +632,7 @@ fun MaterialAutoCompleteTextView.setUpAndHandleSearch(
 
 
 fun EditText.updateLiveData(liveData: MutableLiveData<String>, lower: Boolean = false) {
-    this.doOnTextChanged { text, _, _, _ ->
+    doOnTextChanged { text, _, _, _ ->
         val textRes = text.toString()
         liveData.value = if (lower)
             textRes.lowerFirstLetter()
@@ -810,5 +822,67 @@ fun Activity.openTheWebsite(websiteUrl: String) {
     val openURL = Intent(Intent.ACTION_VIEW)
     openURL.data = Uri.parse(websiteUrl)
     startActivity(openURL)
+}
+
+fun getDetailIcon(key: String, context: Context): Drawable? {
+    val drawableRes = when (key) {
+        "Property Condition" -> {
+            R.drawable.baseline_content_paste_search_24
+        }
+        "Number Of rooms" -> {
+            R.drawable.baseline_bed_24
+        }
+        "Number of bathrooms" -> {
+            R.drawable.baseline_bathroom_24
+        }
+        "Floor Info" -> {
+            R.drawable.skyscraper_svgrepo_com
+        }
+        "Space" -> {
+            R.drawable.measure_area_svgrepo_com
+        }
+
+        //TODO
+        "Furnished" -> {
+            R.drawable.furniture_svgrepo_com
+        }
+        "Balcony" -> {
+            R.drawable.antique_balcony_svgrepo_com
+        }
+        "New" -> {
+            R.drawable.baseline_fiber_new_24
+        }
+        "Swimming Pool" -> {
+            R.drawable.baseline_pool_24
+        }
+        "Gym" -> {
+            R.drawable.gym_svgrepo_com
+        }
+        "Parking" -> {
+            R.drawable.baseline_local_parking_24
+        }
+        "Elevator" -> {
+            R.drawable.elevator_svgrepo_com
+        }
+        "Security" -> {
+            R.drawable.secure_shield_password_protect_safe_svgrepo_com
+        }
+        "Downtown" -> {
+            R.drawable.city_svgrepo_com
+        }
+        "Shopping Mall" -> {
+            R.drawable.cart_svgrepo_com
+        }
+        "Transportation" -> {
+            R.drawable.taxi_4_svgrepo_com
+        }
+        "Tram" -> {
+            R.drawable.tram_svgrepo_com
+        }
+        else -> {
+            R.drawable.baseline_broken_image_24
+        }
+    }
+    return ContextCompat.getDrawable(context, drawableRes)
 }
 

@@ -151,7 +151,8 @@
                 android:id="@+id/propriety_details_cg"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp">
 
                 <CheckBox
                     android:id="@+id/furnished"
@@ -169,16 +170,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/is_new" />
-                <CheckBox
-                    android:id="@+id/gym"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/has_gym" />
+
                 <CheckBox
                     android:id="@+id/swimming_pool"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/has_swimming_pool" />
+
+                <CheckBox
+                    android:id="@+id/gym"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/has_gym" />
+
                 <CheckBox
                     android:id="@+id/parking"
                     android:layout_width="wrap_content"
@@ -194,6 +198,30 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/security" />
+
+                <CheckBox
+                    android:id="@+id/downtown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/downtown" />
+
+                <CheckBox
+                    android:id="@+id/shopping_mall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/shopping_mall" />
+
+                <CheckBox
+                    android:id="@+id/transportation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/transportation" />
+
+                <CheckBox
+                    android:id="@+id/tram"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tram" />
 
             </com.google.android.material.chip.ChipGroup>
         </LinearLayout>

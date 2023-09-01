@@ -6,7 +6,8 @@ import com.example.realestate.data.remote.network.NewFavouritesRequest
 import com.example.realestate.data.remote.network.RetrofitService
 
 class UsersRepository(private val retrofitService: RetrofitService) {
-    fun getUserById(userId: String) = retrofitService.getUserById(userId)
+
+    fun getAuth() = retrofitService.getAuth()
 
     fun addData(userId: String, data: AdditionalInfo) = retrofitService.addData(userId, data)
 
