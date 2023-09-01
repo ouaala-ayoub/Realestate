@@ -1,17 +1,16 @@
 package com.example.realestate.ui.fragments.post_add_steps
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
@@ -19,10 +18,12 @@ import com.example.realestate.R
 import com.example.realestate.data.models.FragmentStep
 import com.example.realestate.databinding.FragmentImagesSelectBinding
 import com.example.realestate.ui.activities.AddPostActivity
-import com.example.realestate.ui.adapters.ImagesAdapter
+import com.example.realestate.ui.adapters.ImagesSelectAdapter
 import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
 import com.example.realestate.utils.*
 import com.google.android.material.snackbar.Snackbar
+import gun0912.tedimagepicker.builder.TedImagePicker
+import gun0912.tedimagepicker.builder.type.MediaType
 import java.util.concurrent.TimeUnit
 
 class ImagesSelectFragment : FragmentStep() {
@@ -33,62 +34,68 @@ class ImagesSelectFragment : FragmentStep() {
     }
 
     private lateinit var binding: FragmentImagesSelectBinding
+    private lateinit var tedImagePicker: TedImagePicker.Builder
     private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
     private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
     private val viewModel: ImagesSelectModel by lazy {
         ImagesSelectModel(MAX_INPUT_SIZE)
     }
-    private val imagesAdapter: ImagesAdapter by lazy {
-        ImagesAdapter(MAX_INPUT_SIZE, viewModel)
-    }
+    private val newImagesAdapter: ImagesSelectAdapter =
+        ImagesSelectAdapter(MAX_INPUT_SIZE, viewModel)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        permissionRequestLauncher = requestPermissionLauncher(
-            object : PermissionResult {
-                override fun onGranted() {
-                    imageResultLauncher.openGallery()
-                }
+        tedImagePicker = TedImagePicker.with(requireContext())
+            .mediaType(MediaType.IMAGE_AND_VIDEO)
+            .buttonBackground(R.color.yellow)
+            .buttonTextColor(R.color.black)
+            .max(8, getString(R.string.max_string))
 
-                override fun onNonGranted() {
-                    val snackBar = makeSnackBar(
-                        requireView(),
-                        getString(R.string.permission),
-                        Snackbar.LENGTH_INDEFINITE
-                    )
-                    snackBar.setAction(R.string.OK) {
-                        snackBar.dismiss()
-                    }.show()
-                }
-            }
-        )
-        imageResultLauncher = startActivityResult(
-            object : SelectionResult {
-                override fun onResultOk(data: Intent) {
-                    val uris = data.getContentAsList()
-                    val urisToUpload = uris.filter { uri -> isValidMedia(uri) }
-
-                    //in case not all uri got accepted
-                    if (urisToUpload.size != uris.size) {
-                        val snackBar = makeSnackBar(
-                            binding.root,
-                            getString(R.string.failed_media_selection),
-                            Snackbar.LENGTH_INDEFINITE
-                        )
-                        snackBar.setAction(getString(R.string.OK)) {
-                            snackBar.dismiss()
-                        }.show()
-                    }
-
-                    imagesAdapter.addImages(urisToUpload, requireContext())
-                }
-
-                override fun onResultFailed() {
-                    Log.e(TAG, "imageResultLauncher onResultFailed")
-                }
-            }
-        )
+//        permissionRequestLauncher = requestPermissionLauncher(
+//            object : PermissionResult {
+//                override fun onGranted() {
+//                    imageResultLauncher.openGallery()
+//                }
+//
+//                override fun onNonGranted() {
+//                    val snackBar = makeSnackBar(
+//                        requireView(),
+//                        getString(R.string.permission),
+//                        Snackbar.LENGTH_INDEFINITE
+//                    )
+//                    snackBar.setAction(R.string.OK) {
+//                        snackBar.dismiss()
+//                    }.show()
+//                }
+//            }
+//        )
+//        imageResultLauncher = startActivityResult(
+//            object : SelectionResult {
+//                override fun onResultOk(data: Intent) {
+//                    val uris = data.getContentAsList()
+//                    val urisToUpload = uris.filter { uri -> isValidMedia(uri) }
+//
+//                    //in case not all uri got accepted
+//                    if (urisToUpload.size != uris.size) {
+//                        val snackBar = makeSnackBar(
+//                            binding.root,
+//                            getString(R.string.failed_media_selection),
+//                            Snackbar.LENGTH_INDEFINITE
+//                        )
+//                        snackBar.setAction(getString(R.string.OK)) {
+//                            snackBar.dismiss()
+//                        }.show()
+//                    }
+//
+//                    imagesAdapter.addImages(urisToUpload, requireContext())
+//                }
+//
+//                override fun onResultFailed() {
+//                    Log.e(TAG, "imageResultLauncher onResultFailed")
+//                }
+//            }
+//        )
     }
 
     override fun onCreateView(
@@ -102,7 +109,7 @@ class ImagesSelectFragment : FragmentStep() {
         binding.imagesRv.apply {
             setHasFixedSize(true)
             layoutManager = GridLayoutManager(requireContext(), NUM_OF_COLUMNS)
-            adapter = imagesAdapter
+            adapter = newImagesAdapter
         }
 
         binding.select.setOnClickListener {
@@ -110,71 +117,71 @@ class ImagesSelectFragment : FragmentStep() {
             //TODO more readable code
 
 //            handle permissions and open the gallery
-            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Manifest.permission.READ_MEDIA_IMAGES
+//            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                Manifest.permission.READ_MEDIA_IMAGES
+//            } else {
+//                Manifest.permission.READ_EXTERNAL_STORAGE
+//            }
+//
+//            requireActivity().handlePermission(object : PermissionResult {
+//                override fun onGranted() {
+//                    imageResultLauncher.openGallery()
+//                }
+//
+//                override fun onNonGranted() {
+//                    permissionRequestLauncher.requestStoragePermission()
+//                }
+//            }, listOf(permission))
+
+            val startUri = newImagesAdapter.getSelectedUris()
+            if (startUri.size < newImagesAdapter.imagesNumber) {
+
+                tedImagePicker
+                    .selectedUri(startUri)
+                    .startMultiImage { uriList ->
+                        val urisToUpload = uriList.filter { uri -> isValidMedia(uri) }
+                        if (urisToUpload.size != uriList.size) {
+                            val snackBar = makeSnackBar(
+                                binding.root,
+                                getString(R.string.failed_media_selection),
+                                Snackbar.LENGTH_INDEFINITE
+                            )
+                            snackBar.setAction(getString(R.string.OK)) {
+                                snackBar.dismiss()
+                            }.show()
+                        }
+                        viewModel.setImagesUri(urisToUpload.toMutableList())
+                    }
             } else {
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            }
-
-            requireActivity().handlePermission(object : PermissionResult {
-                override fun onGranted() {
-                    imageResultLauncher.openGallery()
-                }
-
-                override fun onNonGranted() {
-                    permissionRequestLauncher.requestStoragePermission()
-                }
-            }, listOf(permission))
-        }
-
-        viewModel.isFull.observe(viewLifecycleOwner) { isFull ->
-            binding.select.isEnabled = !isFull
-        }
-
-        viewModel.isValid.observe(viewLifecycleOwner) { isValid ->
-            (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValid)
-        }
-
-
-        viewModel.progress.forEachIndexed { index, progressLiveData ->
-            progressLiveData.observe(viewLifecycleOwner) { progress ->
-                progress?.apply { imagesAdapter.updateProgress(this, index) }
+                requireContext().toast(getString(R.string.max_string), Toast.LENGTH_SHORT)
             }
         }
 
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.apply {
+            imagesUri.observe(viewLifecycleOwner) { urisToUpload ->
+                newImagesAdapter.setImagesList(urisToUpload)
+            }
+            isValid.observe(viewLifecycleOwner) { isValid ->
+                (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValid)
+            }
+        }
+    }
+
     override fun onNextClicked(viewPager: ViewPager2) {
         viewPager.currentItem++
-        (requireActivity() as AddPostActivity).post.media = imagesAdapter.getUploadedMedia()
+        val result = newImagesAdapter.getSelectedUris()
+        Log.d(TAG, "result: ${result.size}")
+        (requireActivity() as AddPostActivity).selectedMedia = result
     }
 
     override fun onBackClicked(viewPager: ViewPager2) {
         showLeaveDialog(requireActivity())
-    }
-
-    private fun showLeaveDialog(activity: Activity) {
-        val dialog = makeDialog(
-            activity,
-            object : OnDialogClicked {
-                override fun onPositiveButtonClicked() {
-                    activity.finish()
-                }
-
-                override fun onNegativeButtonClicked() {
-                    //TODO
-                    //add the delete request
-                    viewModel.cancelAllUploads()
-                }
-            },
-            activity.getString(R.string.quit_post_title),
-            activity.getString(R.string.quit_post_message)
-        )
-        dialog.apply {
-            show()
-            separateButtonsBy(10)
-        }
     }
 
     override fun onResume() {

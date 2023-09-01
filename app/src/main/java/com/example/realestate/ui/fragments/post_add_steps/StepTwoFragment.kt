@@ -16,10 +16,7 @@ import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.FragmentStepTwoBinding
 import com.example.realestate.ui.activities.AddPostActivity
 import com.example.realestate.ui.viewmodels.postaddmodels.StepTwoModel
-import com.example.realestate.utils.capitalizeFirstLetter
-import com.example.realestate.utils.doOnFail
-import com.example.realestate.utils.setUpAndHandleSearch
-import com.example.realestate.utils.updateLiveData
+import com.example.realestate.utils.*
 
 class StepTwoFragment : FragmentStep() {
 
@@ -64,6 +61,13 @@ class StepTwoFragment : FragmentStep() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        stepTwoModel.liveDataWrapper.priceLiveData.observe(viewLifecycleOwner) { price ->
+            Log.d(TAG, "price: $price")
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         val lastState = stepTwoModel.isValidData.value!!
@@ -77,14 +81,20 @@ class StepTwoFragment : FragmentStep() {
 
             //user input
             categoryEditText.updateLiveData(wrapper._categoryLiveData, true)
-            priceEditText.updateLiveData(wrapper._priceLiveData)
+//            priceEditText.updateLiveData(wrapper._priceLiveData)
+            priceEditText.addTextChangedListener(
+                NumberTextWatcher(
+                    priceEditText,
+                    wrapper._priceLiveData
+                )
+            )
             whatsappPhoneInput.phoneEditText.updateLiveData(wrapper._whatsappNumberLiveData)
             callPhoneInput.phoneEditText.updateLiveData(wrapper._callNumberLiveData)
 
             wrapper._typeLiveData.apply {
                 value = typeDefault
-                rent.setOnClickListener { value = rent.text.toString() }
-                forSell.setOnClickListener { value = forSell.text.toString() }
+                rent.setOnClickListener { value = Type.RENT.value }
+                forSell.setOnClickListener { value = Type.BUY.value }
             }
 
         }
@@ -103,8 +113,10 @@ class StepTwoFragment : FragmentStep() {
             stepTwoModel.liveDataWrapper.apply {
 
                 category = categoryLiveData.value.toString()
-                price = priceLiveData.value!!.toInt()
+                price = priceLiveData.value!!.toDouble()
                 type = typeLiveData.value.toString()
+
+                Log.d(TAG, "price: $price")
 
                 val contactInfo = Contact()
                 val whatsappNumber = whatsappNumberLiveData.value
@@ -123,7 +135,7 @@ class StepTwoFragment : FragmentStep() {
 
                 contact = contactInfo
 
-                Log.d(TAG, "psot: $post")
+                Log.d(TAG, "post: $post")
 
                 //TODO change with a call to the local database
                 if (category == categories[0] || category == categories[1] || category == categories[2]) {

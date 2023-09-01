@@ -77,7 +77,7 @@ class StepTwoModel(private val staticDataRepository: StaticDataRepository) : Vie
 class MutableLiveDataWrapper {
     val _typeLiveData = MutableLiveData<String>()
     val _categoryLiveData = MutableLiveData<String>()
-    val _priceLiveData = MutableLiveData<String>()
+    val _priceLiveData = MutableLiveData<String?>()
     val _whatsappNumberLiveData = MutableLiveData<String>()
     val _callNumberLiveData = MutableLiveData<String>()
 
@@ -93,7 +93,7 @@ class MutableLiveDataWrapper {
 class LiveDataWrapper(private val liveDataWrapper: MutableLiveDataWrapper) {
     val categoryLiveData: LiveData<String>
         get() = liveDataWrapper._categoryLiveData
-    val priceLiveData: LiveData<String>
+    val priceLiveData: LiveData<String?>
         get() = liveDataWrapper._priceLiveData
     val typeLiveData: LiveData<String>
         get() = liveDataWrapper._typeLiveData

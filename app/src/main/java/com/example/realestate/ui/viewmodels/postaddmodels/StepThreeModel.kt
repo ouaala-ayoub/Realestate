@@ -1,16 +1,24 @@
 package com.example.realestate.ui.viewmodels.postaddmodels
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.realestate.data.models.CountriesData
+import com.example.realestate.data.models.Media
 import com.example.realestate.data.models.MessageResponse
 import com.example.realestate.data.models.PostWithoutId
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
+import com.example.realestate.utils.RandomGenerator
+import com.example.realestate.utils.getFileExtensionFromUri
 import com.example.realestate.utils.handleApiRequest
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.UploadTask
+import com.google.firebase.storage.ktx.storage
 
 class StepThreeModel(
     private val repository: PostsRepository,
@@ -28,6 +36,10 @@ class StepThreeModel(
     fun getCountries() {
         handleApiRequest(staticDataRepository.getCountries(), _loading, _countries, TAG)
     }
+
+    private val storage = Firebase.storage
+    private val storageRef = storage.reference
+    private val urlsList = mutableListOf<String>()
 
     //request related live data
     private val _requestResponse = MutableLiveData<MessageResponse?>()
@@ -74,8 +86,63 @@ class StepThreeModel(
     val descriptionLiveData: LiveData<String>
         get() = _descriptionLiveData
 
-    fun addPost(post: PostWithoutId) {
-        handleApiRequest(repository.addPost(post), _loading, _requestResponse, TAG)
+    fun addPost(post: PostWithoutId, imagesList: List<Uri>, context: Context) {
+
+        _loading.postValue(true)
+
+        imagesList.forEach { uri ->
+            val ext = getFileExtensionFromUri(context, uri)
+            val fileName = RandomGenerator.createUniqueImageName(ext!!)
+            val path = "posts/${fileName}"
+
+            try {
+                // Upload file and metadata to the path 'images/mountains.jpg'
+                val uploadTask = storageRef.child(path).putFile(uri)
+
+                // Listen for state changes, errors, and completion of the upload.
+                // You'll need to import com.google.firebase.storage.ktx.component1 and
+                // com.google.firebase.storage.ktx.component2
+
+                uploadTask.addCallBacks(post, imagesList.size)
+            } catch (e: NullPointerException) {
+                e.printStackTrace()
+            }
+
+        }
+
+
+    }
+
+    private fun UploadTask.addCallBacks(post: PostWithoutId, fullSize: Int) {
+        addOnProgressListener { taskSnapshot ->
+            val progress = 100.0 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount
+            Log.d(TAG, "Upload is $progress% done")
+
+        }.addOnPausedListener {
+
+        }.addOnFailureListener { e ->
+            // Handle unsuccessful uploads
+            e.printStackTrace()
+            _loading.postValue(false)
+        }.addOnSuccessListener { taskSnapShot ->
+            // Handle successful uploads on complete
+            // ...
+            //TODO
+            taskSnapShot.storage.downloadUrl.addOnSuccessListener { uri ->
+                val downloadUrl = uri.toString()
+                Log.d(TAG, "downloadUrl: $downloadUrl")
+
+                urlsList.add(downloadUrl)
+
+                if (urlsList.size == fullSize) {
+                    post.media = urlsList
+                    Log.d(TAG, "post: $post")
+                    handleApiRequest(repository.addPost(post), _loading, _requestResponse, TAG)
+                }
+
+            }
+
+        }
     }
 
     fun getCities(country: String) {

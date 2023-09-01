@@ -22,6 +22,7 @@ import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.FragmentStepThreeBinding
 import com.example.realestate.ui.activities.AddPostActivity
+import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.viewmodels.postaddmodels.StepThreeModel
 import com.example.realestate.utils.*
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -35,8 +36,10 @@ class StepThreeFragment : FragmentStep() {
     }
 
     private lateinit var binding: FragmentStepThreeBinding
+    private lateinit var activity: AddPostActivity
     private var countriesData: CountriesData? = null
-//    private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
+
+    //    private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
 //    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val stepThreeModel: StepThreeModel by lazy {
         val retrofit = Retrofit.getInstance()
@@ -50,6 +53,7 @@ class StepThreeFragment : FragmentStep() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        activity = (requireActivity() as AddPostActivity)
 //        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 //        locationPermissionRequest = requestMultiplePermissions(object : LocationPermission {
 //            @SuppressLint("MissingPermission")
@@ -83,7 +87,6 @@ class StepThreeFragment : FragmentStep() {
         binding = FragmentStepThreeBinding.inflate(inflater, container, false)
 
 
-
 //        binding.getLocation.setOnClickListener {
 //            requireActivity().handlePermission(
 //                object : PermissionResult {
@@ -114,7 +117,7 @@ class StepThreeFragment : FragmentStep() {
     override fun onResume() {
         super.onResume()
         val lastState = stepThreeModel.isDataValid.value!!
-        (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(lastState)
+        activity.addPostModel.updateIsValidData(lastState)
     }
 
     override fun onNextClicked(viewPager: ViewPager2) {
@@ -125,8 +128,10 @@ class StepThreeFragment : FragmentStep() {
             requireContext(),
             object : OnDialogClicked {
                 override fun onPositiveButtonClicked() {
-                    (requireActivity() as AddPostActivity).post.apply {
+
+                    activity.post.apply {
                         if (CurrentUser.isConnected()) {
+                            val uris = activity.selectedMedia
                             stepThreeModel.apply {
                                 val l = Location(
                                     country = countryLiveData.value.toString(),
@@ -140,7 +145,7 @@ class StepThreeFragment : FragmentStep() {
                                 description = descriptionLiveData.value.toString()
                             }
                             Log.i(TAG, "post: $this")
-                            stepThreeModel.addPost(this)
+                            stepThreeModel.addPost(this, uris, requireContext())
                         } else {
                             doOnFail()
                         }
@@ -198,16 +203,20 @@ class StepThreeFragment : FragmentStep() {
 
         stepThreeModel.apply {
             handleLocationEditText()
-
             isDataValid.observe(viewLifecycleOwner) { isValid ->
                 Log.d(TAG, "isValidData : $isValid")
-                (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValid)
+                activity.addPostModel.updateIsValidData(isValid)
             }
 
             loading.observe(viewLifecycleOwner) { loading ->
+                Log.d(TAG, "loading : $loading")
                 binding.progressBar.isVisible = loading
-                for (v in binding.wholeLayout.children) {
-                    v.isEnabled = false
+                for (v in binding.linearLayout.children) {
+                    v.isEnabled = !loading
+                }
+                activity.addPostModel.apply {
+                    updateIsValidData(false)
+                    updateIsBackEnabled(!loading)
                 }
             }
 

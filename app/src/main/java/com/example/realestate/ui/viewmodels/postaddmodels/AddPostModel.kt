@@ -12,13 +12,16 @@ class AddPostModel() : ViewModel() {
     }
 
     private val _isValidData = MutableLiveData(true)
+    private val _isBackEnabled = MutableLiveData(true)
 
-    val isValidData: LiveData<Boolean>
-        get() = _isValidData
+    val isBackEnabled: LiveData<Boolean> get() = _isBackEnabled
+    val isValidData: LiveData<Boolean> get() = _isValidData
 
     fun updateIsValidData(newValue: Boolean) {
         _isValidData.postValue(newValue)
     }
-
+    fun updateIsBackEnabled(newValue: Boolean) {
+        _isBackEnabled.postValue(newValue)
+    }
 
 }

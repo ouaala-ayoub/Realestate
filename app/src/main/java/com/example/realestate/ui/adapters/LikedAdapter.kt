@@ -22,7 +22,7 @@ class LikedAdapter(private val likedClickListener: OnLikedClickListener) :
     inner class FavouritesHolder(private val binding: SingleLikedBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private val detailsShortAdapter = DetailsAdapter(DetailsType.SHORT)
+        private val detailsShortAdapter = DetailsShortAdapter()
 
         fun bind(position: Int) {
 
@@ -82,12 +82,12 @@ class LikedAdapter(private val likedClickListener: OnLikedClickListener) :
                     likedClickListener.onDeleteClickedListener(currentPost.id!!)
                 }
 
-                val details = currentPost.details
-                if (details != null) {
+                val features = currentPost.features
+                if (features != null) {
                     detailsShortRv.apply {
                         adapter = detailsShortAdapter
                         layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-                        detailsShortAdapter.setDetails(details)
+                        detailsShortAdapter.setFeatures(features)
                     }
                 }
 

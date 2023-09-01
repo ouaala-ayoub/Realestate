@@ -1,5 +1,6 @@
 package com.example.realestate.ui.activities
 
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -40,6 +41,7 @@ class AddPostActivity : AppCompatActivity() {
     val post: PostWithoutId by lazy {
         PostWithoutId.emptyPost
     }
+    var selectedMedia: List<Uri> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,8 +77,10 @@ class AddPostActivity : AppCompatActivity() {
         }
 
         addPostModel.isValidData.observe(this) { isValidData ->
-            Log.d(TAG, "isValidData: $isValidData")
             binding.next.isEnabled = isValidData
+        }
+        addPostModel.isBackEnabled.observe(this) { isBackEnabled ->
+            binding.back.isEnabled = isBackEnabled
         }
 
         setContentView(binding.root)

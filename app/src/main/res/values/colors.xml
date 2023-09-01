@@ -37,4 +37,7 @@
     <color name="yellow">#ffd60a</color>
 
     <color name="skeleton_color">#242424</color>
+
+    <color name="ted_image_picker_primary">@color/yellow</color>
+    <color name="ted_image_picker_primary_pressed">@color/yellow</color>
 </resources>
