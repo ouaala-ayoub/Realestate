@@ -55,9 +55,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
             UsersRepository(retrofit)
         ).also {
             it.apply {
-                if (CurrentUser.isUserIdStored() && !CurrentUser.isConnected())
-                    getUserById(CurrentUser.prefs.get()!!)
-
                 getCategories()
                 getPosts(source = "lazy")
             }
@@ -269,6 +266,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
             }
 
             viewModel.user.observe(viewLifecycleOwner) { user ->
+                Log.d(TAG, "user: $user")
                 if (user != null) {
                     if (!CurrentUser.isConnected()) {
                         CurrentUser.set(user)
@@ -402,7 +400,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
     private fun requestTheUser() {
         val connected = CurrentUser.isUserIdStored()
         if (connected)
-            viewModel.getUserById(CurrentUser.prefs.get()!!)
+            viewModel.getAuth()
     }
 
     private fun handleSearch() {
@@ -515,6 +513,11 @@ class HomeFragment : Fragment(), ActivityResultListener {
             viewModel.getPosts(searchParams, source = "onChipClicked")
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (CurrentUser.isUserIdStored() && !CurrentUser.isConnected())
+            viewModel.getAuth()
+    }
 
     private fun handleChips() {
 

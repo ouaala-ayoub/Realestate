@@ -142,10 +142,13 @@
     <string name="property_condition">Property Condition <font fgcolor='@color/red'>(required *)</font></string>
     <string name="property_condition_text">Property Condition</string>
     <string name="required">required *</string>
-    <string name="luxury">luxury</string>
-    <string name="excellent">excellent</string>
-    <string name="good">good</string>
-    <string name="normal">normal</string>
+
+<!--    propriety conditions-->
+    <string name="luxury">Luxury</string>
+    <string name="excellent">Excellent</string>
+    <string name="good">Good</string>
+    <string name="normal">Normal</string>
+
     <string name="extras">Extras</string>
     <string name="location_tv">Location</string>
     <string name="meter">m²</string>
@@ -170,4 +173,8 @@
     <string name="no_call_msg">No phone number provided by the owner</string>
     <string name="website">Visit our website</string>
     <string name="real_estate_website">https://realestatefy.vercel.app/</string>
+    <string name="downtown">Downtown</string>
+    <string name="shopping_mall">Shopping Mall</string>
+    <string name="transportation">Transportation</string>
+    <string name="tram">Tram</string>
 </resources>

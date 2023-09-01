@@ -44,7 +44,7 @@ class PostsAdapter(
     inner class PostHolder(private val binding: SinglePostBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private val detailsShortAdapter = DetailsAdapter(DetailsType.SHORT)
+        private val detailsShortAdapter = DetailsShortAdapter()
         fun bind(position: Int) {
             val currentPost = postsList[position]
             val context = binding.root.context
@@ -121,13 +121,13 @@ class PostsAdapter(
                     }
                 }
 
-                val details = currentPost.details
-                if (details != null) {
+                val features = currentPost.features
+                if (features != null) {
                     detailsShortRv.apply {
                         adapter = detailsShortAdapter
                         layoutManager =
                             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-                        detailsShortAdapter.setDetails(details)
+                        detailsShortAdapter.setFeatures(features)
                     }
                 }
             }

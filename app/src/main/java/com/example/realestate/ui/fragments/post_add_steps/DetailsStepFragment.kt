@@ -46,14 +46,13 @@ class DetailsStepFragment : FragmentStep() {
                 proprietyDetailsCg.forEach { view ->
                     val checkBox = view as CheckBox
 
-                    checkBox.setOnClickListener {
-                        val text = checkBox.text
-                        Log.d(TAG, "text: $text")
-                        val function = mapOfFunctions["$text"]
-                        val isChecked = checkBox.isChecked
-
-                        function?.invoke(isChecked)
-
+                    checkBox.setOnCheckedChangeListener { compoundButton, isChecked ->
+                        val feature = compoundButton.text.toString()
+                        if (isChecked) {
+                            viewModel.addFeature(feature)
+                        } else {
+                            viewModel.deleteFeature(feature)
+                        }
                     }
                 }
 
@@ -107,9 +106,17 @@ class DetailsStepFragment : FragmentStep() {
     }
 
     override fun onNextClicked(viewPager: ViewPager2) {
-        val details = viewModel.getResult()
-        Log.i(TAG, "details: $details")
-        (requireActivity() as AddPostActivity).post.details = details
+        (requireActivity() as AddPostActivity).post.apply {
+            viewModel.apply {
+                features = featuresLiveData.value
+                condition = propertyState.value
+                rooms = numberOfRooms.value
+                bathrooms = numberOfBathrooms.value
+                floors = numberOfFloors.value
+                floorNumber = floorNumberLiveData.value
+                space = spaceLiveData.value
+            }
+        }
         viewPager.currentItem++
     }
 

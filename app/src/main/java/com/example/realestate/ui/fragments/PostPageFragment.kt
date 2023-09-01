@@ -21,13 +21,12 @@ import com.eudycontreras.boneslibrary.extensions.enableSkeletonLoading
 import com.example.realestate.PostNavArgs
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
-import com.example.realestate.data.models.DetailsType
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.FragmentPostPageBinding
 import com.example.realestate.ui.activities.MainActivity
-import com.example.realestate.ui.adapters.DetailsAdapter
+import com.example.realestate.ui.adapters.DetailsLongAdapter
 import com.example.realestate.ui.adapters.MediaPagerAdapter
 import com.example.realestate.ui.viewmodels.PostPageModel
 import com.example.realestate.utils.*
@@ -60,8 +59,8 @@ class PostPageFragment : Fragment() {
             getPost(postId)
         }
     }
-    private val detailsAdapter: DetailsAdapter by lazy {
-        DetailsAdapter(DetailsType.LONG)
+    private val detailsAdapter: DetailsLongAdapter by lazy {
+        DetailsLongAdapter()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -182,11 +181,29 @@ class PostPageFragment : Fragment() {
                         areaTv.text = loadHtml(area)
 
                         descriptionRv.defineField(post.description, requireContext())
-                        val details = post.details
+                        val features = post.features
+                        val map = mutableMapOf<String, String>()
 
-                        if (details != null) {
-                            detailsAdapter.setDetails(details)
+                        if (features != null) {
+                            for (element in features) {
+                                map[element] = element
+                            }
                         }
+                        post.apply {
+                            condition?.apply {
+                                map["Property Condition"] = this
+                            }
+                            rooms?.apply { map["Number Of rooms"] = this.toString() }
+                            bathrooms?.apply { map["Number of bathrooms"] = this.toString() }
+                            floors?.apply {
+                                floorNumber?.apply {
+                                    map["Floor Info"] = "Floor n° $floorNumber in $floors"
+                                }
+                            }
+                            space?.apply { map["Space"] = "$this m²" }
+                        }
+
+                        detailsAdapter.setFeatures(map)
 //                        else {
 //                            val placeholderMap = mutableMapOf<String, String>()
 //                            placeholderMap[getString(R.string.no_defined)] =

@@ -7,13 +7,19 @@ data class PostWithoutId(
     @SerializedName("description") var description: String,
     @SerializedName("media") var media: List<String>,
     @SerializedName("category") var category: String,
-    @SerializedName("details") var details: Map<String ,Any>? = null,
-    @SerializedName("price") var price: Int,
+    @SerializedName("price") var price: Number,
     @SerializedName("location") var location: Location,
     @SerializedName("type") var type: String,
     @SerializedName("contact") var contact: Contact,
+    @SerializedName("features") var features: MutableList<String>? = null,
+    @SerializedName("condition") var condition: String? = null,
+    @SerializedName("rooms") var rooms: String? = null,
+    @SerializedName("bathrooms") var bathrooms: String? = null,
+    @SerializedName("floors") var floors: String? = null,
+    @SerializedName("floorNumber") var floorNumber: String? = null,
+    @SerializedName("space") var space: String? = null
 
-    ) {
+) {
     companion object {
         val emptyPost = PostWithoutId(
             type = Type.RENT.value,
@@ -28,5 +34,7 @@ data class PostWithoutId(
             contact = Contact()
         )
     }
+
+    fun fillFields(){}
 }
 

@@ -151,8 +151,8 @@ class HomeViewModel(
         return _categoriesList
     }
 
-    fun getUserById(userId: String) {
-        handleApiRequest(usersRepository.getUserById(userId), null, _user, TAG)
+    fun getAuth() {
+        handleApiRequest(usersRepository.getAuth(), null, _user, TAG)
     }
 
 
