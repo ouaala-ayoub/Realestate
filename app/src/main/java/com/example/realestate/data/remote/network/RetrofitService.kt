@@ -63,6 +63,9 @@ interface RetrofitService {
     @GET("users/{id}")
     fun getUserById(@Path("id") userId: String): Call<User>
 
+    @GET("auth")
+    fun getAuth(): Call<User>
+
     @POST("users")
     fun addUser(@Body user: User): Call<IdResponse>
 

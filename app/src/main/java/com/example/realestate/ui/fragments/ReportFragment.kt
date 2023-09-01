@@ -57,19 +57,17 @@ class ReportFragment : Fragment() {
 
         binding.submit.setOnClickListener {
             if (CurrentUser.isConnected()) {
-                val userId = CurrentUser.prefs.get()
-                userId?.apply {
-                    val reasons = reportModel.userReasons.value?.toList()
-                    val message = reportModel.message.value
+                val reasons = reportModel.userReasons.value?.toList()
+                val message = reportModel.message.value
 
-                    val report = Report(postId, userId, reasons!!)
+                val report = Report(postId, reasons = reasons!!)
 
-                    if (!message.isNullOrEmpty()) {
-                        report.message = message
-                    }
-
-                    reportModel.addReport(report)
+                if (!message.isNullOrEmpty()) {
+                    report.message = message
                 }
+
+                reportModel.addReport(report)
+
             } else {
                 doOnFail()
             }

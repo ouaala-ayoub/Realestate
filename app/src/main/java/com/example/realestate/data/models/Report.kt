@@ -7,9 +7,9 @@ data class Report(
     val postId: String,
 
     @SerializedName("userId")
-    val userId: String,
+    val userId: String? = null,
 
-    @SerializedName("reason")
+    @SerializedName("reasons")
     val reasons: List<String>,
 
     @SerializedName("message")
