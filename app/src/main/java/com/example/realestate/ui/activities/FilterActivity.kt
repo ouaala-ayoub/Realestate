@@ -8,6 +8,7 @@ import android.text.Editable
 import android.util.Log
 import android.view.View
 import android.widget.CheckBox
+import android.widget.RadioButton
 import android.widget.TextView
 import androidx.core.view.children
 import androidx.core.view.forEach
@@ -53,8 +54,18 @@ class FilterActivity : AppCompatActivity() {
             val checkBox = view as CheckBox
 
             checkBox.setOnClickListener {
-                val text = checkBox.text
-                Log.d(TAG, "chip text: $text")
+                val feature = checkBox.text.toString()
+                if (searchParams?.features == null) {
+                    searchParams?.apply {
+                        initialiseFeatures()
+                        addFeature(feature)
+                    }
+                } else if (searchParams?.features?.contains(feature) == true) {
+                    searchParams?.deletedFeature(feature)
+                } else {
+                    searchParams?.addFeature(feature)
+                }
+                Log.d(TAG, "searchParams?.features: ${searchParams?.features}")
             }
         }
 
@@ -82,7 +93,7 @@ class FilterActivity : AppCompatActivity() {
                                 val item = selectedItem.toString().lowerFirstLetter()
                                 if (categories.contains(item))
                                     searchParams?.category = item
-                                
+
                                 binding.apply {
                                     val show = extras.contains(item)
                                     proprietyCdTv.isVisible = show
@@ -209,6 +220,14 @@ class FilterActivity : AppCompatActivity() {
 
 
         binding.search.setOnClickListener {
+            //set the condition
+            val button =
+                findViewById<RadioButton>(binding.proprietyConditionRg.checkedRadioButtonId)
+
+             button?.apply {
+                 searchParams?.condition = text.toString()
+            }
+
             intent.putExtra("search_params", searchParams)
             setResult(Activity.RESULT_OK, intent)
             finish()

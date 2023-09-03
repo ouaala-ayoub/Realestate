@@ -380,6 +380,30 @@
                     android:layout_height="wrap_content"
                     android:text="@string/security" />
 
+                <CheckBox
+                    android:id="@+id/downtown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/downtown" />
+
+                <CheckBox
+                    android:id="@+id/shopping_mall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/shopping_mall" />
+
+                <CheckBox
+                    android:id="@+id/transportation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/transportation" />
+
+                <CheckBox
+                    android:id="@+id/tram"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tram" />
+
             </com.google.android.material.chip.ChipGroup>
 
         </LinearLayout>

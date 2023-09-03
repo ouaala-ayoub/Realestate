@@ -10,8 +10,12 @@ data class SearchParams(
     var category: String? = null,
     var price: PriceFilter? = PriceFilter.NONE,
     var location: LocationData? = LocationData(),
-    var page: Number? = null
+    var page: String? = null,
+    var features: MutableList<String>? = null,
+    var condition: String? = null
 ) : Parcelable {
+
+
     fun setCountry(country: String?) {
         location?.country = CountriesDataItem(name = country)
     }
@@ -23,6 +27,19 @@ data class SearchParams(
     fun setArea(area: String?) {
         location?.area = area
     }
+
+    fun initialiseFeatures() {
+        features = mutableListOf()
+    }
+
+    fun addFeature(element: String) {
+        features?.add(element)
+    }
+
+    fun deletedFeature(element: String) {
+        features?.remove(element)
+    }
+
 }
 
 enum class PriceFilter {

@@ -41,7 +41,9 @@ interface RetrofitService {
         @Query("category") category: String? = null,
         @Query("type") type: String? = null,
         @Query("n") filterByDate: String? = null,
-        @Query("page") page: String? = null
+        @Query("condition") condition: String? = null,
+        @Query("page") page: String? = null,
+        @Query("features") features: List<String>? = null
     ): Call<MutableList<PostWithOwnerId>>
 
     @POST("posts")

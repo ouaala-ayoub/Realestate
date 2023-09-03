@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
 import android.view.*
+import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.SearchView
 import android.widget.TextView
@@ -42,6 +43,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
     private var isUserClick = false
     private var firstTime = true
     private var recyclerViewState: Parcelable? = null
+    private var countryAdapter: ArrayAdapter<String?>? = null
     private lateinit var binding: FragmentHomeModifiedBinding
     private lateinit var postsAdapter: PostsAdapter
     private lateinit var searchParams: SearchParams
@@ -149,6 +151,8 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
             //handle swipe gesture
             swipeRefreshLayout.setOnRefreshListener {
+                searchParams = SearchParams()
+                refreshEveryView()
                 viewModel.getPosts(
                     searchParams,
                     source = "swipeRefreshLayout.setOnRefreshListener",
@@ -202,6 +206,41 @@ class HomeFragment : Fragment(), ActivityResultListener {
         return binding.root
     }
 
+    private fun refreshEveryView() {
+        binding.apply {
+            //default button
+            if (selectedChipId != -1) {
+                //unselect last selected chip
+                val previousChip = requireActivity().findViewById<Chip>(selectedChipId)
+                previousChip.apply {
+                    isChecked = false
+                    isEnabled = true
+                }
+                //select all chip
+                selectedChipId = binding.all.id
+                binding.all.apply {
+                    isChecked = true
+                    isEnabled = false
+                }
+            }
+
+            //back to all countries
+            //TODO maybe to change to the country auto detected
+            if (countryEditText.text.toString().isNotEmpty()) {
+                countryEditText.setText(countryAdapter?.getItem(0), false)
+                countryAdapter?.filter?.filter(null)
+            }
+
+            //clear selection
+            categoriesChipGroup.forEach { view ->
+                val radioButton = view as RadioButton
+                radioButton.isChecked = false
+            }
+
+        }
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.postRv.apply {
@@ -219,18 +258,21 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
         binding.apply {
             (requireActivity() as MainActivity).countriesModel.countries.observe(viewLifecycleOwner) { data ->
-                postsAdapter.setCountriesData(data)
+
                 if (data != null) {
+                    postsAdapter.setCountriesData(data)
                     val countries = data.map { element -> element.name }.toMutableList().also {
                         it.add(0, getString(R.string.all))
                     }
                     binding.countryEditText.apply {
+                        isEnabled = data.isNotEmpty()
+
                         setText(countries[0])
-                        val adapter = setUpAndHandleSearch(countries)
+                        countryAdapter = setUpAndHandleSearch(countries)
                         setOnItemClickListener { _, view, _, _ ->
                             val tv = view as TextView
                             val query = tv.text.toString()
-                            adapter.filter.filter(null)
+                            countryAdapter?.filter?.filter(null)
 
                             if (query.isNotEmpty()) {
                                 if (query == getString(R.string.all)) {
@@ -561,14 +603,14 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
     private fun initialiseCountryPicker(countryData: CountriesDataItem?) {
         //TODO fix this shit
-        val code = countryData?.code
-        Log.i(TAG, "code: $code")
+//        val code = countryData?.code
         val country = countryData?.name
         if (country == null) {
             binding.countryEditText.setText(getString(R.string.all))
         } else {
             binding.countryEditText.setText(country)
         }
+        countryAdapter?.filter?.filter(null)
     }
 
     private fun requestData(params: SearchParams) {

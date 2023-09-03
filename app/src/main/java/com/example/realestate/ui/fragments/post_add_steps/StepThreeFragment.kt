@@ -138,8 +138,10 @@ class StepThreeFragment : FragmentStep() {
                                     city = cityLiveData.value.toString()
                                 )
 
-                                if (streetLiveData.value != null)
-                                    l.area = streetLiveData.value.toString()
+                                l.area = if (streetLiveData.value != null)
+                                    streetLiveData.value.toString()
+                                else
+                                    ""
 
                                 location = l
                                 description = descriptionLiveData.value.toString()

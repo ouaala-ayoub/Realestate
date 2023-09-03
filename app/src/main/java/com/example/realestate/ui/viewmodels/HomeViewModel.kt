@@ -25,7 +25,7 @@ class HomeViewModel(
         private const val ERROR = "Unexpected Error"
     }
 
-    var currentPage = MutableLiveData(1)
+    var currentPage = MutableLiveData("1")
     private val _user = MutableLiveData<User?>()
     private val _categoriesList = MutableLiveData<List<String>?>()
     private val _postsList = MutableLiveData(mutableListOf<PostWithOwnerId>())
@@ -64,11 +64,13 @@ class HomeViewModel(
         override: Boolean = true,
         shouldVeil: Boolean = true,
     ): MutableLiveData<MutableList<PostWithOwnerId>?> {
-        Log.i(TAG, "requested data yes source = $source")
-        Log.i(TAG, "override = $override")
-        Log.i(TAG, "shouldVeil = $shouldVeil")
+        val url = postsRepository.getPosts(searchParams).request().url.toString()
+        Log.d(TAG, "getPosts: $url")
+//        Log.i(TAG, "requested data yes source = $source")
+//        Log.i(TAG, "override = $override")
+//        Log.i(TAG, "shouldVeil = $shouldVeil")
         if (shouldVeil) _shouldVeil.postValue(true)
-        if (override) currentPage.value = 1
+        if (override) currentPage.value = "1"
         handleApiRequest(
             postsRepository.getPosts(searchParams),
             _isLoading,
@@ -81,7 +83,7 @@ class HomeViewModel(
                     if (responseBody.isSuccessful) {
                         if (override) {
                             Log.d(TAG, "override: yes")
-                            currentPage.postValue(2)
+                            currentPage.postValue("2")
                             if (responseBody.body()!!.isEmpty()) {
                                 _postsMessage.postValue(NO_POST)
                             } else {

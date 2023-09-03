@@ -11,7 +11,9 @@ class PostsRepository(private val retrofit: RetrofitService) {
         city = searchParams.location?.city,
         category = searchParams.category,
         type = searchParams.type,
-        page = searchParams.page.toString()
+        page = searchParams.page,
+        features = searchParams.features,
+        condition = searchParams.condition
     )
 
     fun addPost(post: PostWithoutId) = retrofit.addPost(post)
