@@ -8,6 +8,7 @@ data class PostWithoutId(
     @SerializedName("media") var media: List<String>,
     @SerializedName("category") var category: String,
     @SerializedName("price") var price: Number,
+    @SerializedName("period") var period: String? = null,
     @SerializedName("location") var location: Location,
     @SerializedName("type") var type: String,
     @SerializedName("contact") var contact: Contact,
@@ -35,6 +36,6 @@ data class PostWithoutId(
         )
     }
 
-    fun fillFields(){}
+    fun fillFields() {}
 }
 

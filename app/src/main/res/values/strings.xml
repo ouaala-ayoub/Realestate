@@ -177,4 +177,8 @@
     <string name="shopping_mall">Shopping Mall</string>
     <string name="transportation">Transportation</string>
     <string name="tram">Tram</string>
+    <string name="daily">daily</string>
+    <string name="monthly">monthly</string>
+    <string name="yearly">yearly</string>
+    <string name="period">Period :</string>
 </resources>

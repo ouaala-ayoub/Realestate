@@ -8,6 +8,7 @@ data class PostWithOwnerId(
     @SerializedName("media") val media: List<String>,
     @SerializedName("category") val category: String,
     @SerializedName("price") val price: Int,
+    @SerializedName("period") var period: String? = null,
     @SerializedName("location") val location: Location,
     @SerializedName("owner") val owner: String, // Assuming ObjectId is represented as String
     @SerializedName("type") val type: String,

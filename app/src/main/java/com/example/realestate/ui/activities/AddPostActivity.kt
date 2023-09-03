@@ -29,7 +29,7 @@ class AddPostActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddPostBinding
     private val fragmentsList: List<FragmentStep> =
         listOf(
-            ImagesSelectFragment(),
+//            ImagesSelectFragment(),
             StepTwoFragment(),
             DetailsStepFragment(),
             StepThreeFragment()

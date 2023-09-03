@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import androidx.core.view.forEach
 import androidx.core.widget.doOnTextChanged
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.data.models.Contact
@@ -36,6 +38,36 @@ class StepTwoFragment : FragmentStep() {
         // Inflate the layout for this fragment
         binding = FragmentStepTwoBinding.inflate(inflater, container, false)
 
+        binding.periodRg.setOnCheckedChangeListener { radioGroup, id ->
+            val button = radioGroup.findViewById<RadioButton>(id)
+
+            button?.apply {
+                val period = text.toString()
+                Log.i(TAG, "period: $period")
+                stepTwoModel.mutableLiveDataWrapper._periodLiveData.postValue(period)
+            }
+
+        }
+
+        //validity of the data entered handling
+        validateTheData(Type.RENT.value)
+
+        return binding.root
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        stepTwoModel.liveDataWrapper.typeLiveData.observe(viewLifecycleOwner) { type ->
+            val shouldShow = type == Type.RENT.value
+            binding.periodRg.forEach { it.isEnabled = shouldShow }
+            if (!shouldShow) {
+                binding.periodRg.clearCheck()
+                stepTwoModel.mutableLiveDataWrapper.clearPeriod()
+            }
+        }
+
         stepTwoModel.categories.observe(viewLifecycleOwner) { categories ->
             if (categories != null) {
                 binding.categoryEditText.apply {
@@ -55,17 +87,12 @@ class StepTwoFragment : FragmentStep() {
             }
         }
 
-        //validity of the data entered handling
-        validateTheData(Type.RENT.value)
-
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        stepTwoModel.liveDataWrapper.priceLiveData.observe(viewLifecycleOwner) { price ->
-            Log.d(TAG, "price: $price")
+        stepTwoModel.isValidData.observe(viewLifecycleOwner) { isValidData ->
+            //update the state of the next button
+            Log.d(TAG, "isValidData : $isValidData")
+            (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValidData)
         }
+
     }
 
     override fun onResume() {
@@ -93,17 +120,17 @@ class StepTwoFragment : FragmentStep() {
 
             wrapper._typeLiveData.apply {
                 value = typeDefault
-                rent.setOnClickListener { value = Type.RENT.value }
-                forSell.setOnClickListener { value = Type.BUY.value }
+                rent.setOnClickListener {
+                    value = Type.RENT.value
+                }
+                forSell.setOnClickListener {
+                    value = Type.BUY.value
+                }
             }
 
         }
 
-        stepTwoModel.isValidData.observe(viewLifecycleOwner) { isValidData ->
-            //update the state of the next button
-            Log.d(TAG, "isValidData : $isValidData")
-            (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValidData)
-        }
+
     }
 
     override fun onNextClicked(viewPager: ViewPager2) {
@@ -114,6 +141,7 @@ class StepTwoFragment : FragmentStep() {
 
                 category = categoryLiveData.value.toString()
                 price = priceLiveData.value!!.toDouble()
+                period = periodLiveData.value
                 type = typeLiveData.value.toString()
 
                 Log.d(TAG, "price: $price")
