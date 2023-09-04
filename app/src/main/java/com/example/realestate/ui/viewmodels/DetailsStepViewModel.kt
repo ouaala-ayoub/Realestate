@@ -71,9 +71,7 @@ class DetailsStepViewModel : ViewModel() {
         numberOfFloors: String?,
         space: String?
     ): Boolean {
-        //TODO
-        // Perform your validation logic here
-        // For example, check if required fields are not empty, and any other specific validations
+
 
         Log.d(
             TAG,

@@ -55,7 +55,6 @@ class StepTwoModel(private val staticDataRepository: StaticDataRepository) : Vie
         whatsappNumber: String?,
         callNumber: String?
     ): Boolean {
-        //TODO handle whatsapp and call numbers
         val isValidCategory = !category.isNullOrEmpty()
         val isValidPrice = !price.isNullOrEmpty()
         val isValidPeriod = !period.isNullOrEmpty() || category != Type.RENT.value

@@ -100,6 +100,8 @@ class HomeFragment : Fragment(), ActivityResultListener {
         savedInstanceState: Bundle?
     ): View {
 
+        binding = FragmentHomeModifiedBinding.inflate(inflater, container, false)
+
         //back button handling
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -123,15 +125,15 @@ class HomeFragment : Fragment(), ActivityResultListener {
                         positiveText = getString(R.string.Yes)
                     )
                     dialog.apply {
-                        separateButtonsBy(10)
                         show()
+                        separateButtonsBy(15)
                     }
 
                 }
 
             })
 
-        binding = FragmentHomeModifiedBinding.inflate(inflater, container, false)
+
 //        val countryPicker = binding.countryPicker
         searchParams.location?.country =
             CountriesDataItem(
@@ -602,7 +604,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
     }
 
     private fun initialiseCountryPicker(countryData: CountriesDataItem?) {
-        //TODO fix this shit
 //        val code = countryData?.code
         val country = countryData?.name
         if (country == null) {

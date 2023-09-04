@@ -298,22 +298,6 @@ fun ImageView.loadSvg(imageUrl: String, errorImage: Int = R.drawable.baseline_br
                 .error(errorImage)
         )
         .into(this)
-
-//    GlideToVectorYou
-//        .init()
-//        .with(context)
-//        .withListener(object : GlideToVectorYouListener {
-//            override fun onLoadFailed() {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onResourceReady() {
-//                TODO("Not yet implemented")
-//            }
-//
-//        })
-//        .setPlaceHolder(circularProgressBar(context), R.drawable.baseline_broken_image_24)
-//        .load(Uri.parse(imageUrl), this)
 }
 
 fun StyledPlayerView.loadVideo(videoName: String, myPlayer: ExoPlayer) {
@@ -385,13 +369,13 @@ fun makeDialog(
 }
 
 fun AlertDialog.separateButtonsBy(margin: Int) {
-    val negButton = this.getButton(AlertDialog.BUTTON_POSITIVE)
+    val posButton = getButton(AlertDialog.BUTTON_POSITIVE)
     val params = LinearLayout.LayoutParams(
         LinearLayout.LayoutParams.WRAP_CONTENT,
         LinearLayout.LayoutParams.WRAP_CONTENT
     )
     params.setMargins(margin, 0, 0, 0)
-    negButton.layoutParams = params
+    posButton.layoutParams = params
 }
 
 //fun RecyclerView.handleRefreshWithScrolling(swipeRefresh: SwipeRefreshLayout) {
@@ -841,8 +825,6 @@ fun getDetailIcon(key: String, context: Context): Drawable? {
         "Space" -> {
             R.drawable.measure_area_svgrepo_com
         }
-
-        //TODO
         "Furnished" -> {
             R.drawable.furniture_svgrepo_com
         }

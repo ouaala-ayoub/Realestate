@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class AdditionalInfo(
     @SerializedName("name") val name: String,
     @SerializedName("socials") val socials: List<String> = listOf(),
-    @SerializedName("image") val image: String? = null
+    @SerializedName("image") var image: String? = null
 )
 
 data class PhoneNumber(

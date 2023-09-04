@@ -37,7 +37,6 @@ class NumberTextWatcher(
         } else {
             try {
 
-                //TODO fix that shit
 
                 // reverse format the input to get the numeric value
                 val numericValue = reverseFormatNumberWithCommas(input)

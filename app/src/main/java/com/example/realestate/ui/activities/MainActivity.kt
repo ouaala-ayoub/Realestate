@@ -181,7 +181,6 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                 return true
             }
             R.id.filter_button -> {
-                //TODO
                 openSearchActivity()
                 return true
             }

@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.user_register_steps.EmailVerificationFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -25,7 +24,8 @@
             android:layout_gravity="center"
             android:layout_marginBottom="30dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/nicepng_email_symbol_png_9602830" />
+            android:src="@drawable/nicepng_email_symbol_png_9602830"
+            android:contentDescription="@string/email" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/sign_in_google"

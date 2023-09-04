@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.realestate.PostNavArgs
+import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.Report
 import com.example.realestate.data.remote.network.Retrofit
@@ -55,6 +56,8 @@ class ReportFragment : Fragment() {
 
         Log.d(TAG, "postId: $postId")
 
+        reportModel.handleMessageChanges(binding.messageEditText)
+
         binding.submit.setOnClickListener {
             if (CurrentUser.isConnected()) {
                 val reasons = reportModel.userReasons.value?.toList()
@@ -81,6 +84,7 @@ class ReportFragment : Fragment() {
         reportModel.apply {
 
             isDataValid.observe(viewLifecycleOwner) { valid ->
+                Log.d(TAG, "valid: $valid")
                 binding.submit.isEnabled = valid
             }
 
@@ -93,27 +97,32 @@ class ReportFragment : Fragment() {
                         userReasons.observe(viewLifecycleOwner) { userReasons ->
                             Log.i(TAG, "userReasons: $userReasons")
                             if (userReasons != null) {
-                                binding.messageEditText.isEnabled =
-                                    userReasons.contains(reasonsList.last())
+                                val shouldShow = userReasons.contains(reasonsList.last())
+                                
+                                binding.specifyTv.isVisible = shouldShow
+                                binding.messageEditText.isVisible = shouldShow
+
                             }
 
                         }
                     }
 
                 } else {
-//                    doOnFail()
+                    doOnFail()
                 }
             }
 
             loading.observe(viewLifecycleOwner) { loading ->
+                Log.d(TAG, "loading: $loading")
                 binding.reportProgressBar.isVisible = loading
-                blockUi(loading)
+            }
+            requestSent.observe(viewLifecycleOwner) { sent ->
+                blockUi(!sent)
             }
 
             reported.observe(viewLifecycleOwner) { message ->
                 if (message != null) {
-                    Log.d(TAG, "message: $message")
-                    requireContext().toast(message.message, Toast.LENGTH_SHORT)
+                    requireContext().toast(getString(R.string.thanks), Toast.LENGTH_SHORT)
                     findNavController().popBackStack()
                 } else {
                     doOnFail()

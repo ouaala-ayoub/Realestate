@@ -95,9 +95,13 @@ class AddInfoFragment : Fragment() {
                     val name = addInfoModel.name.value!!
 
                     //TODO add the image to the additional info
-                    val image = FirebaseAuth.getInstance().currentUser?.photoUrl
+                    val info = AdditionalInfo(name)
+                    val image = FirebaseAuth.getInstance().currentUser?.photoUrl.toString()
+                    if (image != null.toString()) {
+                        info.image = image
+                    }
 
-                    addInfoModel.addInfoToUser(userId, AdditionalInfo(name))
+                    addInfoModel.addInfoToUser(userId, info)
 
                 }
             }

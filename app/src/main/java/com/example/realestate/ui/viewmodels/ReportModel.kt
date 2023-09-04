@@ -2,16 +2,15 @@ package com.example.realestate.ui.viewmodels
 
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.EditText
 import androidx.core.view.ViewCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.realestate.data.models.MessageResponse
 import com.example.realestate.data.models.Report
 import com.example.realestate.data.repositories.ReportsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.utils.handleApiRequest
+import com.example.realestate.utils.updateLiveData
 
 class ReportModel(
     private val reportsRepository: ReportsRepository,
@@ -20,43 +19,43 @@ class ReportModel(
 
     companion object {
         private const val TAG = "ReportModel"
+        private const val MAX_MESSAGE_SIZE = 250
     }
 
     private val _reported = MutableLiveData<MessageResponse?>()
     private val _reasonsList = MutableLiveData<List<String>?>()
     private val _userReasons = MutableLiveData(mutableListOf<String>())
     private val _loading = MutableLiveData<Boolean>()
+    private val _requestSent = MutableLiveData<Boolean>()
     private val _message = MutableLiveData("")
     val isDataValid = MediatorLiveData<Boolean>().apply {
         addSource(_userReasons) { this.value = validate() }
         addSource(message) { this.value = validate() }
     }
 
-    val reported: LiveData<MessageResponse?>
-        get() = _reported
-    val loading: LiveData<Boolean>
-        get() = _loading
-    val reasonsList: LiveData<List<String>?>
-        get() = _reasonsList
-    val userReasons: LiveData<MutableList<String>?>
-        get() = _userReasons
-    val message: LiveData<String>
-        get() = _message
+    val requestSent: LiveData<Boolean> get() = _requestSent
+    val reported: LiveData<MessageResponse?> get() = _reported
+    val loading: LiveData<Boolean> get() = _loading
+    val reasonsList: LiveData<List<String>?> get() = _reasonsList
+    val userReasons: LiveData<MutableList<String>?> get() = _userReasons
+    val message: LiveData<String> get() = _message
 
 
-    fun validate(): Boolean {
+    private fun validate(): Boolean {
         return validateData(_userReasons.value, _message.value)
     }
 
     private fun validateData(usersReasons: List<String?>?, message: String?): Boolean {
         val validReasons = !usersReasons.isNullOrEmpty()
         val containsOther = usersReasons?.contains(reasonsList.value?.last()) == true
+        val validMessageSize = !message.isNullOrEmpty() && message.length < MAX_MESSAGE_SIZE
         val validMessage =
-            containsOther && !message.isNullOrEmpty() || !containsOther && message.isNullOrEmpty()
+            containsOther && validMessageSize || !containsOther && message.isNullOrEmpty()
         return validReasons && validMessage
     }
 
     fun addReport(reportToAdd: Report) {
+        _requestSent.postValue(true)
         handleApiRequest(reportsRepository.addReport(reportToAdd), _loading, _reported, TAG)
     }
 
@@ -92,6 +91,10 @@ class ReportModel(
             }
             addView(checkBox)
         }
+    }
+
+    fun handleMessageChanges(editText: EditText) {
+        editText.updateLiveData(_message)
     }
 
 }
