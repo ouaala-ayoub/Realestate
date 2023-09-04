@@ -181,4 +181,8 @@
     <string name="monthly">monthly</string>
     <string name="yearly">yearly</string>
     <string name="period">Period :</string>
+    <string name="thanks">Thanks for helping us making the user experience better.</string>
+    <string name="reasons">Reasons</string>
+    <string name="specify">Specify</string>
+    <string name="email">email</string>
 </resources>
