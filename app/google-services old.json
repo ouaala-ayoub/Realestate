@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "25303075238",
+    "project_id": "otp-verification-67e8b",
+    "storage_bucket": "otp-verification-67e8b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:25303075238:android:5b91f3186a798bb4386767",
+        "android_client_info": {
+          "package_name": "com.example.realestate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "25303075238-vlnkj4lt1bdkropvii80cdr6im2c6262.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.realestate",
+            "certificate_hash": "a3fc95cbb8f7f82685c3b2a23f5e33b638697ef9"
+          }
+        },
+        {
+          "client_id": "25303075238-vdas3fraj34kgibq68gg4ccjt1n630m1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWgQv3iUkA68SQTIVcSygJz0_AnvjrT0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "25303075238-vdas3fraj34kgibq68gg4ccjt1n630m1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
