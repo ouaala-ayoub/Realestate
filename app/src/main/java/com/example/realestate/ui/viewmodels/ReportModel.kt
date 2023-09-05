@@ -19,7 +19,7 @@ class ReportModel(
 
     companion object {
         private const val TAG = "ReportModel"
-        private const val MAX_MESSAGE_SIZE = 250
+        const val MAX_MESSAGE_SIZE = 250
     }
 
     private val _reported = MutableLiveData<MessageResponse?>()

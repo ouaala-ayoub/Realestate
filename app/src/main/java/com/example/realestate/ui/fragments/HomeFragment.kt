@@ -59,6 +59,9 @@ class HomeFragment : Fragment(), ActivityResultListener {
             it.apply {
                 getCategories()
                 getPosts(source = "lazy")
+
+                if (!CurrentUser.isConnected())
+                    getAuth()
             }
         }
     }

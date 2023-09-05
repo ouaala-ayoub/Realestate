@@ -144,7 +144,7 @@
     <string name="property_condition_text">Property Condition</string>
     <string name="required">required *</string>
 
-<!--    propriety conditions-->
+    <!--    propriety conditions-->
     <string name="luxury">Luxury</string>
     <string name="excellent">Excellent</string>
     <string name="good">Good</string>
@@ -182,9 +182,10 @@
     <string name="monthly">Per Month</string>
     <string name="yearly">Per Year</string>
     <string name="period">Period :</string>
-    <string name="thanks">Thanks for helping us making the user experience better.</string>
+    <string name="thanks">Thanks for helping us make the user experience better.</string>
     <string name="reasons">Reasons</string>
     <string name="specify">Specify</string>
     <string name="email">email</string>
     <string name="register_first">please register first</string>
+    <string name="helper_text_max">%1$s/ %2$s</string>
 </resources>

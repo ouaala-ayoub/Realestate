@@ -98,9 +98,23 @@ class ReportFragment : Fragment() {
                             Log.i(TAG, "userReasons: $userReasons")
                             if (userReasons != null) {
                                 val shouldShow = userReasons.contains(reasonsList.last())
-                                
+
                                 binding.specifyTv.isVisible = shouldShow
+
                                 binding.messageEditText.isVisible = shouldShow
+                                binding.messageTextField.isVisible = shouldShow
+
+                                if (shouldShow) {
+                                    message.observe(viewLifecycleOwner) { message ->
+                                        binding.messageTextField.helperText = getString(
+                                            R.string.helper_text_max,
+                                            message.length.toString(),
+                                            ReportModel.MAX_MESSAGE_SIZE.toString()
+                                        )
+                                    }
+                                } else {
+                                    message.removeObservers(viewLifecycleOwner)
+                                }
 
                             }
 
