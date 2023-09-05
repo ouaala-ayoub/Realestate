@@ -1,6 +1,7 @@
 package com.example.realestate.ui.activities
 
 import android.content.Intent
+import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -22,6 +23,7 @@ import com.bumptech.glide.Glide
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.SearchParams
+import com.example.realestate.data.models.User
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.ActivityMainBinding
 import com.example.realestate.ui.fragments.HomeFragmentDirections
@@ -264,13 +266,6 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     override fun onResume() {
         super.onResume()
 
-        val uri = CurrentUser.get()?.image
-        Log.i(TAG, "uri: $uri")
-        if (uri != null) {
-            profileImage.loadImage(uri)
-        } else {
-            profileImage.setImageResource(R.drawable.baseline_person_24)
-        }
 
         // Manually set the selected item in the bottom navigation view based on the current destination
         val navDestination = findNavController(R.id.fragment_container).currentDestination
@@ -283,6 +278,10 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         }
     }
 
+    fun handleUserUi(emailTv: TextView) {
+
+    }
+
     private fun initialiseDrawerLayout(drawerLayout: DrawerLayout) {
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, R.string.nav_open, R.string.nav_close
@@ -292,14 +291,33 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
         val view = binding.navView.getHeaderView(0)
         val emailTv = view.findViewById<TextView>(R.id.user_email)
-        val phoneTv = view.findViewById<TextView>(R.id.user_phone)
+        val imageView = view.findViewById<ImageView>(R.id.user_image)
+//        val phoneTv = view.findViewById<TextView>(R.id.user_phone)
 
-        handleUser(FirebaseAuth.getInstance().currentUser, emailTv, phoneTv)
-        FirebaseAuth.getInstance().currentUser
+        CurrentUser.observe(this, object : CurrentUser.Companion.OnUserChanged {
+            override fun onChange(user: User?) {
+                val imageUri = user?.image
+                if (imageUri != null) {
+                    imageView.loadImage(imageUri)
+                } else {
+                    profileImage.setImageResource(R.drawable.baseline_person_24)
+                }
+                if (user != null) {
+                    emailTv.text = user.email
+                } else {
+                    emailTv.text = getString(R.string.no_user)
+                }
+            }
 
-        FirebaseAuth.getInstance().addAuthStateListener { auth ->
-            handleUser(auth.currentUser, emailTv, phoneTv)
-        }
+        })
+
+
+//        handleUser(FirebaseAuth.getInstance().currentUser, emailTv, phoneTv)
+//        FirebaseAuth.getInstance().currentUser
+//
+//        FirebaseAuth.getInstance().addAuthStateListener { auth ->
+//            handleUser(auth.currentUser, emailTv, phoneTv)
+//        }
 
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -334,7 +352,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         if (user != null) {
 
             emailTv.text = user.email
-            phoneTv.defineField(user.phoneNumber, this)
+            phoneTv.defineField(user.phoneNumber)
 
         } else {
             emailTv.text = getString(R.string.no_user)

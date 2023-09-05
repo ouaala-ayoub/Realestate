@@ -18,6 +18,7 @@
 
     <!--post data-->
     <string name="price"> %1$s USD </string>
+    <string name="price_rent"> %1$s USD / %2$s</string>
     <string name="location"> %1$s, %2$s, %3$s </string>
     <string name="country_res"><![CDATA[<b>Country:</b> %1$s]]></string>
     <string name="city_res"><![CDATA[<b>City:</b> %1$s]]></string>
@@ -174,15 +175,16 @@
     <string name="website">Visit our website</string>
     <string name="real_estate_website">https://realestatefy.vercel.app/</string>
     <string name="downtown">Downtown</string>
-    <string name="shopping_mall">Shopping Mall</string>
-    <string name="transportation">Transportation</string>
-    <string name="tram">Tram</string>
-    <string name="daily">daily</string>
-    <string name="monthly">monthly</string>
-    <string name="yearly">yearly</string>
+    <string name="shopping_mall">Near Shopping Mall</string>
+    <string name="transportation">Near Transportation</string>
+    <string name="tram">Near Tram</string>
+    <string name="daily">Per Day</string>
+    <string name="monthly">Per Month</string>
+    <string name="yearly">Per Year</string>
     <string name="period">Period :</string>
     <string name="thanks">Thanks for helping us making the user experience better.</string>
     <string name="reasons">Reasons</string>
     <string name="specify">Specify</string>
     <string name="email">email</string>
+    <string name="register_first">please register first</string>
 </resources>

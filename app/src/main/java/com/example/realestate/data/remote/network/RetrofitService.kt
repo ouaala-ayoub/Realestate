@@ -17,10 +17,6 @@ interface RetrofitService {
 //    @GET("streets")
 //    fun getStreets(): Call<List<String>>
 
-    //sign the uploads
-    @POST("upload/newnew")
-    fun generateSignature(@Query("timestamp") timeStamp: Long): Call<SignResult>
-
     //reports
     @GET("reports/reasons")
     fun getReportReasons(): Call<List<String>>

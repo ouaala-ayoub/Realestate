@@ -1,22 +1,18 @@
 package com.example.realestate.ui.viewmodels.userregistermodels
 
 import android.app.Activity
-import android.nfc.Tag
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.User
-import com.example.realestate.data.models.UserId
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.utils.AdditionalCode
 import com.example.realestate.utils.Task
 import com.example.realestate.utils.handleApiRequest
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.UserProfileChangeRequest
 import retrofit2.Response
 
 open class LoginModel(private val repository: UsersRepository) : ViewModel() {

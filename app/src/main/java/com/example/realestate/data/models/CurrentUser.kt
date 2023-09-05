@@ -1,25 +1,36 @@
 package com.example.realestate.data.models
 
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.realestate.R
 
 class CurrentUser {
     companion object {
-        private var current: User? = null
+        private var liveData: MutableLiveData<User?> = MutableLiveData<User?>()
         private const val name = "user"
         private const val keyRes = R.string.cookie_token
         val prefs = PrefsCRUD(name, keyRes)
 
-        fun isConnected() = current != null
-        fun get() = current
+        fun isConnected() = liveData.value != null
+        fun get() = liveData.value
         fun set(user: User?) {
-            current = user
+            liveData.postValue(user)
         }
 
         fun logout() {
-            current = null
+            liveData.postValue(null)
             prefs.delete()
         }
 
-        fun isUserIdStored() = prefs.get() != null
+        fun observe(lifecycleOwner: LifecycleOwner, onUserChanged: OnUserChanged) {
+            liveData.observe(lifecycleOwner) { user ->
+                onUserChanged.onChange(user)
+            }
+        }
+
+        interface OnUserChanged {
+            fun onChange(user: User?)
+        }
     }
 }

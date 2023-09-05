@@ -85,12 +85,12 @@ class FilterActivity : AppCompatActivity() {
             categoriesList.observe(this@FilterActivity) { categories ->
                 Log.i(TAG, "categories: $categories")
                 categories?.apply {
-                    val categoriesToShow = this.capitalizeFirstLetter().sorted()
+                    val categoriesToShow = this.sorted()
                     binding.categoryEditText.apply {
                         binding.categoryTextField.isEnabled = true
                         val adapter = setUpAndHandleSearch(categoriesToShow, object : OnSelected {
                             override fun onSelected(selectedItem: Editable?) {
-                                val item = selectedItem.toString().lowerFirstLetter()
+                                val item = selectedItem.toString()
                                 if (categories.contains(item))
                                     searchParams?.category = item
 

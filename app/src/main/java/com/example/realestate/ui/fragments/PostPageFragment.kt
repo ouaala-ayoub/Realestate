@@ -21,6 +21,7 @@ import com.eudycontreras.boneslibrary.extensions.enableSkeletonLoading
 import com.example.realestate.PostNavArgs
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
+import com.example.realestate.data.models.Type
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.UsersRepository
@@ -79,12 +80,12 @@ class PostPageFragment : Fragment() {
                 if (registerSuccess) {
                     navigateToReportFragment(postId)
                 } else {
-                    requireContext().toast("please register first", Toast.LENGTH_SHORT)
+                    requireContext().toast(getString(R.string.register_first), Toast.LENGTH_SHORT)
                 }
             }
 
             override fun onResultFailed() {
-                requireContext().toast("please register first", Toast.LENGTH_SHORT)
+                requireContext().toast(getString(R.string.register_first), Toast.LENGTH_SHORT)
             }
 
         })
@@ -162,15 +163,28 @@ class PostPageFragment : Fragment() {
                                 R.string.category_type,
                                 post.category.upperFirstLetter(),
                                 post.type.upperFirstLetter()
-                            ), requireContext()
+                            )
                         )
 
                         numberOfLikes.text = formatNumberWithSpaces(post.likes)
 
-                        priceTextView.defineField(
-                            getString(R.string.price, formatNumberWithCommas(post.price)),
-                            requireContext()
-                        )
+                        //handle price
+                        when (post.type) {
+                            Type.RENT.value -> {
+                                priceTextView.defineField(
+                                    getString(
+                                        R.string.price_rent,
+                                        formatNumberWithCommas(post.price),
+                                        post.period
+                                    ),
+                                )
+                            }
+                            else -> {
+                                priceTextView.defineField(
+                                    getString(R.string.price, formatNumberWithCommas(post.price)),
+                                )
+                            }
+                        }
 
                         share.setOnClickListener {
                             shareDeepLink(deepLink)
@@ -180,7 +194,7 @@ class PostPageFragment : Fragment() {
                         cityTv.text = loadHtml(city)
                         areaTv.text = loadHtml(area)
 
-                        descriptionRv.defineField(post.description, requireContext())
+                        descriptionRv.defineField(post.description)
                         val features = post.features
                         val map = mutableMapOf<String, String>()
 
@@ -266,7 +280,7 @@ class PostPageFragment : Fragment() {
 
                         owner?.apply {
                             ownerImage.loadImage(image, R.drawable.baseline_person_24)
-                            ownerTv.defineField(name, requireContext(), getString(R.string.error))
+                            ownerTv.defineField(name)
                         }
 
                     }

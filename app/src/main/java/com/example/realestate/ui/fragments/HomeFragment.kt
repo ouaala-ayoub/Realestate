@@ -442,9 +442,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
     }
 
     private fun requestTheUser() {
-        val connected = CurrentUser.isUserIdStored()
-        if (connected)
-            viewModel.getAuth()
+        viewModel.getAuth()
     }
 
     private fun handleSearch() {
@@ -559,8 +557,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
     override fun onResume() {
         super.onResume()
-        if (CurrentUser.isUserIdStored() && !CurrentUser.isConnected())
-            viewModel.getAuth()
     }
 
     private fun handleChips() {

@@ -1,17 +1,11 @@
 package com.example.realestate.ui.viewmodels.userregistermodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.MessageResponse
-import com.example.realestate.data.models.User
-import com.example.realestate.data.models.UserId
 import com.example.realestate.data.repositories.UsersRepository
-import com.example.realestate.utils.AdditionalCode
 import com.example.realestate.utils.handleApiRequest
-import retrofit2.Response
 
 class VerificationCodeModel(private val repository: UsersRepository) : LoginModel(repository) {
 

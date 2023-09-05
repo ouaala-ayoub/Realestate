@@ -12,7 +12,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.data.models.Contact
 import com.example.realestate.data.models.FragmentStep
 import com.example.realestate.data.models.Type
-import com.example.realestate.data.models.categories
+import com.example.realestate.data.models.extras
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.FragmentStepTwoBinding
@@ -43,7 +43,6 @@ class StepTwoFragment : FragmentStep() {
 
             button?.apply {
                 val period = text.toString()
-                Log.i(TAG, "period: $period")
                 stepTwoModel.mutableLiveDataWrapper._periodLiveData.postValue(period)
             }
 
@@ -163,10 +162,8 @@ class StepTwoFragment : FragmentStep() {
 
                 contact = contactInfo
 
-                Log.d(TAG, "post: $post")
-
                 //TODO change with a call to the local database
-                if (category == categories[0] || category == categories[1] || category == categories[2]) {
+                if (extras.contains(category)) {
                     viewPager.currentItem++
                 } else {
                     viewPager.currentItem += 2

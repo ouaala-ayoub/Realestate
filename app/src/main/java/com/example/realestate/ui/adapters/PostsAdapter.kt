@@ -81,14 +81,28 @@ class PostsAdapter(
                             R.string.category_type,
                             currentPost.category.upperFirstLetter(),
                             currentPost.type.upperFirstLetter()
-                        ), context
+                        )
                     )
                 }
-                postPrice.text =
-                    context.getString(
-                        R.string.price,
-                        formatNumberWithCommas(currentPost.price)
-                    )
+                when (currentPost.type) {
+                    Type.RENT.value -> {
+                        postPrice.defineField(
+                            context.getString(
+                                R.string.price_rent,
+                                formatNumberWithCommas(currentPost.price),
+                                currentPost.period
+                            ),
+                        )
+                    }
+                    else -> {
+                        postPrice.defineField(
+                            context.getString(
+                                R.string.price,
+                                formatNumberWithCommas(currentPost.price)
+                            ),
+                        )
+                    }
+                }
                 currentPost.location.apply {
                     countryFlag.loadImage(countryData?.image)
                     postLocation.text =

@@ -750,10 +750,8 @@ fun getMediaTypeFromUri(context: Context, uri: Uri): MediaType {
     }
 }
 
-fun TextView.defineField(value: String?, context: Context, fillWith: String? = null) {
-    val test = getValueOrDefault(value)
-    Log.d(TAG, "test: $test")
-    text = test
+fun TextView.defineField(value: String?) {
+    text = getValueOrDefault(value)
 }
 
 fun getValueOrDefault(value: String?): String {

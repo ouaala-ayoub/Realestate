@@ -8,7 +8,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.realestate.data.models.CountriesData
-import com.example.realestate.data.models.Media
 import com.example.realestate.data.models.MessageResponse
 import com.example.realestate.data.models.PostWithoutId
 import com.example.realestate.data.repositories.PostsRepository
