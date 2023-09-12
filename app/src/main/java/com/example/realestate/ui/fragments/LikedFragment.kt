@@ -18,6 +18,7 @@ import com.example.realestate.databinding.FragmentSavedBinding
 import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.adapters.LikedAdapter
 import com.example.realestate.ui.viewmodels.LikedViewModel
+import com.example.realestate.utils.Countries
 import com.example.realestate.utils.OnLikedClickListener
 import com.example.realestate.utils.toast
 
@@ -106,7 +107,11 @@ class LikedFragment : Fragment() {
                 binding.savedLoading.isVisible = loading
             }
             (requireActivity() as MainActivity).countriesModel.countries.observe(viewLifecycleOwner) { data ->
-                likedAdapter.setCountriesData(data)
+                data?.apply {
+                    Countries.set(this)
+                    likedAdapter.setCountriesData(this)
+                }
+
             }
         }
     }

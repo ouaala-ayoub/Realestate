@@ -62,4 +62,9 @@
             android:id="@+id/action_savedFragment_to_postNav"
             app:destination="@id/postNav" />
     </fragment>
+    <activity
+        android:id="@+id/postEditActivity"
+        android:name="com.example.realestate.ui.activities.PostEditActivity"
+        android:label="activity_post_edit"
+        tools:layout="@layout/activity_post_edit" />
 </navigation>

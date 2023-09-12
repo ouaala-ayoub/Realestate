@@ -43,7 +43,7 @@ class DetailsStepFragment : FragmentStep() {
             viewModel.apply {
                 // Set up listeners for user input changes
 
-                proprietyDetailsCg.forEach { view ->
+                detailsFullLayout.proprietyDetailsCg.forEach { view ->
                     val checkBox = view as CheckBox
 
                     checkBox.setOnCheckedChangeListener { compoundButton, isChecked ->
@@ -56,7 +56,7 @@ class DetailsStepFragment : FragmentStep() {
                     }
                 }
 
-                proprietyConditionRg.setOnCheckedChangeListener { radioGroup, i ->
+                detailsFullLayout.proprietyConditionRg.setOnCheckedChangeListener { radioGroup, i ->
                     val radioButton =
                         radioGroup.findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
                     val state = radioButton.text.toString()
@@ -64,23 +64,23 @@ class DetailsStepFragment : FragmentStep() {
                     setProprietyState(state)
                 }
 
-                numberOfRoomsEditText.doOnTextChanged { text, _, _, _ ->
+                detailsFullLayout.numberOfRoomsEditText.doOnTextChanged { text, _, _, _ ->
                     setNumberOfRooms(text.toString())
                 }
 
-                numberOfBathroomsEditText.doOnTextChanged { text, _, _, _ ->
+                detailsFullLayout.numberOfBathroomsEditText.doOnTextChanged { text, _, _, _ ->
                     setNumberOfBathrooms(text.toString())
                 }
 
-                floorNumberEditText.doOnTextChanged { text, _, _, _ ->
+                detailsFullLayout.floorNumberEditText.doOnTextChanged { text, _, _, _ ->
                     setFloorNumber(text.toString())
                 }
 
-                numberOfFloorsEditText.doOnTextChanged { text, _, _, _ ->
+                detailsFullLayout.numberOfFloorsEditText.doOnTextChanged { text, _, _, _ ->
                     setNumberOfFloors(text.toString())
                 }
 
-                converter.apply {
+                detailsFullLayout.converter.apply {
                     spaceMeterEditText.doOnTextChanged { text, _, _, _ ->
                         updateValue(text, spaceFootEditText, ::squareMeterToSquareFoot, ::setSpace)
                         setSpace(text.toString())

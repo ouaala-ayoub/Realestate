@@ -2,7 +2,10 @@ package com.example.realestate.ui.adapters
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.R
@@ -12,11 +15,13 @@ import com.example.realestate.utils.*
 
 class PostsAdapter(
 
-    private val postClickListener: OnPostClickListener,
-    private val addToFavClicked: OnAddToFavClicked,
-    private var postsList: MutableList<PostWithOwnerId> = mutableListOf()
 
-) : RecyclerView.Adapter<PostsAdapter.PostHolder>() {
+    private val postClickListener: OnPostClickListener,
+    private val addToFavClicked: OnAddToFavClicked? = null,
+    private var postsList: MutableList<PostWithOwnerId> = mutableListOf(),
+    private val isEdit: Boolean = false,
+
+    ) : RecyclerView.Adapter<PostsAdapter.PostHolder>() {
     companion object {
         const val TAG = "PostAdapter"
     }
@@ -54,6 +59,31 @@ class PostsAdapter(
 
             binding.apply {
 
+
+                postWhole.setOnClickListener {
+                    if (isEdit) {
+                        postClickListener.onClicked(currentPost)
+                    } else {
+                        postClickListener.onClick(currentPost.id!!)
+                    }
+                }
+
+                if (isEdit) {
+                    approveStatusLl.apply {
+                        isVisible = true
+                        approveStatusTv.text = currentPost.status
+                        // Handle long press to show the menu
+                        postWhole.setOnLongClickListener {
+                            showPopUpMenu(moreIcon, position)
+                            true
+                        }
+                        moreIcon.setOnClickListener {
+                            showPopUpMenu(it, position)
+                        }
+                    }
+                }
+
+
                 //load the first image if nothing found load first media
                 val firstImage =
                     currentPost.media.find { image ->
@@ -71,9 +101,7 @@ class PostsAdapter(
                     }
                 }
 
-                postWhole.setOnClickListener {
-                    postClickListener.onClick(currentPost.id!!)
-                }
+                outOfOrder.isVisible = currentPost.status == PostStatus.OUT_OF_ORDER.value
 
                 postInfo.apply {
                     defineField(
@@ -86,20 +114,22 @@ class PostsAdapter(
                 }
                 when (currentPost.type) {
                     Type.RENT.value -> {
+                        val toShow = context.getString(
+                            R.string.price_rent,
+                            formatNumberWithCommas(currentPost.price.toDouble()),
+                            currentPost.period
+                        )
                         postPrice.defineField(
-                            context.getString(
-                                R.string.price_rent,
-                                formatNumberWithCommas(currentPost.price),
-                                currentPost.period
-                            ),
+                            toShow
                         )
                     }
                     else -> {
+                        val toShow = context.getString(
+                            R.string.price,
+                            formatNumberWithCommas(currentPost.price.toDouble())
+                        )
                         postPrice.defineField(
-                            context.getString(
-                                R.string.price,
-                                formatNumberWithCommas(currentPost.price)
-                            ),
+                            toShow
                         )
                     }
                 }
@@ -116,24 +146,29 @@ class PostsAdapter(
 
                 //favourites button
 
-                addToFav.isChecked = isChecked
-                addToFav.setOnClickListener {
-                    val userConnected = CurrentUser.isConnected()
+                if (!isEdit) {
+                    addToFav.isChecked = isChecked
+                    addToFav.setOnClickListener {
+
+                        val userConnected = CurrentUser.isConnected()
 //                    val userId = CurrentUser.prefs.get()
-                    val postId = currentPost.id!!
+                        val postId = currentPost.id!!
 
-                    if (userConnected) {
-                        if (isChecked) {
-                            addToFavClicked.onChecked(postId)
+                        if (userConnected) {
+                            if (isChecked) {
+                                addToFavClicked?.onChecked(postId)
+                            } else {
+                                addToFavClicked?.onUnChecked(postId)
+                            }
+
                         } else {
-                            addToFavClicked.onUnChecked(postId)
+                            addToFav.isEnabled = false
                         }
-
-                    } else {
-                        addToFav.isEnabled = false
-//                        addToFavClicked.onDisconnected()
                     }
+                } else {
+                    addToFav.visibility = View.INVISIBLE
                 }
+
 
                 val features = currentPost.features
                 if (features != null) {
@@ -145,6 +180,44 @@ class PostsAdapter(
                     }
                 }
             }
+        }
+
+        private fun showPopUpMenu(anchor: View, position: Int) {
+            val currentPost = postsList[position]
+            val popupMenu = PopupMenu(anchor.context, anchor)
+            popupMenu.menuInflater.inflate(R.menu.post_long_click_menu, popupMenu.menu)
+
+            // Set click listeners for menu items
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.action_set_out_of_order -> {
+                        // Handle edit action
+                        // You can implement your edit logic here
+                        Log.d(TAG, "action_set_out_of_order")
+                        if (currentPost.status == PostStatus.OUT_OF_ORDER.value || currentPost.status == PostStatus.APPROVED.value) {
+                            Log.d(TAG, "status valid : yes")
+                            postClickListener.setOutOfOrder(
+                                currentPost.id!!,
+                                position,
+                                currentPost.status == PostStatus.OUT_OF_ORDER.value
+                            )
+                        }
+
+
+                        true
+                    }
+                    R.id.action_delete -> {
+                        // Handle delete action
+                        // You can implement your delete logic here
+                        Log.d(TAG, "action_delete")
+                        postClickListener.onDeleteClicked(currentPost.id!!, position)
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+            popupMenu.show()
         }
 
     }
@@ -163,5 +236,26 @@ class PostsAdapter(
 
     override fun onBindViewHolder(holder: PostHolder, position: Int) {
         holder.bind(position)
+    }
+
+    fun deleteElementAt(i: Int) {
+        postsList.removeAt(i)
+        notifyItemRemoved(i)
+    }
+
+    fun setOutOfOrder(position: Int) {
+        when (postsList[position].status) {
+            PostStatus.APPROVED.value -> {
+                postsList[position].status = PostStatus.OUT_OF_ORDER.value
+            }
+            PostStatus.OUT_OF_ORDER.value -> {
+                postsList[position].status = PostStatus.APPROVED.value
+            }
+            else -> {
+                return
+            }
+        }
+        Log.d(TAG, "postsList[position].status: ${postsList[position].status}")
+        notifyItemChanged(position)
     }
 }

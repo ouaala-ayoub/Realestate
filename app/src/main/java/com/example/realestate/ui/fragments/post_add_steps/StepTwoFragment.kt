@@ -38,7 +38,7 @@ class StepTwoFragment : FragmentStep() {
         // Inflate the layout for this fragment
         binding = FragmentStepTwoBinding.inflate(inflater, container, false)
 
-        binding.periodRg.setOnCheckedChangeListener { radioGroup, id ->
+        binding.stepTwoFullLayout.periodRg.setOnCheckedChangeListener { radioGroup, id ->
             val button = radioGroup.findViewById<RadioButton>(id)
 
             button?.apply {
@@ -60,16 +60,16 @@ class StepTwoFragment : FragmentStep() {
 
         stepTwoModel.liveDataWrapper.typeLiveData.observe(viewLifecycleOwner) { type ->
             val shouldShow = type == Type.RENT.value
-            binding.periodRg.forEach { it.isEnabled = shouldShow }
+            binding.stepTwoFullLayout.periodRg.forEach { it.isEnabled = shouldShow }
             if (!shouldShow) {
-                binding.periodRg.clearCheck()
+                binding.stepTwoFullLayout.periodRg.clearCheck()
                 stepTwoModel.mutableLiveDataWrapper.clearPeriod()
             }
         }
 
         stepTwoModel.categories.observe(viewLifecycleOwner) { categories ->
             if (categories != null) {
-                binding.categoryEditText.apply {
+                binding.stepTwoFullLayout.categoryEditText.apply {
                     val categoriesToShow = categories.capitalizeFirstLetter().sorted()
                     //initial values
                     setText(categoriesToShow[0])
@@ -102,7 +102,7 @@ class StepTwoFragment : FragmentStep() {
 
     private fun validateTheData(typeDefault: String) {
 
-        binding.apply {
+        binding.stepTwoFullLayout.apply {
             val wrapper = stepTwoModel.mutableLiveDataWrapper
 
             //user input
@@ -150,12 +150,14 @@ class StepTwoFragment : FragmentStep() {
                 val callNumber = callNumberLiveData.value
 
                 if (!whatsappNumber.isNullOrEmpty()) {
-                    val code = binding.whatsappPhoneInput.countryCode.selectedCountryCodeWithPlus
+                    val code =
+                        binding.stepTwoFullLayout.whatsappPhoneInput.countryCode.selectedCountryCodeWithPlus
                     contactInfo.whatsapp = code + whatsappNumber
                 }
 
                 if (!callNumber.isNullOrEmpty()) {
-                    val code = binding.callPhoneInput.countryCode.selectedCountryCodeWithPlus
+                    val code =
+                        binding.stepTwoFullLayout.callPhoneInput.countryCode.selectedCountryCodeWithPlus
                     contactInfo.call = code + callNumber
                 }
 

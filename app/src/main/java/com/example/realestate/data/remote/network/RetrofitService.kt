@@ -1,7 +1,6 @@
 package com.example.realestate.data.remote.network
 
 import com.example.realestate.data.models.*
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -42,6 +41,9 @@ interface RetrofitService {
         @Query("features") features: List<String>? = null
     ): Call<MutableList<PostWithOwnerId>>
 
+    @GET("users/{id}/posts")
+    fun getUserPosts(@Path("id") userId: String): Call<List<PostWithOwnerId>>
+
     @POST("posts")
     fun addPost(@Body post: PostWithoutId): Call<MessageResponse>
 
@@ -55,7 +57,26 @@ interface RetrofitService {
     fun deletePost(@Path("id") postId: String): Call<IdResponse>
 
     @PUT("posts/{id}")
-    fun updatePost(@Path("id") postId: String, @Body newAnnonce: RequestBody): Call<IdResponse>
+    fun updatePost(
+        @Path("id") postId: String,
+        @Body newAnnonce: PostWithOwnerId
+    ): Call<MessageResponse>
+
+    @PATCH("posts/{id}/like")
+    fun like(
+        @Path("id") postId: String
+    ): Call<MessageResponse>
+
+    @PATCH("posts/{id}/unlike")
+    fun unlike(
+        @Path("id") postId: String
+    ): Call<MessageResponse>
+
+    @PUT("posts/{id}")
+    fun setStatus(
+        @Path("id") postId: String,
+        @Body status: Status
+    ): Call<MessageResponse>
 
     //users
     @GET("users/{id}")
@@ -82,13 +103,5 @@ interface RetrofitService {
     @GET("users/{id}/likes")
     fun getLikedPosts(@Path("id") userId: String): Call<List<PostWithOwnerId>>
 
-    @PATCH("posts/{id}/like")
-    fun like(
-        @Path("id") postId: String
-    ): Call<MessageResponse>
 
-    @PATCH("posts/{id}/unlike")
-    fun unlike(
-        @Path("id") postId: String
-    ): Call<MessageResponse>
 }

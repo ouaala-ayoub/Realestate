@@ -53,11 +53,12 @@ class StepTwoModel(private val staticDataRepository: StaticDataRepository) : Vie
         price: String?,
         period: String?,
         whatsappNumber: String?,
-        callNumber: String?
+        callNumber: String?,
+        type: String?
     ): Boolean {
         val isValidCategory = !category.isNullOrEmpty()
         val isValidPrice = !price.isNullOrEmpty()
-        val isValidPeriod = !period.isNullOrEmpty() || category != Type.RENT.value
+        val isValidPeriod = !period.isNullOrEmpty() || type != Type.RENT.value
         val isValidPhone = !whatsappNumber.isNullOrEmpty() || !callNumber.isNullOrEmpty()
 
         return isValidCategory && isValidPrice && isValidPeriod && isValidPhone
@@ -70,7 +71,8 @@ class StepTwoModel(private val staticDataRepository: StaticDataRepository) : Vie
                 _priceLiveData.value,
                 _periodLiveData.value,
                 _whatsappNumberLiveData.value,
-                _callNumberLiveData.value
+                _callNumberLiveData.value,
+                _typeLiveData.value
             )
             _isValidData.value = isValid
         }

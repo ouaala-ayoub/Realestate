@@ -1,7 +1,6 @@
 package com.example.realestate.ui.activities
 
 import android.content.Intent
-import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -22,6 +21,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
+import com.example.realestate.data.models.OnChanged
 import com.example.realestate.data.models.SearchParams
 import com.example.realestate.data.models.User
 import com.example.realestate.data.repositories.StaticDataRepository
@@ -100,15 +100,16 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     })
     val registerForPostAddLauncher = registerAnd(object : SelectionResult {
         override fun onResultOk(data: Intent) {
-//            val shouldCheckPhone =
-//                FirebaseAuth.getInstance().currentUser?.phoneNumber.isNullOrEmpty()
-//            if (shouldCheckPhone) {
-//                launchPhoneAddProcess()
-//            } else {
-//                findNavController(R.id.fragment_container).navigate(R.id.addPostActivity)
-//            }
             findNavController(R.id.fragment_container).navigate(R.id.addPostActivity)
+        }
 
+        override fun onResultFailed() {}
+
+    })
+
+    private val registerForProfileLauncher = registerAnd(object : SelectionResult {
+        override fun onResultOk(data: Intent) {
+            findNavController(R.id.fragment_container).navigate(R.id.postEditActivity)
         }
 
         override fun onResultFailed() {}
@@ -156,6 +157,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         navController = navHost.navController
 
         //check for deep link
+        //TODO not working to fix later
         if (data != null) {
             val postId = data.lastPathSegment // Extract the post ID from the URL
             // Use postId to navigate to the specific post within your app
@@ -259,8 +261,8 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     fun launchRegisterProcess(
         registerLauncher: ActivityResultLauncher<Intent>
     ) {
-        val addPhoneIntent = Intent(this, UserRegisterActivity::class.java)
-        registerLauncher.launch(addPhoneIntent)
+        val userRegisterIntent = Intent(this, UserRegisterActivity::class.java)
+        registerLauncher.launch(userRegisterIntent)
     }
 
     override fun onResume() {
@@ -278,10 +280,6 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         }
     }
 
-    fun handleUserUi(emailTv: TextView) {
-
-    }
-
     private fun initialiseDrawerLayout(drawerLayout: DrawerLayout) {
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, R.string.nav_open, R.string.nav_close
@@ -294,16 +292,16 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         val imageView = view.findViewById<ImageView>(R.id.user_image)
 //        val phoneTv = view.findViewById<TextView>(R.id.user_phone)
 
-        CurrentUser.observe(this, object : CurrentUser.Companion.OnUserChanged {
-            override fun onChange(user: User?) {
-                val imageUri = user?.image
+        CurrentUser.observe(this, object : OnChanged<User> {
+            override fun onChange(data: User?) {
+                val imageUri = data?.image
                 if (imageUri != null) {
                     imageView.loadImage(imageUri)
                 } else {
                     profileImage.setImageResource(R.drawable.baseline_person_24)
                 }
-                if (user != null) {
-                    emailTv.text = user.email
+                if (data != null) {
+                    emailTv.text = data.email
                 } else {
                     emailTv.text = getString(R.string.no_user)
                 }
@@ -321,8 +319,12 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.settings -> {
-                    //TODO
+                R.id.profile -> {
+                    if (CurrentUser.isConnected()) {
+                        navController.navigate(R.id.postEditActivity)
+                    } else {
+                        launchRegisterProcess(registerForProfileLauncher)
+                    }
                 }
                 R.id.email -> {
                     //TODO

@@ -67,7 +67,7 @@ class LikedAdapter(private val likedClickListener: OnLikedClickListener) :
                         postPrice.defineField(
                             context.getString(
                                 R.string.price_rent,
-                                formatNumberWithCommas(currentPost.price),
+                                formatNumberWithCommas(currentPost.price.toDouble()),
                                 currentPost.period
                             ),
                         )
@@ -76,7 +76,7 @@ class LikedAdapter(private val likedClickListener: OnLikedClickListener) :
                         postPrice.defineField(
                             context.getString(
                                 R.string.price,
-                                formatNumberWithCommas(currentPost.price)
+                                formatNumberWithCommas(currentPost.price.toDouble())
                             ),
                         )
                     }

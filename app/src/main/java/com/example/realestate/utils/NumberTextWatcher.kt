@@ -37,12 +37,15 @@ class NumberTextWatcher(
         } else {
             try {
 
+                Log.d(TAG, "input: $input")
 
                 // reverse format the input to get the numeric value
                 val numericValue = reverseFormatNumberWithCommas(input)
+                val stringValue = String.format("%.0f", numericValue)
+                Log.d(TAG, "numericValue: $stringValue")
 
-                Log.d(TAG, "numericValue: $numericValue")
-                liveData.postValue(numericValue.toString())
+                liveData.postValue(stringValue)
+
                 // Reformat the numeric value with commas
                 val formattedValue = formatNumberWithCommas(numericValue)
 

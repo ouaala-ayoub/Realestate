@@ -37,13 +37,13 @@
             android:textSize="18sp"
             tools:text="Email: user@example.com" />
 
-        <!-- Phone Number -->
-        <TextView
-            android:id="@+id/user_phone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            tools:text="Phone: +1 (555) 123-4567" />
+<!--        &lt;!&ndash; Phone Number &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/user_phone"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="18sp"-->
+<!--            tools:text="Phone: +1 (555) 123-4567" />-->
 
     </LinearLayout>
 

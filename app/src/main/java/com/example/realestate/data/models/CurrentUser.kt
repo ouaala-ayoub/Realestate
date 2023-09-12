@@ -1,7 +1,6 @@
 package com.example.realestate.data.models
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.realestate.R
 
@@ -23,14 +22,15 @@ class CurrentUser {
             prefs.delete()
         }
 
-        fun observe(lifecycleOwner: LifecycleOwner, onUserChanged: OnUserChanged) {
+        fun observe(lifecycleOwner: LifecycleOwner, onChanged: OnChanged<User>) {
             liveData.observe(lifecycleOwner) { user ->
-                onUserChanged.onChange(user)
+                onChanged.onChange(user)
             }
         }
 
-        interface OnUserChanged {
-            fun onChange(user: User?)
-        }
+
     }
+}
+interface OnChanged<T> {
+    fun onChange(data: T?)
 }

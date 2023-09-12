@@ -82,8 +82,9 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
         postsAdapter = PostsAdapter(
             object : OnPostClickListener {
-                override fun onClick(postId: String) {
+                override fun onClick(postId: String): Nothing? {
                     goToPostFragment(postId)
+                    return super.onClick(postId)
                 }
             },
             object : OnAddToFavClicked {
@@ -265,6 +266,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
             (requireActivity() as MainActivity).countriesModel.countries.observe(viewLifecycleOwner) { data ->
 
                 if (data != null) {
+                    Countries.set(data)
                     postsAdapter.setCountriesData(data)
                     val countries = data.map { element -> element.name }.toMutableList().also {
                         it.add(0, getString(R.string.all))

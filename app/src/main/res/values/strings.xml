@@ -17,8 +17,8 @@
     <string name="quit_post_message">All data will be lost</string>
 
     <!--post data-->
-    <string name="price"> %1$s USD </string>
-    <string name="price_rent"> %1$s USD / %2$s</string>
+    <string name="price">\u0024 %1$s USD </string>
+    <string name="price_rent">\u0024 %1$s USD / %2$s</string>
     <string name="location"> %1$s, %2$s, %3$s </string>
     <string name="country_res"><![CDATA[<b>Country:</b> %1$s]]></string>
     <string name="city_res"><![CDATA[<b>City:</b> %1$s]]></string>
@@ -140,7 +140,7 @@
     <string name="floor_number">Floor Number</string>
     <string name="space">Space</string>
     <string name="max_string">Media selection limit exceeded</string>
-    <string name="property_condition">Property Condition <font fgcolor='@color/red'>(required *)</font></string>
+    <string name="property_condition">Property Condition (required *)</string>
     <string name="property_condition_text">Property Condition</string>
     <string name="required">required *</string>
 
@@ -157,7 +157,7 @@
     <string name="zero">0</string>
     <string name="instagram">Instagram</string>
     <string name="email_us">Email us</string>
-    <string name="settings">Settings</string>
+    <string name="profile">Profile</string>
     <string name="owner_photo">Owner photo</string>
     <string name="long_detail">%1$s : %2$s</string>
     <string name="jpg_jpeg_png_webp_mp4_or_webm">Jpg, Jpeg, Png, WebP, Mp4 or WebM</string>
@@ -188,4 +188,9 @@
     <string name="email">email</string>
     <string name="register_first">please register first</string>
     <string name="helper_text_max">%1$s/ %2$s</string>
+    <string name="out_of_order">Out Of Order</string>
+    <string name="no_posts">No posts</string>
+    <string name="update">Update</string>
+    <string name="set_out_of_order">Set Out Of Order</string>
+    <string name="delete">Delete</string>
 </resources>

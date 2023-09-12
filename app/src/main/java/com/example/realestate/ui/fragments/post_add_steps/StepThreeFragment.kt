@@ -177,7 +177,7 @@ class StepThreeFragment : FragmentStep() {
     }
 
     private fun setEditTexts() {
-        binding.apply {
+        binding.stepThreeFullLayout.apply {
             stepThreeModel.apply {
 
 //                _countryLiveData.value = countryPicker.selectedCountryName
@@ -213,7 +213,7 @@ class StepThreeFragment : FragmentStep() {
             loading.observe(viewLifecycleOwner) { loading ->
                 Log.d(TAG, "loading : $loading")
                 binding.progressBar.isVisible = loading
-                for (v in binding.linearLayout.children) {
+                for (v in binding.stepThreeFullLayout.linearLayout.children) {
                     v.isEnabled = !loading
                 }
                 activity.addPostModel.apply {
@@ -280,7 +280,7 @@ class StepThreeFragment : FragmentStep() {
 
     private fun handleLocationEditText() {
         stepThreeModel.apply {
-            binding.apply {
+            binding.stepThreeFullLayout.apply {
 
                 countries.observe(viewLifecycleOwner) { countries ->
                     Log.d(TAG, "cities: $countries")

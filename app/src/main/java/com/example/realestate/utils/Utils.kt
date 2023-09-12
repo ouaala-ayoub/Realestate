@@ -25,7 +25,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
-import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -38,10 +37,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.example.realestate.R
-import com.example.realestate.data.models.Error
-import com.example.realestate.data.models.ErrorResponse
-import com.example.realestate.data.models.MediaType
-import com.example.realestate.data.models.SearchParams
+import com.example.realestate.data.models.*
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -100,7 +96,10 @@ interface ActivityResultListener {
 }
 
 interface OnPostClickListener {
-    fun onClick(postId: String)
+    fun onClick(postId: String) = null
+    fun onClicked(post: PostWithOwnerId) = null
+    fun onDeleteClicked(postId: String, position: Int) = null
+    fun setOutOfOrder(postId: String, position: Int, outOfOrder: Boolean) = null
 }
 
 interface OnAddToFavClicked {
@@ -198,10 +197,21 @@ fun formatNumberWithSpaces(number: Number): String {
     return numberFormat.format(number)
 }
 
+//fun reverseFormatNumberWithCommas(formattedNumber: String): Double {
+//    val numberFormat = NumberFormat.getInstance(Locale.US)
+//    numberFormat.isParseIntegerOnly = false // Allow parsing of decimal numbers
+//    return try {
+//        val number = numberFormat.parse(formattedNumber)?.toString()?.toDoubleOrNull() ?: 0.0
+//        number ?: 0.0 // Return 0.0 if parsing fails
+//    } catch (e: Exception) {
+//        0.0 // Handle parsing errors as needed
+//    }
+//}
+
 fun reverseFormatNumberWithCommas(formattedNumber: String): Double {
-    val numberFormat = NumberFormat.getInstance(Locale.US)
+    val sanitizedNumber = formattedNumber.replace(",", "") // Remove commas
     return try {
-        val number = numberFormat.parse(formattedNumber)?.toDouble()
+        val number = sanitizedNumber.toDoubleOrNull() ?: 0.0
         number ?: 0.0 // Return 0.0 if parsing fails
     } catch (e: Exception) {
         0.0 // Handle parsing errors as needed
