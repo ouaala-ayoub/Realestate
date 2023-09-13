@@ -42,7 +42,7 @@ interface RetrofitService {
     ): Call<MutableList<PostWithOwnerId>>
 
     @GET("users/{id}/posts")
-    fun getUserPosts(@Path("id") userId: String): Call<List<PostWithOwnerId>>
+    fun getUserPosts(@Path("id") userId: String): Call<MutableList<PostWithOwnerId>>
 
     @POST("posts")
     fun addPost(@Body post: PostWithoutId): Call<MessageResponse>

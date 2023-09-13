@@ -193,4 +193,6 @@
     <string name="update">Update</string>
     <string name="set_out_of_order">Set Out Of Order</string>
     <string name="delete">Delete</string>
+    <string name="delete_title">Delete Confirmation</string>
+    <string name="delete_message">Are you sure You want to delete This post ?</string>
 </resources>

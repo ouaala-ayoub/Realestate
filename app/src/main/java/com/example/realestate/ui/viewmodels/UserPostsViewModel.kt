@@ -1,6 +1,5 @@
 package com.example.realestate.ui.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,13 +15,13 @@ class UserPostsViewModel(private val repository: PostsRepository) : ViewModel() 
         private const val TAG = "UserPostsViewModel"
     }
 
-    private val _posts = MutableLiveData<List<PostWithOwnerId>?>()
+    private val _posts = MutableLiveData<MutableList<PostWithOwnerId>?>()
     private val _isEmpty = MutableLiveData<Boolean>()
     private var _deleted = MutableLiveData<List<MutableLiveData<MessageResponse?>>>()
     private var _outOfOrderSet = MutableLiveData<List<MutableLiveData<MessageResponse?>>>()
     private val _isLoading = MutableLiveData<Boolean>()
 
-    val posts: LiveData<List<PostWithOwnerId>?> get() = _posts
+    val posts: LiveData<MutableList<PostWithOwnerId>?> get() = _posts
     val loading: LiveData<Boolean> get() = _isLoading
     val deleted: LiveData<List<MutableLiveData<MessageResponse?>>> get() = _deleted
     val outOfOrderSet: LiveData<List<MutableLiveData<MessageResponse?>>> get() = _outOfOrderSet
@@ -65,5 +64,30 @@ class UserPostsViewModel(private val repository: PostsRepository) : ViewModel() 
             _outOfOrderSet.value?.get(position),
             TAG
         )
+    }
+
+    fun deleteElementAt(i: Int) {
+        val posts = _posts.value
+        posts?.removeAt(i)
+        _posts.postValue(posts)
+    }
+
+    fun setOutOfOrder(position: Int) {
+        val list = _posts.value
+        val current = list?.get(position)
+        current?.apply {
+            when (current.status) {
+                PostStatus.APPROVED.value -> {
+                    current.status = PostStatus.OUT_OF_ORDER.value
+                }
+                PostStatus.OUT_OF_ORDER.value -> {
+                    current.status = PostStatus.APPROVED.value
+                }
+                else -> {
+                    return
+                }
+            }
+        }
+        _posts.postValue(list)
     }
 }

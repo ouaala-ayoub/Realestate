@@ -10,7 +10,7 @@
         android:id="@+id/homeFragment"
         android:name="com.example.realestate.ui.fragments.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home">
+        tools:layout="@layout/fragment_home_modified">
         <action
             android:id="@+id/action_homeFragment_to_postPageFragment2"
             app:destination="@id/postPageFragment" />
