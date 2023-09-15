@@ -35,8 +35,8 @@ class ImagesSelectFragment : FragmentStep() {
 
     private lateinit var binding: FragmentImagesSelectBinding
     private lateinit var tedImagePicker: TedImagePicker.Builder
-    private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
-    private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
+//    private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
+//    private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
     private val viewModel: ImagesSelectModel by lazy {
         ImagesSelectModel(MAX_INPUT_SIZE)
     }

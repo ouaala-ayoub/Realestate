@@ -1,6 +1,5 @@
 package com.example.realestate.ui.fragments
 
-import android.animation.TypeEvaluator
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -14,16 +13,13 @@ import android.widget.Toast
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
-import androidx.navigation.NavArgs
 import androidx.navigation.fragment.navArgs
 import com.example.realestate.R
 import com.example.realestate.data.models.*
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
-import com.example.realestate.databinding.DetailsLayoutBinding
 import com.example.realestate.databinding.FragmentSinglePostEditBinding
-import com.example.realestate.ui.fragments.post_add_steps.StepThreeFragment
 import com.example.realestate.ui.viewmodels.SinglePostEditViewModel
 import com.example.realestate.utils.*
 import com.google.android.material.textfield.TextInputEditText
@@ -109,17 +105,17 @@ class SinglePostEditFragment : Fragment() {
                 description = descriptionLd.value!!
 
                 //TODO if category is house or ....
-                if (!extras.contains(post.category)) {
-                    viewModel.clearAllDetails()
+                if (extras.contains(post.category)) {
+                    features = featuresLd.value
+                    condition = conditionLd.value
+                    rooms = roomsLd.value?.toDoubleOrNull()
+                    bathrooms = bathroomsLd.value?.toDoubleOrNull()
+                    floors = floorsLd.value?.toDoubleOrNull()
+                    floorNumber = floorNumberLd.value?.toDoubleOrNull()
+                    space = spaceLd.value?.toDoubleOrNull()
                 }
 
-                features = featuresLd.value
-                condition = conditionLd.value
-                rooms = roomsLd.value?.toDoubleOrNull()
-                bathrooms = bathroomsLd.value?.toDoubleOrNull()
-                floors = floorsLd.value?.toDoubleOrNull()
-                floorNumber = floorNumberLd.value?.toDoubleOrNull()
-                space = spaceLd.value?.toDoubleOrNull()
+
             }
         }
         viewModel.updatePost(post.id!!, post)
@@ -194,10 +190,10 @@ class SinglePostEditFragment : Fragment() {
                     numberOfBathroomsEditText.setText(post.bathrooms.toString())
 
                     //floor number
-                    floorNumberEditText.setText(post.floorNumber.toString())
+                    floorInfo.floorNumberEditText.setText(post.floorNumber.toString())
 
                     //floors
-                    numberOfFloorsEditText.setText(post.floors.toString())
+                    floorInfo.numberOfFloorsEditText.setText(post.floors.toString())
 
                     //space
                     converter.spaceMeterEditText.setText(post.space.toString())
@@ -334,10 +330,10 @@ class SinglePostEditFragment : Fragment() {
                         numberOfBathroomsEditText.updateLiveData(mutableBathrooms)
 
                         //floor number
-                        floorNumberEditText.updateLiveData(mutableFloorNumber)
+                        floorInfo.floorNumberEditText.updateLiveData(mutableFloorNumber)
 
                         //number of floors
-                        numberOfFloorsEditText.updateLiveData(mutableFloors)
+                        floorInfo.numberOfFloorsEditText.updateLiveData(mutableFloors)
 
                         //space
                         converter.apply {

@@ -14,7 +14,7 @@ class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
         private const val TAG = "ImagesSelectModel"
     }
 
-    private val _imagesUri = MutableLiveData<MutableList<Uri?>>(MutableList(imagesNumber) { null })
+    private val _imagesUri = MutableLiveData<MutableList<Uri?>>(mutableListOf())
     private val _isValid = MediatorLiveData(false).apply {
         addSource(_imagesUri) { uris -> this.value = uris.filterNotNull().isNotEmpty() }
     }
@@ -30,12 +30,9 @@ class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
 
     fun deleteElementAt(position: Int) {
         val imagesUriList = _imagesUri.value?.toMutableList()
-        Log.d(TAG, "imagesUriList: $imagesUriList")
         imagesUriList?.apply {
             removeAt(position)
-            add(null)
         }
-        Log.d(TAG, "imagesUriList result: $imagesUriList")
         _imagesUri.value = imagesUriList!!
     }
 

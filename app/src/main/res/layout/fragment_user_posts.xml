@@ -6,14 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.UserPostsFragment">
 
-<!--    <SearchView-->
-<!--        android:id="@+id/searchView"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.5"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/search_background"
+        android:iconifiedByDefault="false"
+        android:queryBackground="@null"
+        android:queryHint="Search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
@@ -23,8 +28,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-        <!--        app:layout_constraintTop_toBottomOf="@+id/searchView"-->
+        app:layout_constraintTop_toBottomOf="@+id/searchView">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/user_posts_rv"

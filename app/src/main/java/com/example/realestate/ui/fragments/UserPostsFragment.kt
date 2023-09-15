@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
@@ -78,16 +79,34 @@ class UserPostsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentUserPostsBinding.inflate(inflater, container, false)
-        binding.userPostsRv.apply {
-            adapter = postsAdapter
-            layoutManager = LinearLayoutManager(requireContext())
-        }
+        binding.apply {
+            userPostsRv.apply {
+                adapter = postsAdapter
+                layoutManager = LinearLayoutManager(requireContext())
+            }
 
-        //TODO add search logic
+            //TODO add search logic
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    // Handle query submission (if needed)
+                    filter(query)
+                    return false
+                }
 
-        binding.swipeRefresh.setOnRefreshListener {
-            val userId = CurrentUser.get()?.id!!
-            viewModel.getUserPosts(userId)
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    filter(newText)
+                    return true
+                }
+
+                fun filter(query: String?) {
+                    postsAdapter.filter.filter(query.orEmpty())
+                }
+            })
+
+            swipeRefresh.setOnRefreshListener {
+                val userId = CurrentUser.get()?.id!!
+                viewModel.getUserPosts(userId)
+            }
         }
 
         return binding.root
@@ -100,7 +119,7 @@ class UserPostsFragment : Fragment() {
                 it.observeLiveDataList(object : OnChanged<Int> {
                     override fun onChange(data: Int?) {
                         Log.i(TAG, "deleted element at position : $data")
-                        setIsEmpty(posts.value.isNullOrEmpty())
+//                        setIsEmpty(posts.value.isNullOrEmpty())
                         deleteElementAt(data!!)
                     }
                 })

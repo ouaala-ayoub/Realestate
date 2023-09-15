@@ -26,6 +26,7 @@ import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.data.repositories.UsersRepository
 import com.example.realestate.databinding.ChipVeilledBinding
 import com.example.realestate.databinding.FragmentHomeModifiedBinding
+import com.example.realestate.ui.activities.ActivityWanted
 import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.adapters.PostsAdapter
 import com.example.realestate.ui.viewmodels.HomeViewModel
@@ -168,21 +169,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
             }
 
-            newPost.setOnClickListener {
-                val navHost =
-                    requireActivity().supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
-                val navController = navHost.navController
-
-                if (CurrentUser.isConnected()) {
-                    navController.navigate(R.id.addPostActivity)
-                } else {
-                    val activity = (requireActivity() as MainActivity)
-                    activity.launchRegisterProcess(
-                        activity.registerForPostAddLauncher
-                    )
-                }
-            }
-
             //disable swipe refresh if not on top
             scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
                 val isAtTop = scrollY == 0
@@ -273,8 +259,10 @@ class HomeFragment : Fragment(), ActivityResultListener {
                     }
                     binding.countryEditText.apply {
                         isEnabled = data.isNotEmpty()
+                        val elementToShow = countries[0]!!
+                        setText(elementToShow)
+                        setSelection(elementToShow.length)
 
-                        setText(countries[0])
                         countryAdapter = setUpAndHandleSearch(countries)
                         setOnItemClickListener { _, view, _, _ ->
                             val tv = view as TextView
@@ -556,7 +544,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
             }
         }
 
-        if (isUserClick)
+        if (isUserClick && chipId != binding.wanted.id)
             viewModel.getPosts(searchParams, source = "onChipClicked")
     }
 
@@ -567,7 +555,13 @@ class HomeFragment : Fragment(), ActivityResultListener {
     private fun handleChips() {
 
         for (chip in binding.chips.children) {
-            if (chip.id == R.id.new_post) continue
+            if (chip.id == R.id.wanted) {
+                chip.setOnClickListener {
+                    (chip as Chip).isChecked = false
+                    goToActivity<ActivityWanted>(requireContext())
+                }
+                continue
+            }
             chip.setOnClickListener {
                 isUserClick = true
                 if (selectedChipId == chip.id) {

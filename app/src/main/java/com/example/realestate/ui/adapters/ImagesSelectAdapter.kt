@@ -1,6 +1,7 @@
 package com.example.realestate.ui.adapters
 
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -14,18 +15,14 @@ import com.example.realestate.utils.swap
 class ImagesSelectAdapter(val imagesNumber: Int = 8, val viewModel: ImagesSelectModel) :
     RecyclerView.Adapter<ImagesSelectAdapter.ImagesSelectHolder>() {
 
-    private var imagesList: ImagesMedia = ImagesMedia(
-        MutableList(imagesNumber) {
-            null
-        }
-    )
+    companion object {
+        private const val TAG = "ImagesSelectAdapter"
+    }
+
+    private var imagesList: ImagesMedia = ImagesMedia()
 
     fun setImagesList(list: List<Uri?>) {
-        val newList = list.toMutableList()
-        for (i in list.lastIndex + 1 until imagesList.uriList.size) {
-            newList.add(null)
-        }
-        imagesList.uriList = newList
+        imagesList.uriList = list.toMutableList()
         notifyDataSetChanged()
     }
 
@@ -41,13 +38,11 @@ class ImagesSelectAdapter(val imagesNumber: Int = 8, val viewModel: ImagesSelect
         RecyclerView.ViewHolder(binding.root) {
 
         private fun deleteElementAt(position: Int) {
-            viewModel
             imagesList.uriList.apply {
                 if (imagesList.selectedPosition == position)
                     imagesList.selectedPosition = 0
 
                 viewModel.deleteElementAt(position)
-
             }
         }
 

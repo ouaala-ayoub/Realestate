@@ -7,14 +7,14 @@
         android:title="@string/profile" />
 
     <item
+        android:id="@+id/add_post"
+        android:icon="@drawable/baseline_add_business_24"
+        android:title="@string/add_a_post" />
+
+    <item
         android:id="@+id/website"
         android:icon="@drawable/internet_svgrepo_com"
         android:title="@string/website" />
-
-    <item
-        android:id="@+id/email"
-        android:icon="@drawable/baseline_email_24"
-        android:title="@string/email_us" />
 
     <item
         android:id="@+id/instagram"

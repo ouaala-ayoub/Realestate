@@ -70,9 +70,11 @@ class StepTwoFragment : FragmentStep() {
         stepTwoModel.categories.observe(viewLifecycleOwner) { categories ->
             if (categories != null) {
                 binding.stepTwoFullLayout.categoryEditText.apply {
-                    val categoriesToShow = categories.capitalizeFirstLetter().sorted()
+                    val categoriesToShow = categories.sorted()
+                    val initial = categoriesToShow[0]
                     //initial values
-                    setText(categoriesToShow[0])
+                    setText(initial)
+                    setSelection(initial.length)
 
                     val adapter = setUpAndHandleSearch(categoriesToShow)
 

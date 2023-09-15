@@ -30,13 +30,17 @@
                 android:id="@+id/approve_status_tv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/more_icon"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="test" />
 
             <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/more_icon"

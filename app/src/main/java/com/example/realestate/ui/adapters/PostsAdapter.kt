@@ -1,9 +1,12 @@
 package com.example.realestate.ui.adapters
 
+import android.content.pm.ApplicationInfo
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,23 +21,28 @@ class PostsAdapter(
 
     private val postClickListener: OnPostClickListener,
     private val addToFavClicked: OnAddToFavClicked? = null,
-    private var postsList: MutableList<PostWithOwnerId> = mutableListOf(),
+
     private val isEdit: Boolean = false,
 
-    ) : RecyclerView.Adapter<PostsAdapter.PostHolder>() {
+    ) : RecyclerView.Adapter<PostsAdapter.PostHolder>(), Filterable {
     companion object {
         const val TAG = "PostAdapter"
     }
 
-    //    private var postsList: MutableList<Post> = mutableListOf()
+    private var postsList: MutableList<PostWithOwnerId> = mutableListOf()
+    private var filteredList: List<PostWithOwnerId> = postsList
+
+    //    private var postsList: MutableList<PostWithOwnerId> = mutableListOf()
+//    private var postsListFull: MutableList<PostWithOwnerId> = postsList
     private var favourites: MutableList<String> = mutableListOf()
     private var countriesData: CountriesData? = null
     fun setPostsList(list: List<PostWithOwnerId>) {
         postsList = list.toMutableList()
+        filteredList = postsList
+        Log.d(TAG, "postsList: $postsList")
+        Log.d(TAG, "filteredList: $filteredList")
         notifyDataSetChanged()
     }
-
-    fun isListEmpty() = postsList.isEmpty()
 
     fun setLiked(list: List<String>) {
         favourites = list.toMutableList()
@@ -51,7 +59,7 @@ class PostsAdapter(
 
         private val detailsShortAdapter = DetailsShortAdapter()
         fun bind(position: Int) {
-            val currentPost = postsList[position]
+            val currentPost = filteredList[position]
             val context = binding.root.context
             val isChecked = currentPost.id in favourites
             val countryData =
@@ -183,7 +191,7 @@ class PostsAdapter(
         }
 
         private fun showPopUpMenu(anchor: View, position: Int) {
-            val currentPost = postsList[position]
+            val currentPost = filteredList[position]
             val popupMenu = PopupMenu(anchor.context, anchor)
             popupMenu.menuInflater.inflate(R.menu.post_long_click_menu, popupMenu.menu)
 
@@ -232,30 +240,35 @@ class PostsAdapter(
         )
     }
 
-    override fun getItemCount() = postsList.size
+    override fun getItemCount() = filteredList.size
 
     override fun onBindViewHolder(holder: PostHolder, position: Int) {
         holder.bind(position)
     }
 
-    fun deleteElementAt(i: Int) {
-        postsList.removeAt(i)
-        notifyItemRemoved(i)
+    override fun getFilter(): Filter {
+        return exampleFilter
     }
 
-    fun setOutOfOrder(position: Int) {
-        when (postsList[position].status) {
-            PostStatus.APPROVED.value -> {
-                postsList[position].status = PostStatus.OUT_OF_ORDER.value
+    private val exampleFilter = object : Filter() {
+        override fun performFiltering(query: CharSequence?): FilterResults {
+
+            filteredList = if (query.isNullOrEmpty()) {
+                postsList
+            } else {
+                postsList.filter { post ->
+                    //filtering by description
+                    post.description.contains(query)
+                }
             }
-            PostStatus.OUT_OF_ORDER.value -> {
-                postsList[position].status = PostStatus.APPROVED.value
-            }
-            else -> {
-                return
-            }
+            val results = FilterResults()
+            results.values = filteredList
+            return results
         }
-        Log.d(TAG, "postsList[position].status: ${postsList[position].status}")
-        notifyItemChanged(position)
+
+        override fun publishResults(query: CharSequence?, result: FilterResults?) {
+            notifyDataSetChanged()
+        }
+
     }
 }

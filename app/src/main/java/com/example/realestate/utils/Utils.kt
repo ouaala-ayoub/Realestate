@@ -2,6 +2,7 @@ package com.example.realestate.utils
 
 import android.Manifest
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -814,6 +815,50 @@ fun Activity.openTheWebsite(websiteUrl: String) {
     val openURL = Intent(Intent.ACTION_VIEW)
     openURL.data = Uri.parse(websiteUrl)
     startActivity(openURL)
+}
+
+fun Activity.openAppWithPackage(pkg: String, url: String) {
+    try {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(url)
+        intent.setPackage("com.twitter.android")
+        startActivity(intent)
+    } catch (e: ActivityNotFoundException) {
+        Log.e(TAG, "openAppWithPackage $pkg: ${e.message}")
+        startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(url)
+            )
+        )
+    }
+}
+
+fun Activity.openTwitterPage(twtUrl: String) {
+    openAppWithPackage("com.twitter.android", twtUrl)
+}
+
+fun Activity.openInstagramPage(appIns: String) {
+    openAppWithPackage("com.instagram.android", appIns)
+}
+
+fun Activity.openEmailSending(email: String) {
+    val intent = Intent(Intent.ACTION_SEND)
+    intent.apply {
+        type = "message/rfc822"
+        putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+        putExtra(Intent.EXTRA_SUBJECT, "Subject")
+    }
+    try {
+        startActivity(Intent.createChooser(intent, "Send mail..."))
+    } catch (ex: ActivityNotFoundException) {
+        Log.e(TAG, "openEmailSending: ${ex.message}")
+        Toast.makeText(
+            this,
+            "There are no email clients installed.",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 }
 
 fun getDetailIcon(key: String, context: Context): Drawable? {

@@ -208,9 +208,15 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         searchLauncher.launch(intent)
     }
 
+    private fun handleAddPost(userConnected: Boolean) {
+        if (userConnected) {
+            navController.navigate(R.id.addPostActivity)
+        } else {
+            launchRegisterProcess(registerForPostAddLauncher)
+        }
+    }
+
     private fun setTheBottomNav() {
-
-
         binding.bottomNav.setupWithNavController(navController)
 
         binding.bottomNav.setOnItemSelectedListener { menuItem ->
@@ -220,12 +226,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
             when (menuItem.itemId) {
                 R.id.addPostActivity -> {
-
-                    if (userConnected) {
-                        navController.navigate(R.id.addPostActivity)
-                    } else {
-                        launchRegisterProcess(registerForPostAddLauncher)
-                    }
+                    handleAddPost(userConnected)
                 }
                 R.id.likedFragment -> {
                     if (userConnected) {
@@ -326,14 +327,14 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                         launchRegisterProcess(registerForProfileLauncher)
                     }
                 }
-                R.id.email -> {
-                    //TODO
+                R.id.add_post -> {
+                    handleAddPost(CurrentUser.isConnected())
                 }
                 R.id.website -> {
                     openTheWebsite(getString(R.string.real_estate_website))
                 }
                 R.id.instagram -> {
-                    //TODO
+                    openInstagramPage(getString(R.string.real_estate_instagram))
                 }
                 R.id.logout -> {
                     logout()
