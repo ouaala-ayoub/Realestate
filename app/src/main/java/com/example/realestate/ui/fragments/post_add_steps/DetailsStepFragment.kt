@@ -17,7 +17,6 @@ import com.example.realestate.ui.viewmodels.DetailsStepViewModel
 import com.example.realestate.utils.formatDecimal
 import com.example.realestate.utils.squareFeetToSquareMeters
 import com.example.realestate.utils.squareMeterToSquareFoot
-import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.TextInputEditText
 
 class DetailsStepFragment : FragmentStep() {
@@ -72,11 +71,11 @@ class DetailsStepFragment : FragmentStep() {
                     setNumberOfBathrooms(text.toString())
                 }
 
-                detailsFullLayout.floorNumberEditText.doOnTextChanged { text, _, _, _ ->
+                detailsFullLayout.floorInfo.floorNumberEditText.doOnTextChanged { text, _, _, _ ->
                     setFloorNumber(text.toString())
                 }
 
-                detailsFullLayout.numberOfFloorsEditText.doOnTextChanged { text, _, _, _ ->
+                detailsFullLayout.floorInfo.numberOfFloorsEditText.doOnTextChanged { text, _, _, _ ->
                     setNumberOfFloors(text.toString())
                 }
 

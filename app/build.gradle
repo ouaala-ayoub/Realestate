@@ -6,49 +6,6 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
-//ext {
-//    kotlin_version = "1.5.21"
-//
-//    support_lib_version = "1.1.0"
-//    constraint_layout_version = "2.1.4"
-//    core_ktx_version = "1.10.1"
-//    appcompat_version = "1.6.1"
-//    material_version = "1.9.0"
-//
-//    firebase_bom_version = "32.1.0"
-//    firebase_auth_version = "22.0.0"
-//
-//    play_services_version = "20.5.0"
-//    play_services_location_version = "21.0.1"
-//    play_services_auth_api_phone_version = "18.0.1"
-//
-//    navigation_version = "2.6.0"
-//
-//    retrofit_version = "2.9.0"
-//    okhttp_version = "4.10.0"
-//    gson_version = "2.10.1"
-//
-//    glide_version = "4.15.1"
-//
-//    exoplayer_version = "2.18.7"
-//
-//    cloudinary_version = "2.3.1"
-//
-//    photoview_version = "2.0.0"
-//    touchimageview_version = "3.2.1"
-//
-//    ted_image_picker_version = "1.4.2"
-//
-//    android_veil_version = "1.1.3"
-//
-//    sms_verify_catcher_version = "0.3.3"
-//
-//    sms_confirmation_view_version = "1.7.1"
-//
-//    country_picker_version = "2.7.0"
-//    android_country_picker_version = "0.0.7"
-//}
-
 android {
     namespace 'com.example.realestate'
     compileSdk 33

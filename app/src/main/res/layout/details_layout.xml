@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:orientation="vertical">
 
     <!-- Building Age -->
 
@@ -85,40 +85,9 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Floor Number -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/floorNumberInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:hint="@string/floor_number"
-        app:helperText="@string/required"
-        app:helperTextTextColor="@color/red">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/floorNumberEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Floor Number -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/numberOfFloorsInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:hint="@string/number_of_floors"
-        app:helperText="@string/required"
-        app:helperTextTextColor="@color/red">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/numberOfFloorsEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number" />
-    </com.google.android.material.textfield.TextInputLayout>
+    <include
+        android:id="@+id/floor_info"
+        layout="@layout/floors_layout" />
 
     <TextView
         android:layout_width="match_parent"
