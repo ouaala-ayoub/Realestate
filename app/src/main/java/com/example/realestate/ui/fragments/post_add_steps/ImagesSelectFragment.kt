@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.R
@@ -29,16 +30,17 @@ import java.util.concurrent.TimeUnit
 class ImagesSelectFragment : FragmentStep() {
     companion object {
         private const val TAG = "ImagesSelectFragment"
-        private const val MAX_INPUT_SIZE = 8
+        private const val MAX_INPUT_SIZE = 10
         private const val NUM_OF_COLUMNS = 3
     }
 
     private lateinit var binding: FragmentImagesSelectBinding
     private lateinit var tedImagePicker: TedImagePicker.Builder
-//    private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
+
+    //    private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
 //    private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
     private val viewModel: ImagesSelectModel by lazy {
-        ImagesSelectModel(MAX_INPUT_SIZE)
+        ImagesSelectModel()
     }
     private val newImagesAdapter: ImagesSelectAdapter =
         ImagesSelectAdapter(MAX_INPUT_SIZE, viewModel)
@@ -47,10 +49,10 @@ class ImagesSelectFragment : FragmentStep() {
         super.onCreate(savedInstanceState)
 
         tedImagePicker = TedImagePicker.with(requireContext())
-            .mediaType(MediaType.IMAGE_AND_VIDEO)
+            .mediaType(MediaType.IMAGE)
             .buttonBackground(R.color.yellow)
             .buttonTextColor(R.color.black)
-            .max(8, getString(R.string.max_string))
+            .max(10, getString(R.string.max_string))
 
 //        permissionRequestLauncher = requestPermissionLauncher(
 //            object : PermissionResult {
@@ -98,6 +100,27 @@ class ImagesSelectFragment : FragmentStep() {
 //        )
     }
 
+    private fun showWarningDialog() {
+        val dialog = makeDialog(
+            requireContext(),
+            object : OnDialogClicked {
+                override fun onPositiveButtonClicked() {
+                }
+
+                override fun onNegativeButtonClicked() {
+                }
+            },
+            getString(R.string.warning_title),
+            getString(R.string.failed_media_selection),
+            positiveText = getString(R.string.OK),
+            style = R.style.MyDialogTheme
+        )
+        dialog.apply {
+            show()
+            separateButtonsBy(10, true)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -107,7 +130,6 @@ class ImagesSelectFragment : FragmentStep() {
 
 
         binding.imagesRv.apply {
-            setHasFixedSize(true)
             layoutManager = GridLayoutManager(requireContext(), NUM_OF_COLUMNS)
             adapter = newImagesAdapter
         }
@@ -141,14 +163,7 @@ class ImagesSelectFragment : FragmentStep() {
                     .startMultiImage { uriList ->
                         val urisToUpload = uriList.filter { uri -> isValidMedia(uri) }
                         if (urisToUpload.size != uriList.size) {
-                            val snackBar = makeSnackBar(
-                                binding.root,
-                                getString(R.string.failed_media_selection),
-                                Snackbar.LENGTH_INDEFINITE
-                            )
-                            snackBar.setAction(getString(R.string.OK)) {
-                                snackBar.dismiss()
-                            }.show()
+                            showWarningDialog()
                         }
                         viewModel.setImagesUri(urisToUpload.toMutableList())
                     }

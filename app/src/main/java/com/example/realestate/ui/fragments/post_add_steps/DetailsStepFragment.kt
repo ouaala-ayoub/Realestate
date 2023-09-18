@@ -42,7 +42,7 @@ class DetailsStepFragment : FragmentStep() {
             viewModel.apply {
                 // Set up listeners for user input changes
 
-                detailsFullLayout.proprietyDetailsCg.forEach { view ->
+                detailsFullLayout.features.proprietyDetailsCg.forEach { view ->
                     val checkBox = view as CheckBox
 
                     checkBox.setOnCheckedChangeListener { compoundButton, isChecked ->

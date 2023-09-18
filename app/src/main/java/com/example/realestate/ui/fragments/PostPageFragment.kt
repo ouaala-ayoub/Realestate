@@ -20,6 +20,7 @@ import com.eudycontreras.boneslibrary.extensions.disableSkeletonLoading
 import com.eudycontreras.boneslibrary.extensions.enableSkeletonLoading
 import com.example.realestate.PostNavArgs
 import com.example.realestate.R
+import com.example.realestate.data.models.ContactType
 import com.example.realestate.data.models.CurrentUser
 import com.example.realestate.data.models.Type
 import com.example.realestate.data.remote.network.Retrofit
@@ -145,6 +146,7 @@ class PostPageFragment : Fragment() {
 
                     val contact = post.contact
                     val owner = post.owner
+                    phoneNumber = "${contact.code}${contact.phoneNumber}"
                     val deepLink = "https://realestatefy.vercel.app/posts/${post.id}"
                     val country = getString(R.string.country_res, post.location.country)
                     val city = getString(R.string.city_res, post.location.city)
@@ -235,52 +237,43 @@ class PostPageFragment : Fragment() {
                             setPageTransformer(ZoomOutPageTransformer())
                         }
 
-                        //handle call button
-                        if (!contact.call.isNullOrEmpty()) {
-                            call.apply {
-                                phoneNumber = contact.call!!
-                                setOnClickListener {
-                                    //directly call
-                                    requireActivity().handlePermission(object : PermissionResult {
-                                        override fun onGranted() {
-                                            call(phoneNumber)
-                                        }
-
-                                        override fun onNonGranted() {
-                                            permissionLauncher.requestCallPermission()
-                                        }
-
-                                    }, listOf(android.Manifest.permission.CALL_PHONE))
+                        message.setOnClickListener {
+                            when (contact.type) {
+                                ContactType.WHATSAPP.value -> {
+                                    openWhatsapp(phoneNumber)
                                 }
-                            }
-                        } else {
-                            call.setOnClickListener {
-                                requireContext().toast(
-                                    getString(R.string.no_call_msg),
-                                    Toast.LENGTH_SHORT
-                                )
+                                ContactType.Both.value -> {
+                                    openWhatsapp(phoneNumber)
+                                }
+                                else -> {
+                                    handleUnsupportedAction()
+                                }
                             }
                         }
 
-                        //handle whatsapp button
-                        if (!contact.whatsapp.isNullOrEmpty()) {
-                            message.apply {
-                                setOnClickListener {
-                                    openWhatsapp(contact.whatsapp!!)
+                        call.setOnClickListener {
+                            when (contact.type) {
+                                ContactType.CALL.value -> {
+                                    handleCallClick(phoneNumber)
                                 }
-                            }
-                        } else {
-                            message.setOnClickListener {
-                                requireContext().toast(
-                                    getString(R.string.no_call_msg),
-                                    Toast.LENGTH_SHORT
-                                )
+                                ContactType.Both.value -> {
+                                    handleCallClick(phoneNumber)
+                                }
+                                else -> {
+                                    handleUnsupportedAction()
+                                }
                             }
                         }
 
                         owner?.apply {
                             ownerImage.loadImage(image, R.drawable.baseline_person_24)
                             ownerTv.defineField(name)
+                            ownerJoinDateTv.defineField(
+                                getString(
+                                    R.string.join_date,
+                                    extractDate(owner.createdAt)
+                                )
+                            )
                         }
 
                     }
@@ -300,6 +293,26 @@ class PostPageFragment : Fragment() {
 //                binding.imagePlaceholder.isVisible = loading
             }
         }
+    }
+
+    private fun handleUnsupportedAction() {
+        requireContext().toast(
+            getString(R.string.no_call_msg),
+            Toast.LENGTH_SHORT
+        )
+    }
+
+    private fun handleCallClick(phoneNumber: String) {
+        requireActivity().handlePermission(object : PermissionResult {
+            override fun onGranted() {
+                call(phoneNumber)
+            }
+
+            override fun onNonGranted() {
+                permissionLauncher.requestCallPermission()
+            }
+
+        }, listOf(android.Manifest.permission.CALL_PHONE))
     }
 
     private fun navigateToReportFragment(postsId: String) {

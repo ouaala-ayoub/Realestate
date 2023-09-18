@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import androidx.core.view.forEach
-import androidx.core.widget.doOnTextChanged
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.data.models.Contact
 import com.example.realestate.data.models.FragmentStep
@@ -48,6 +47,17 @@ class StepTwoFragment : FragmentStep() {
 
         }
 
+        binding.stepTwoFullLayout.apply {
+            whatsapp.setOnCheckedChangeListener { _, isChecked ->
+                stepTwoModel.updateSelectedOptions(isChecked, call.isChecked)
+            }
+
+            call.setOnCheckedChangeListener { _, isChecked ->
+                stepTwoModel.updateSelectedOptions(whatsapp.isChecked, isChecked)
+            }
+        }
+
+
         //validity of the data entered handling
         validateTheData(Type.RENT.value)
 
@@ -71,11 +81,6 @@ class StepTwoFragment : FragmentStep() {
             if (categories != null) {
                 binding.stepTwoFullLayout.categoryEditText.apply {
                     val categoriesToShow = categories.sorted()
-                    val initial = categoriesToShow[0]
-                    //initial values
-                    setText(initial)
-                    setSelection(initial.length)
-
                     val adapter = setUpAndHandleSearch(categoriesToShow)
 
                     //clear filter after user choose one item
@@ -116,8 +121,7 @@ class StepTwoFragment : FragmentStep() {
                     wrapper._priceLiveData
                 )
             )
-            whatsappPhoneInput.phoneEditText.updateLiveData(wrapper._whatsappNumberLiveData)
-            callPhoneInput.phoneEditText.updateLiveData(wrapper._callNumberLiveData)
+            phoneNumber.phoneEditText.updateLiveData(wrapper._phoneNumberLiveData)
 
             wrapper._typeLiveData.apply {
                 value = typeDefault
@@ -145,26 +149,12 @@ class StepTwoFragment : FragmentStep() {
                 period = periodLiveData.value
                 type = typeLiveData.value.toString()
 
-                Log.d(TAG, "price: $price")
+                val code =
+                    binding.stepTwoFullLayout.phoneNumber.countryCode.selectedCountryCodeWithPlus
+                val phoneNumber = phoneLiveData.value.toString()
+                val contactType = contactTypeLiveData.value.toString()
 
-                val contactInfo = Contact()
-                val whatsappNumber = whatsappNumberLiveData.value
-                val callNumber = callNumberLiveData.value
-
-                if (!whatsappNumber.isNullOrEmpty()) {
-                    val code =
-                        binding.stepTwoFullLayout.whatsappPhoneInput.countryCode.selectedCountryCodeWithPlus
-                    contactInfo.whatsapp = code + whatsappNumber
-                }
-
-                if (!callNumber.isNullOrEmpty()) {
-                    val code =
-                        binding.stepTwoFullLayout.callPhoneInput.countryCode.selectedCountryCodeWithPlus
-                    contactInfo.call = code + callNumber
-                }
-
-
-                contact = contactInfo
+                contact = Contact(code, phoneNumber, contactType)
 
                 //TODO change with a call to the local database
                 if (extras.contains(category)) {
@@ -180,6 +170,4 @@ class StepTwoFragment : FragmentStep() {
     override fun onBackClicked(viewPager: ViewPager2) {
         viewPager.currentItem--
     }
-
-
 }

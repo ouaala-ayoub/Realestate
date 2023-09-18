@@ -31,6 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
+        app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
         android:hint="@string/country"
         app:helperText="@string/required"
         app:helperTextTextColor="@color/red">
@@ -51,6 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
+        app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
         android:hint="@string/city"
         app:helperText="@string/required"
         app:helperTextTextColor="@color/red">
@@ -71,6 +73,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
+        app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
         android:hint="@string/street">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView

@@ -6,12 +6,15 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.text.Editable
+import android.text.Html
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -22,10 +25,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -39,6 +44,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.example.realestate.R
 import com.example.realestate.data.models.*
+import com.example.realestate.ui.adapters.CustomCountryArrayAdapter
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -56,6 +62,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -354,11 +364,14 @@ fun makeDialog(
     message: String?,
     view: View? = null,
     negativeText: String = context.resources.getString(R.string.Cancel),
-    positiveText: String = context.resources.getString(R.string.Yes)
+    positiveText: String = context.resources.getString(R.string.Yes),
+    @StyleRes style: Int? = null,
 
-): AlertDialog {
-    val myDialog = AlertDialog
-        .Builder(context)
+    ): AlertDialog {
+    val builder = if (style != null) AlertDialog.Builder(context, style)
+    else
+        AlertDialog.Builder(context)
+    val myDialog = builder
         .setTitle(title)
         .setMessage(message)
         .setView(view)
@@ -371,7 +384,6 @@ fun makeDialog(
             onDialogClicked.onNegativeButtonClicked()
         }
         .create()
-
     myDialog.setOnCancelListener {
         it.dismiss()
     }
@@ -379,14 +391,20 @@ fun makeDialog(
     return myDialog
 }
 
-fun AlertDialog.separateButtonsBy(margin: Int) {
+fun AlertDialog.separateButtonsBy(margin: Int, hide: Boolean = false) {
     val posButton = getButton(AlertDialog.BUTTON_POSITIVE)
+    val negButton = getButton(AlertDialog.BUTTON_NEGATIVE)
+    if (hide)
+        negButton.isVisible = false
+
     val params = LinearLayout.LayoutParams(
         LinearLayout.LayoutParams.WRAP_CONTENT,
         LinearLayout.LayoutParams.WRAP_CONTENT
     )
     params.setMargins(margin, 0, 0, 0)
-    posButton.layoutParams = params
+    posButton.apply {
+        layoutParams = params
+    }
 }
 
 //fun RecyclerView.handleRefreshWithScrolling(swipeRefresh: SwipeRefreshLayout) {
@@ -582,9 +600,10 @@ fun ActivityResultLauncher<Intent>.openGallery() {
 fun makeSnackBar(
     view: View,
     message: String,
-    duration: Int
+    duration: Int,
+    anchorView: View? = null
 ): Snackbar {
-    return Snackbar.make(view, message, duration)
+    return Snackbar.make(view, message, duration).setAnchorView(anchorView)
 }
 
 fun MaterialAutoCompleteTextView.setWithList(
@@ -592,6 +611,65 @@ fun MaterialAutoCompleteTextView.setWithList(
 ): ArrayAdapter<String?> {
     val adapter = ArrayAdapter(context, R.layout.list_item, list)
     setAdapter(adapter)
+    return adapter
+}
+
+fun MaterialAutoCompleteTextView.setCountryList(
+    list: List<CountriesDataItem>,
+): CustomCountryArrayAdapter {
+    val adapter = CustomCountryArrayAdapter(context, R.layout.custom_country_item, list)
+    setAdapter(adapter)
+    return adapter
+}
+
+fun Int.dpToPx(res: Resources): Int {
+    val density = res.displayMetrics.density
+    return (this * density).toInt()
+}
+
+fun extractDate(inputDate: String): String {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+    val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+
+    try {
+        val date = inputFormat.parse(inputDate)
+        return outputFormat.format(date)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
+    return "" // Return an empty string if parsing fails
+}
+
+fun MaterialAutoCompleteTextView.setUpCountriesAndHandleSearch(
+    list: List<CountriesDataItem>,
+    onSelected: OnSelected? = null,
+    TAG: String = "Unknown"
+): CustomCountryArrayAdapter {
+    val adapter = setCountryList(list)
+    addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(
+            s: CharSequence?,
+            start: Int,
+            count: Int,
+            after: Int
+        ) {
+        }
+
+        override fun onTextChanged(
+            s: CharSequence?,
+            start: Int,
+            before: Int,
+            count: Int
+        ) {
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            Log.d(TAG, "afterTextChanged: $s")
+            onSelected?.onSelected(s)
+            adapter.filter.filter(s)
+        }
+    })
     return adapter
 }
 

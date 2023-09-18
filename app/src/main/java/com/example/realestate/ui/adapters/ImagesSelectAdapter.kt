@@ -12,7 +12,7 @@ import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
 import com.example.realestate.utils.loadImageUri
 import com.example.realestate.utils.swap
 
-class ImagesSelectAdapter(val imagesNumber: Int = 8, val viewModel: ImagesSelectModel) :
+class ImagesSelectAdapter(val imagesNumber: Int, val viewModel: ImagesSelectModel) :
     RecyclerView.Adapter<ImagesSelectAdapter.ImagesSelectHolder>() {
 
     companion object {

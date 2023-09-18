@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/propriety_details_cg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5">
+
+        <CheckBox
+            android:id="@+id/furnished"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/furniture_svgrepo_com"
+            android:drawablePadding="5dp"
+            android:text="@string/is_furnished" />
+
+        <CheckBox
+            android:id="@+id/balcony"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/antique_balcony_svgrepo_com"
+            android:drawablePadding="5dp"
+            android:text="@string/has_balcony" />
+
+        <CheckBox
+            android:id="@+id/new_property"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/baseline_fiber_new_24"
+            android:drawablePadding="5dp"
+            android:text="@string/is_new" />
+
+        <CheckBox
+            android:id="@+id/swimming_pool"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/baseline_pool_24"
+            android:drawablePadding="5dp"
+            android:text="@string/has_swimming_pool" />
+
+        <CheckBox
+            android:id="@+id/gym"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/gym_svgrepo_com"
+            android:drawablePadding="5dp"
+            android:text="@string/has_gym" />
+
+        <CheckBox
+            android:id="@+id/parking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/baseline_local_parking_24"
+            android:drawablePadding="5dp"
+            android:text="@string/has_parking" />
+
+        <CheckBox
+            android:id="@+id/elevator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/elevator_svgrepo_com"
+            android:drawablePadding="5dp"
+            android:text="@string/elevator" />
+
+        <CheckBox
+            android:id="@+id/security"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/secure_shield_password_protect_safe_svgrepo_com"
+            android:drawablePadding="5dp"
+            android:text="@string/security" />
+
+        <CheckBox
+            android:id="@+id/downtown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/city_svgrepo_com"
+            android:drawablePadding="5dp"
+            android:text="@string/downtown" />
+
+        <CheckBox
+            android:id="@+id/shopping_mall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/cart_svgrepo_com"
+            android:drawablePadding="5dp"
+            android:text="@string/shopping_mall" />
+
+        <CheckBox
+            android:id="@+id/transportation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/taxi_4_svgrepo_com"
+            android:drawablePadding="5dp"
+            android:text="@string/transportation" />
+
+        <CheckBox
+            android:id="@+id/tram"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/IconCheckboxStyle"
+            android:drawableStart="@drawable/tram_svgrepo_com"
+            android:drawablePadding="5dp"
+            android:text="@string/tram" />
+    </com.google.android.material.chip.ChipGroup>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

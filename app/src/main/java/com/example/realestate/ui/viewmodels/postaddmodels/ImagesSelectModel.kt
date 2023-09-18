@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 
-class ImagesSelectModel(private val imagesNumber: Int) : ViewModel() {
+class ImagesSelectModel() : ViewModel() {
 
     companion object {
         private const val TAG = "ImagesSelectModel"

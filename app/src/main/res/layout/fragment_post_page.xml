@@ -223,18 +223,35 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:src="@tools:sample/avatars" />
 
-                <TextView
-                    android:id="@+id/owner_tv"
-                    style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="18sp"
+                    android:orientation="vertical"
                     app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/owner_image"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Ayoub Ouaala" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/owner_tv"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="18sp"
+                        tools:text="Ayoub Ouaala" />
+
+                    <TextView
+                        android:id="@+id/owner_join_date_tv"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="16dp"
+                        tools:text="On realestatefy since 2022-02-24" />
+
+                </LinearLayout>
+
 
                 <LinearLayout
                     android:id="@+id/linearLayout3"
@@ -272,7 +289,7 @@
                         android:textColor="@color/colorBackground"
                         app:icon="@drawable/icon"
                         app:iconGravity="start"
-                        app:iconTint="@color/colorBackground" />
+                        app:iconTint="@color/green_whatsapp" />
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

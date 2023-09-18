@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Contact(
-    @SerializedName("call") var call: String? = "",
-    @SerializedName("whatsapp") var whatsapp: String? = ""
+    @SerializedName("code") val code: String = "",
+    @SerializedName("phone") val phoneNumber: String ="",
+    @SerializedName("type") val type: String=""
 ) : Parcelable

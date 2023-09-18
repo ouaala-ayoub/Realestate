@@ -258,7 +258,7 @@ class PostsAdapter(
             } else {
                 postsList.filter { post ->
                     //filtering by description
-                    post.description.contains(query)
+                    post.description.contains(query, ignoreCase = true)
                 }
             }
             val results = FilterResults()

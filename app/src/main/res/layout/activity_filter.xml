@@ -103,6 +103,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
                 android:layout_marginBottom="10dp"
                 android:enabled="false"
                 android:hint="@string/country">
@@ -123,6 +124,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
+                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
                 android:enabled="false"
                 android:hint="@string/city"
                 android:visibility="gone">
@@ -143,6 +145,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
+                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
                 android:enabled="false"
                 android:hint="@string/street"
                 android:visibility="gone">
@@ -173,6 +176,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
+                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
                 android:enabled="false"
                 android:hint="@string/proprety_type">
 
@@ -273,138 +277,10 @@
                 android:textSize="16sp"
                 android:visibility="gone" />
 
-            <!--            <com.google.android.material.chip.ChipGroup-->
-            <!--                android:id="@+id/extras_chip_grp"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:visibility="visible"-->
-            <!--                app:singleSelection="false">-->
-
-            <!--                <com.google.android.material.chip.Chip-->
-            <!--                    android:id="@+id/furnished"-->
-            <!--                    style="@style/YellowChipStyle"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="@string/is_furnished" />-->
-
-            <!--                <com.google.android.material.chip.Chip-->
-            <!--                    android:id="@+id/balcony"-->
-            <!--                    style="@style/YellowChipStyle"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="@string/has_balcony" />-->
-
-            <!--                <com.google.android.material.chip.Chip-->
-            <!--                    android:id="@+id/new_property"-->
-            <!--                    style="@style/YellowChipStyle"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="@string/is_new" />-->
-
-            <!--                <com.google.android.material.chip.Chip-->
-            <!--                    android:id="@+id/gym"-->
-            <!--                    style="@style/YellowChipStyle"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="@string/has_gym" />-->
-
-            <!--                <com.google.android.material.chip.Chip-->
-            <!--                    android:id="@+id/swimming_pool"-->
-            <!--                    style="@style/YellowChipStyle"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="@string/has_swimming_pool" />-->
-
-            <!--                <com.google.android.material.chip.Chip-->
-            <!--                    android:id="@+id/parking"-->
-            <!--                    style="@style/YellowChipStyle"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="@string/has_parking" />-->
-
-
-            <!--            </com.google.android.material.chip.ChipGroup>-->
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/extras_chip_grp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <CheckBox
-                    android:id="@+id/furnished"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/is_furnished" />
-
-                <CheckBox
-                    android:id="@+id/balcony"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/has_balcony" />
-
-                <CheckBox
-                    android:id="@+id/new_property"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/is_new" />
-
-                <CheckBox
-                    android:id="@+id/gym"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/has_gym" />
-
-                <CheckBox
-                    android:id="@+id/swimming_pool"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/has_swimming_pool" />
-
-                <CheckBox
-                    android:id="@+id/parking"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/has_parking" />
-
-                <CheckBox
-                    android:id="@+id/elevator"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/elevator" />
-
-                <CheckBox
-                    android:id="@+id/security"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/security" />
-
-                <CheckBox
-                    android:id="@+id/downtown"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/downtown" />
-
-                <CheckBox
-                    android:id="@+id/shopping_mall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/shopping_mall" />
-
-                <CheckBox
-                    android:id="@+id/transportation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/transportation" />
-
-                <CheckBox
-                    android:id="@+id/tram"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/tram" />
-
-            </com.google.android.material.chip.ChipGroup>
+            <include
+                android:id="@+id/features"
+                android:visibility="gone"
+                layout="@layout/features_layout" />
 
         </LinearLayout>
 

@@ -1,22 +1,29 @@
 package com.example.realestate.ui.activities
 
 import android.app.Activity
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
+import android.view.RoundedCorner
 import android.view.View
 import android.widget.CheckBox
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.children
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
-import com.example.realestate.data.models.PriceFilter
-import com.example.realestate.data.models.SearchParams
-import com.example.realestate.data.models.Type
-import com.example.realestate.data.models.extras
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import com.example.realestate.data.models.*
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.ActivityFilterBinding
@@ -50,7 +57,7 @@ class FilterActivity : AppCompatActivity() {
         }
         Log.i(TAG, "params: $searchParams")
 
-        binding.extrasChipGrp.forEach { view ->
+        binding.features.proprietyDetailsCg.forEach { view ->
             val checkBox = view as CheckBox
 
             checkBox.setOnClickListener {
@@ -99,15 +106,16 @@ class FilterActivity : AppCompatActivity() {
                                     proprietyCdTv.isVisible = show
                                     proprietyConditionRg.isVisible = show
                                     extrasTv.isVisible = show
-                                    extrasChipGrp.isVisible = show
+                                    features.root.isVisible = show
                                 }
 
                             }
 
                         })
                         searchParams?.category?.apply {
-                            setText(this.upperFirstLetter())
+                            setText(this)
                             adapter.filter.filter(null)
+                            binding.categoryEditText.setSelection(this.length)
                         }
                         setOnItemClickListener { _, _, _, _ ->
                             adapter.filter.filter(null)
@@ -120,50 +128,70 @@ class FilterActivity : AppCompatActivity() {
             countries.observe(this@FilterActivity) { countries ->
 
                 countries?.apply {
-                    Log.d(TAG, "countries: $countries")
                     //Initialise country data
                     searchParams?.location?.country?.name?.apply {
-                        Log.d(TAG, "country data: $this")
                         binding.countryEditText.setText(this)
+                        binding.countryEditText.setSelection(this.length)
                         getCities(this)
-//                        val code = this?.code
-//
-//                        code?.apply {
-//                            val country = countries.find { data -> data.code == code }
-//                            Log.d(TAG, "country with code $code: $country")
-//                            country?.name?.apply {
-//                                binding.countryEditText.setText(this)
-//                                getCities(this)
-//                            }
-//                        }
-
                     }
 
                     binding.countryEditText.apply {
-                        val names = countries.map { data ->
-                            data.name ?: "____"
-                        }
-                        val adapter = setUpAndHandleSearch(names, object : OnSelected {
-                            override fun onSelected(selectedItem: Editable?) {
-                                if (!selectedItem.isNullOrEmpty()) {
-                                    searchParams?.setCountry(selectedItem.toString())
-                                } else {
-                                    searchParams?.setCountry(null)
-                                }
-                            }
-                        })
+
+                        val adapter = setUpCountriesAndHandleSearch(countries)
 
                         binding.countryTextField.isEnabled = true
 
-                        setOnItemClickListener { _, view, i, _ ->
-                            adapter.filter.filter(null)
-                            searchParams?.location?.country?.code = countries[i].code
-                            val text = (view as TextView).text
-                            getCities(text.toString())
+                        adapter.setOnItemClickListener { selectedItem ->
+                            val name = selectedItem.name
+//                            Glide.with(this)
+//                                .load(selectedItem.image)
+//                                .transform(CenterCrop(), RoundedCorners(10.dpToPx(resources)))
+//                                .into(object : CustomTarget<Drawable>() {
+//                                    override fun onResourceReady(
+//                                        resource: Drawable,
+//                                        transition: Transition<in Drawable>?
+//                                    ) {
+//                                        val scaledBitmap = Bitmap.createScaledBitmap(
+//                                            resource.toBitmap(),
+//                                            48.dpToPx(resources),
+//                                            48.dpToPx(resources),
+//                                            false
+//                                        )
+//
+//                                        // Convert the scaled bitmap to a Drawable
+//                                        val scaledDrawable = BitmapDrawable(resources, scaledBitmap)
+//
+//                                        // Set the scaled drawable as the start icon drawable
+//                                        binding.countryTextField.startIconDrawable = scaledDrawable
+//                                    }
+//
+//                                    override fun onLoadCleared(placeholder: Drawable?) {
+//                                        // Called when the image is no longer needed
+//                                    }
+//                                })
+
+                            if (!name.isNullOrEmpty()) {
+                                searchParams?.setCountry(name)
+                                setText(name.toString(), false)
+                                setSelection(name.length)
+                                adapter.filter.filter(null)
+                                dismissDropDown()
+                                getCities(name)
+                            } else {
+                                searchParams?.setCountry(null)
+                            }
+
 
                             binding.cityEditText.text.clear()
                             binding.cityTextField.isEnabled = false
                         }
+
+//                        setOnItemClickListener { _, view, i, _ ->
+//
+//                            val selectedItem = adapter.getItem(i)
+//
+//
+//                        }
                     }
                 }
 
@@ -224,8 +252,8 @@ class FilterActivity : AppCompatActivity() {
             val button =
                 findViewById<RadioButton>(binding.proprietyConditionRg.checkedRadioButtonId)
 
-             button?.apply {
-                 searchParams?.condition = text.toString()
+            button?.apply {
+                searchParams?.condition = text.toString()
             }
 
             intent.putExtra("search_params", searchParams)
@@ -256,6 +284,7 @@ class FilterActivity : AppCompatActivity() {
                 this?.apply {
                     cityTextField.isVisible = true
                     cityEditText.setText(this)
+                    cityEditText.setSelection(this.length)
 //                    filterModel.getAreas(this)
                 }
             }

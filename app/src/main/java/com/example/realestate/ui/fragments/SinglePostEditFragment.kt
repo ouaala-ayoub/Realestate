@@ -79,23 +79,12 @@ class SinglePostEditFragment : Fragment() {
                 }
 
                 // TODO whatsapp
-                val contactInfo = Contact()
-                val whatsappNumber = whatsappLd.value
-                val callNumber = callLd.value
+                val code =
+                    binding.phoneNumber.countryCode.selectedCountryCodeWithPlus
+                val phoneNumberValue = viewModel.phoneNumber.value.toString()
+                val contactType = viewModel.contactType.value.toString()
 
-                if (!whatsappNumber.isNullOrEmpty()) {
-                    val code =
-                        binding.whatsappPhoneInput.countryCode.selectedCountryCodeWithPlus
-                    contactInfo.whatsapp = code + whatsappNumber
-                }
-
-                if (!callNumber.isNullOrEmpty()) {
-                    val code =
-                        binding.callPhoneInput.countryCode.selectedCountryCodeWithPlus
-                    contactInfo.call = code + callNumber
-                }
-
-                contact = contactInfo
+                contact = Contact(code, phoneNumberValue, contactType)
 
                 location.apply {
                     country = countryLd.value
@@ -199,7 +188,7 @@ class SinglePostEditFragment : Fragment() {
                     converter.spaceMeterEditText.setText(post.space.toString())
 
                     //features
-                    proprietyDetailsCg.forEach { view ->
+                    features.proprietyDetailsCg.forEach { view ->
                         val checkBox = view as CheckBox
                         val feature = checkBox.text.toString()
                         if (post.features?.contains(feature) == true) {
@@ -262,8 +251,17 @@ class SinglePostEditFragment : Fragment() {
                 }
 
                 //contact
-                whatsappPhoneInput.phoneEditText.updateLiveData(mutableWhatsappNumber)
-                callPhoneInput.phoneEditText.updateLiveData(mutableCallNumber)
+                binding.phoneNumber.phoneEditText.updateLiveData(mutablePhoneNumber)
+
+                binding.apply {
+                    whatsapp.setOnCheckedChangeListener { _, isChecked ->
+                        viewModel.updateSelectedOptions(isChecked, call.isChecked)
+                    }
+
+                    call.setOnCheckedChangeListener { _, isChecked ->
+                        viewModel.updateSelectedOptions(whatsapp.isChecked, isChecked)
+                    }
+                }
 
                 //country
                 Countries.observe(viewLifecycleOwner, object : OnChanged<CountriesData> {
@@ -315,7 +313,7 @@ class SinglePostEditFragment : Fragment() {
                     detailsLayout.apply {
 
                         //condition
-                        proprietyConditionRg.setOnCheckedChangeListener { radioGroup, i ->
+                        proprietyConditionRg.setOnCheckedChangeListener { radioGroup, _ ->
                             val radioButton =
                                 radioGroup.findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
                             val state = radioButton.text.toString()
@@ -355,7 +353,7 @@ class SinglePostEditFragment : Fragment() {
                         }
 
                         //features
-                        proprietyDetailsCg.forEach { view ->
+                        features.proprietyDetailsCg.forEach { view ->
                             val checkBox = view as CheckBox
 
                             checkBox.setOnCheckedChangeListener { compoundButton, isChecked ->

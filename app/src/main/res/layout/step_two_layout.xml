@@ -74,6 +74,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
+        app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
         android:hint="@string/category"
         app:helperText="@string/required"
         app:helperTextTextColor="@color/red">
@@ -145,32 +146,33 @@
 
     </RadioGroup>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="@string/whatsapp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-        android:textSize="18sp"
-        app:drawableStartCompat="@drawable/icon"
-        app:drawableTint="@color/colorText" />
-
     <include
-        android:id="@+id/whatsapp_phone_input"
+        android:id="@+id/phone_number"
         layout="@layout/phone_number_layout" />
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/type"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="@string/call"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-        android:textSize="18sp"
-        app:drawableStartCompat="@drawable/baseline_call_24"
-        app:drawableTint="@color/colorText" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-    <include
-        android:id="@+id/call_phone_input"
-        layout="@layout/phone_number_layout" />
+        <CheckBox
+            android:id="@+id/whatsapp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTint="@color/green_whatsapp"
+            android:drawableStart="@drawable/icon" />
+
+        <CheckBox
+            android:id="@+id/call"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTint="@color/colorText"
+            android:drawableStart="@drawable/baseline_call_24"/>
+
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.realestate.data.models.ContactType
 import com.example.realestate.data.models.Type
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.utils.handleApiRequest
@@ -39,8 +40,8 @@ class StepTwoModel(private val staticDataRepository: StaticDataRepository) : Vie
             addSource(_categoryLiveData) { validateForm() }
             addSource(_priceLiveData) { validateForm() }
             addSource(_periodLiveData) { validateForm() }
-            addSource(_whatsappNumberLiveData) { validateForm() }
-            addSource(_callNumberLiveData) { validateForm() }
+            addSource(_phoneNumberLiveData) { validateForm() }
+            addSource(_contactTypeLiveData) { validateForm() }
         }
     }
 
@@ -52,16 +53,17 @@ class StepTwoModel(private val staticDataRepository: StaticDataRepository) : Vie
         category: String?,
         price: String?,
         period: String?,
-        whatsappNumber: String?,
-        callNumber: String?,
+        contactType: String?,
+        phoneNumber: String?,
         type: String?
     ): Boolean {
         val isValidCategory = !category.isNullOrEmpty()
         val isValidPrice = !price.isNullOrEmpty()
         val isValidPeriod = !period.isNullOrEmpty() || type != Type.RENT.value
-        val isValidPhone = !whatsappNumber.isNullOrEmpty() || !callNumber.isNullOrEmpty()
+        val isValidPhoneNumber = !phoneNumber.isNullOrEmpty()
+        val isValidContactType = !contactType.isNullOrEmpty()
 
-        return isValidCategory && isValidPrice && isValidPeriod && isValidPhone
+        return isValidCategory && isValidPrice && isValidPeriod && isValidPhoneNumber && isValidContactType
     }
 
     private fun validateForm() {
@@ -70,32 +72,37 @@ class StepTwoModel(private val staticDataRepository: StaticDataRepository) : Vie
                 _categoryLiveData.value,
                 _priceLiveData.value,
                 _periodLiveData.value,
-                _whatsappNumberLiveData.value,
-                _callNumberLiveData.value,
+                _contactTypeLiveData.value,
+                _phoneNumberLiveData.value,
                 _typeLiveData.value
             )
             _isValidData.value = isValid
         }
     }
 
+    fun updateSelectedOptions(isWhatsAppChecked: Boolean, isCallChecked: Boolean) {
+        mutableLiveDataWrapper._contactTypeLiveData.value =
+            if (isWhatsAppChecked && isCallChecked) {
+                ContactType.Both.value
+            } else if (isWhatsAppChecked) {
+                ContactType.WHATSAPP.value
+            } else if (isCallChecked) {
+                ContactType.CALL.value
+            } else {
+                ""
+            }
+    }
+
 }
+
 
 class MutableLiveDataWrapper {
     val _typeLiveData = MutableLiveData<String>()
     val _categoryLiveData = MutableLiveData<String>()
     val _priceLiveData = MutableLiveData<String?>()
     val _periodLiveData = MutableLiveData<String?>()
-    val _whatsappNumberLiveData = MutableLiveData<String>()
-    val _callNumberLiveData = MutableLiveData<String>()
-
-    override fun toString(): String {
-        return "category=${_categoryLiveData.value.toString()}, " +
-                "price=${_priceLiveData.value.toString()}, " +
-                "period=${_periodLiveData.value.toString()}, " +
-                "type=${_typeLiveData.value.toString()}, " +
-                "whatsappNumber=${_whatsappNumberLiveData.value.toString()}" +
-                "callNumber=${_callNumberLiveData.value.toString()}"
-    }
+    val _contactTypeLiveData = MutableLiveData<String?>("")
+    val _phoneNumberLiveData = MutableLiveData<String>("")
 
     fun clearPeriod() {
         _periodLiveData.postValue(null)
@@ -111,8 +118,6 @@ class LiveDataWrapper(private val liveDataWrapper: MutableLiveDataWrapper) {
         get() = liveDataWrapper._periodLiveData
     val typeLiveData: LiveData<String>
         get() = liveDataWrapper._typeLiveData
-    val whatsappNumberLiveData: LiveData<String>
-        get() = liveDataWrapper._whatsappNumberLiveData
-    val callNumberLiveData: LiveData<String>
-        get() = liveDataWrapper._callNumberLiveData
+    val contactTypeLiveData: LiveData<String?> get() = liveDataWrapper._contactTypeLiveData
+    val phoneLiveData: LiveData<String?> get() = liveDataWrapper._phoneNumberLiveData
 }

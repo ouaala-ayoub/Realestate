@@ -25,7 +25,6 @@
     <string name="area_res"><![CDATA[<b>Area:</b> %1$s]]></string>
     <string name="location_icon_description">Location</string>
     <string name="post_image_description">Propriety image</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!--bottom navigation menu-->
@@ -161,9 +160,9 @@
     <string name="owner_photo">Owner photo</string>
     <string name="long_detail">%1$s : %2$s</string>
     <string name="jpg_jpeg_png_webp_mp4_or_webm">Jpg, Jpeg, Png, WebP, Mp4 or WebM</string>
-    <string name="up_to_59_seconds">up to 59 seconds</string>
-    <string name="less_than_100_mb">less than 100 Mb</string>
-    <string name="failed_media_selection">Please choose a video with size less than 100 Mb and duration less then 59 second</string>
+    <string name="up_to_59_seconds">Up to 59 seconds</string>
+    <string name="less_than_100_mb">Less than 100 Mb</string>
+    <string name="failed_media_selection">You exceeded limit size of the files 100mb/59s </string>
     <string name="share">Share</string>
     <string name="country_flag">Country Flag</string>
     <string name="choose_a_category">Categories</string>
@@ -199,4 +198,6 @@
     <string name="out_of">Out Of</string>
     <string name="wanted">Wanted</string>
     <string name="coming_soon">Coming Soon</string>
+    <string name="warning_title">Warning</string>
+    <string name="join_date">On realestatefy since %1$s</string>
 </resources>

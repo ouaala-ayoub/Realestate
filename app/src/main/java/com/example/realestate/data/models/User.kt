@@ -9,4 +9,5 @@ data class User(
     @SerializedName("socials") val socials: List<String>? = null,
     @SerializedName("image") val image: String? = null,
     @SerializedName("likes") var likes: List<String> = listOf(),
+    @SerializedName("createdAt") var createdAt: String = "",
 )

@@ -4,10 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.realestate.data.models.MessageResponse
-import com.example.realestate.data.models.PostWithOwnerId
-import com.example.realestate.data.models.Type
-import com.example.realestate.data.models.extras
+import com.example.realestate.data.models.*
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.utils.handleApiRequest
@@ -33,11 +30,12 @@ class SinglePostEditViewModel(
     val mutableFloorNumber = MutableLiveData(post.floorNumber.toString())
     private val mutableSpace = MutableLiveData(post.space.toString())
 
+    private val mutableContactType = MutableLiveData(post.contact.type)
+    val mutablePhoneNumber = MutableLiveData(post.contact.phoneNumber)
+
     //    val mutableCategory = MutableLiveData(post.category)
     val mutablePrice = MutableLiveData(post.price)
     val mutablePeriod = MutableLiveData<String?>(post.period)
-    val mutableWhatsappNumber = MutableLiveData<String>(post.contact.whatsapp)
-    val mutableCallNumber = MutableLiveData<String>(post.contact.call)
     val mutableCountry = MutableLiveData<String>(post.location.country)
     val mutableCity = MutableLiveData<String>(post.location.city)
     val mutableArea = MutableLiveData<String>(post.location.area)
@@ -54,12 +52,25 @@ class SinglePostEditViewModel(
 //        addSource(mutableCategory) { updateValidity() }
         addSource(mutablePrice) { updateValidity() }
         addSource(mutablePeriod) { updateValidity() }
-        addSource(mutableWhatsappNumber) { updateValidity() }
-        addSource(mutableCallNumber) { updateValidity() }
+        addSource(mutableContactType) { updateValidity() }
+        addSource(mutablePhoneNumber) { updateValidity() }
         addSource(mutableCountry) { updateValidity() }
         addSource(mutableCity) { updateValidity() }
         addSource(mutableArea) { updateValidity() }
         addSource(mutableDescription) { updateValidity() }
+    }
+
+    fun updateSelectedOptions(isWhatsAppChecked: Boolean, isCallChecked: Boolean) {
+        mutableContactType.value =
+            if (isWhatsAppChecked && isCallChecked) {
+                ContactType.Both.value
+            } else if (isWhatsAppChecked) {
+                ContactType.WHATSAPP.value
+            } else if (isCallChecked) {
+                ContactType.CALL.value
+            } else {
+                ""
+            }
     }
 
     private fun updateValidity() {
@@ -75,7 +86,8 @@ class SinglePostEditViewModel(
 //            !mutableCategory.value.isNullOrBlank() &&
             !mutablePrice.value.isNullOrBlank() &&
                     (!mutablePeriod.value.isNullOrBlank() || mutableType.value != Type.RENT.value) &&
-                    (!mutableWhatsappNumber.value.isNullOrBlank() || !mutableCallNumber.value.isNullOrBlank()) &&
+                    !mutableContactType.value.isNullOrBlank() &&
+                    !mutablePhoneNumber.value.isNullOrBlank() &&
                     !mutableCountry.value.isNullOrBlank() &&
                     !mutableCity.value.isNullOrBlank() &&
                     !mutableDescription.value.isNullOrBlank()
@@ -98,8 +110,8 @@ class SinglePostEditViewModel(
     val floorsLd: LiveData<String> = mutableFloors
     val floorNumberLd: LiveData<String> = mutableFloorNumber
     val spaceLd: LiveData<String?> = mutableSpace
-    val whatsappLd: LiveData<String?> = mutableWhatsappNumber
-    val callLd: LiveData<String?> = mutableCallNumber
+    val contactType: LiveData<String?> = mutableContactType
+    val phoneNumber: LiveData<String?> = mutablePhoneNumber
 
     //    val categoryLd: LiveData<String> = mutableCategory
     val priceLd: LiveData<String?> = mutablePrice
