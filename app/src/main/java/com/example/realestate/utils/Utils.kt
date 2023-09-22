@@ -234,7 +234,7 @@ fun <T> handleApiRequest(
     loadingLiveData: MutableLiveData<Boolean>?,
     dataLiveData: MutableLiveData<T?>? = null,
     TAG: String,
-    additionalCode: AdditionalCode<T>? = null
+    additionalCode: AdditionalCode<T>? = null, function: String=""
 ) {
     loadingLiveData?.postValue(true)
 
@@ -245,8 +245,8 @@ fun <T> handleApiRequest(
                 dataLiveData?.postValue(response.body())
                 Log.d(TAG, "onResponse: ${response.body()}")
             } else {
-                getError(TAG, response.errorBody(), response.code())
                 dataLiveData?.postValue(null)
+                getError(TAG, response.errorBody(), response.code(), function)
             }
             additionalCode?.onResponse(response)
             loadingLiveData?.postValue(false)
@@ -264,20 +264,20 @@ fun <T> handleApiRequest(
 fun getError(
     TAG: String,
     responseBody: ResponseBody?,
-    code: Int
+    code: Int, function: String = ""
 ): Error? {
     return try {
 
         val test = responseBody?.charStream()?.readText()
-        Log.e(TAG, "JSONObject or msg : $test ")
+        Log.e(TAG, "JSONObject or msg $function: $test ")
         val error = Gson().fromJson(test, ErrorResponse::class.java)
-        Log.e(TAG, "error: $error")
+        Log.e(TAG, "error $function: $error")
 
         Error(error.message, code)
     } catch (e: Exception) {
-        Log.e(TAG, "getError: $e.stackTrace")
+        Log.e(TAG, "getError $function: $e.stackTrace")
         val error = e.message?.let { Error(it, code) }
-        Log.e(TAG, "error parsing JSON error message: $error")
+        Log.e(TAG, "error parsing JSON error message $function: $error")
         return error
     }
 }

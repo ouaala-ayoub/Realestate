@@ -22,8 +22,6 @@
         <argument
             android:name="userId"
             app:argType="string" />
-        <argument
-            android:name="tokenId"
-            app:argType="string" />
+
     </fragment>
 </navigation>

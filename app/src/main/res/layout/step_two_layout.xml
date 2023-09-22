@@ -2,10 +2,11 @@
 <LinearLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_margin="10dp"
     android:gravity="center"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -161,7 +162,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableTint="@color/green_whatsapp"
+            style="@style/IconCheckboxStyle"
             android:drawableStart="@drawable/icon" />
 
         <CheckBox
@@ -169,7 +170,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableTint="@color/colorText"
+            style="@style/IconCheckboxStyle"
             android:drawableStart="@drawable/baseline_call_24"/>
 
 

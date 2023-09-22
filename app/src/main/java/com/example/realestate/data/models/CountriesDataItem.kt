@@ -13,7 +13,7 @@ data class CountriesDataItem(
     val dial_code: String? = null,
 
     @SerializedName("image")
-    val image: String? = null,
+    val image: String? = "https://upload.wikimedia.org/wikipedia/commons/2/2f/Flag_of_the_United_Nations.svg",
 
     @SerializedName("name")
     var name: String? = null

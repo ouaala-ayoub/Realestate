@@ -119,7 +119,7 @@ class HomeViewModel(
                     _postsList.postValue(null)
                     _shouldVeil.postValue(false)
                 }
-            }
+            }, "getPosts()"
         )
         return _postsList
     }
@@ -147,14 +147,14 @@ class HomeViewModel(
                 override fun onFailure() {
                     _categoriesMessage.postValue(ERROR)
                 }
-            }
+            }, "getCategories()"
 
         )
         return _categoriesList
     }
 
     fun getAuth() {
-        handleApiRequest(usersRepository.getAuth(), null, _user, TAG)
+        handleApiRequest(usersRepository.getAuth(), null, _user, TAG, function = "getAuth()")
     }
 
 
@@ -163,7 +163,8 @@ class HomeViewModel(
             usersRepository.like(postId),
             null,
             _liked,
-            TAG
+            TAG,
+            function = "like()"
         )
     }
 
@@ -172,7 +173,8 @@ class HomeViewModel(
             usersRepository.unlike(postId),
             null,
             _unliked,
-            TAG
+            TAG,
+            function = "unlike()"
         )
     }
 }

@@ -224,12 +224,10 @@ class StepThreeFragment : FragmentStep() {
 
             requestResponse.observe(viewLifecycleOwner) { requestResponse ->
                 Log.d(TAG, "onCreateView: ${requestResponse?.message}")
-                if (requestResponse != null) {
-                    requireContext().toast(requestResponse.message, Toast.LENGTH_SHORT)
-                } else {
-                    doOnFail()
+                requireContext().toast(requestResponse?.message!!, Toast.LENGTH_SHORT)
+                if (requestResponse.message == "post created") {
+                    requireActivity().finish()
                 }
-                requireActivity().finish()
             }
         }
     }
@@ -289,16 +287,20 @@ class StepThreeFragment : FragmentStep() {
 
                     countries?.apply {
                         countryEditText.apply {
-                            val names = map { data -> data.name ?: "____" }
-                            val adapter = setUpAndHandleSearch(names)
-                            setOnItemClickListener { _, view, _, _ ->
-                                val text = (view as TextView).text
-                                Log.i(TAG, "onItemSelected: $text")
-                                adapter.filter.filter(null)
-                                getCities(text.toString())
-                                cityEditText.text.clear()
-                                streetEditText.text.clear()
-//                                cityEditText.isEnabled = false
+
+                            val adapter = setUpCountriesAndHandleSearch(countries)
+                            adapter.setOnItemClickListener { selectedItem ->
+                                val name = selectedItem.name
+
+                                if (!name.isNullOrEmpty()) {
+                                    setText(name.toString(), false)
+                                    setSelection(name.length)
+                                    adapter.filter.filter(null)
+                                    dismissDropDown()
+                                    getCities(name)
+                                    cityEditText.text.clear()
+                                    streetEditText.text.clear()
+                                }
                             }
                         }
                     }

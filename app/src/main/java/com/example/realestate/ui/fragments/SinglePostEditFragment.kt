@@ -146,8 +146,12 @@ class SinglePostEditFragment : Fragment() {
 
 
             //contact
-//            whatsappPhoneInput.phoneEditText.setText(post.contact.whatsapp)
-//            callPhoneInput.phoneEditText.setText(post.contact.call)
+            phoneNumber.apply {
+                val phoneCode = post.contact.code.replace("+", "").toInt()
+                phoneEditText.setText(post.contact.phoneNumber)
+                countryCode.setCountryForPhoneCode(phoneCode)
+            }
+
 
             //country
             countryEditText.setText(post.location.country)
@@ -383,7 +387,9 @@ class SinglePostEditFragment : Fragment() {
             response.observe(viewLifecycleOwner) { response ->
                 Log.d(TAG, "response: $response")
                 if (response != null)
-                    requireContext().toast(response.message, Toast.LENGTH_SHORT)
+                    response.message?.apply {
+                        requireContext().toast(response.message, Toast.LENGTH_SHORT)
+                    }
                 else
                     requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
             }

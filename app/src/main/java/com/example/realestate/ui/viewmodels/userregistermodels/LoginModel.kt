@@ -13,6 +13,7 @@ import com.example.realestate.utils.Task
 import com.example.realestate.utils.handleApiRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
+import okhttp3.ResponseBody
 import retrofit2.Response
 
 open class LoginModel(private val repository: UsersRepository) : ViewModel() {
@@ -21,16 +22,15 @@ open class LoginModel(private val repository: UsersRepository) : ViewModel() {
     }
 
     val _isLoading = MutableLiveData<Boolean>()
-    val _user = MutableLiveData<User?>()
+    private val _user = MutableLiveData<User?>()
 
     val user: LiveData<User?>
         get() = _user
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-
-    fun addPhoneToUser() {
-
+    fun getAuth() {
+        handleApiRequest(repository.getAuth(), _isLoading, _user, TAG)
     }
 
     fun signInWithPhoneAuthCredential(
@@ -53,71 +53,31 @@ open class LoginModel(private val repository: UsersRepository) : ViewModel() {
                 }
                 _isLoading.postValue(false)
             }
-
-//        _isLoading.postValue(true)
-//        FirebaseAuth.getInstance().signInWithCredential(credential)
-//            .addOnCompleteListener(activity) { task ->
-//                if (task.isSuccessful) {
-//                    // Sign in success, update UI with the signed-in user's information
-//                    Log.d(TAG, "signInWithCredential:success")
-//
-//                    val user = task.result?.user
-//                    myTask.onSuccess(user)
-//
-//                    Log.d(TAG, "signInWithCredential:${user?.phoneNumber}")
-//                } else {
-//                    // Sign in failed, display a message and update the UI
-//                    Log.w(TAG, "signInWithCredential:failure", task.exception)
-//                    val e = task.exception
-//                    myTask.onFail(e)
-//                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
-//                        // The verification code entered was invalid
-//                    }
-//                    // Update UI
-//                }
-//                _isLoading.postValue(false)
-//            }
     }
 
     fun login(token: String) {
         handleApiRequest(
             repository.login(token),
             _isLoading,
-            _user,
+            null,
             TAG,
-            object : AdditionalCode<User> {
-                override fun onResponse(responseBody: Response<User>) {
-                    val user = responseBody.body()
-                    Log.d(TAG, "user: $user")
-                    //store user in the memory
-                    if (user != null) {
-                        CurrentUser.apply {
-                            set(user)
-                            prefs.set(user.id!!)
-                        }
+            object : AdditionalCode<ResponseBody> {
+                override fun onResponse(responseBody: Response<ResponseBody>) {
+
+                    if (responseBody.isSuccessful) {
+                        //get the auth on login success
+                        getAuth()
+                    } else {
+                        _user.postValue(null)
                     }
 
                 }
 
-                override fun onFailure() {}
+                override fun onFailure() {
+                    _user.postValue(null)
+                }
 
             }
         )
-//        handleApiRequest(
-//            repository.login(token),
-//            _isLoading,
-//            _user,
-//            TAG,
-//            object : AdditionalCode<User> {
-//                override fun onResponse(responseBody: Response<User>) {
-//                    val userId = (responseBody.body())?.id
-//                    Log.d(TAG, "userId: $userId")
-//                    //store user id in the prefs
-//                    if (userId != null)
-//                        CurrentUser.prefs.set(userId)
-//                }
-//
-//                override fun onFailure() {}
-//            })
     }
 }

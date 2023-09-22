@@ -8,16 +8,14 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import androidx.core.view.forEach
 import androidx.viewpager2.widget.ViewPager2
-import com.example.realestate.data.models.Contact
-import com.example.realestate.data.models.FragmentStep
-import com.example.realestate.data.models.Type
-import com.example.realestate.data.models.extras
+import com.example.realestate.data.models.*
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.FragmentStepTwoBinding
 import com.example.realestate.ui.activities.AddPostActivity
 import com.example.realestate.ui.viewmodels.postaddmodels.StepTwoModel
 import com.example.realestate.utils.*
+import com.hbb20.CountryCodePicker.OnCountryChangeListener
 
 class StepTwoFragment : FragmentStep() {
 
@@ -77,25 +75,34 @@ class StepTwoFragment : FragmentStep() {
             }
         }
 
-        stepTwoModel.categories.observe(viewLifecycleOwner) { categories ->
-            if (categories != null) {
-                binding.stepTwoFullLayout.categoryEditText.apply {
-                    val categoriesToShow = categories.sorted()
-                    val adapter = setUpAndHandleSearch(categoriesToShow)
+        Categories.observe(viewLifecycleOwner, object : OnChanged<List<String>?> {
+            override fun onChange(data: List<String>?) {
+                Log.d(TAG, "onChange data: $data")
+                if (data != null) {
+                    binding.stepTwoFullLayout.categoryEditText.apply {
+                        val categoriesToShow = data.sorted()
+                        val adapter = setUpAndHandleSearch(categoriesToShow)
 
-                    //clear filter after user choose one item
-                    setOnItemClickListener { _, _, _, _ ->
-                        adapter.filter.filter(null)
+                        //clear filter after user choose one item
+                        setOnItemClickListener { _, _, _, _ ->
+                            adapter.filter.filter(null)
+                        }
                     }
+                } else {
+                    requireActivity().doOnFail()
                 }
-            } else {
-                requireActivity().doOnFail()
             }
-        }
+
+        })
 
         stepTwoModel.isValidData.observe(viewLifecycleOwner) { isValidData ->
             //update the state of the next button
             Log.d(TAG, "isValidData : $isValidData")
+            Log.d(
+                TAG,
+                "contactTypeLiveData : ${stepTwoModel.liveDataWrapper.contactTypeLiveData.value}"
+            )
+            Log.d(TAG, "phoneLiveData : ${stepTwoModel.liveDataWrapper.phoneLiveData.value}")
             (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValidData)
         }
 
@@ -113,7 +120,7 @@ class StepTwoFragment : FragmentStep() {
             val wrapper = stepTwoModel.mutableLiveDataWrapper
 
             //user input
-            categoryEditText.updateLiveData(wrapper._categoryLiveData, true)
+            categoryEditText.updateLiveData(wrapper._categoryLiveData)
 //            priceEditText.updateLiveData(wrapper._priceLiveData)
             priceEditText.addTextChangedListener(
                 NumberTextWatcher(
@@ -149,6 +156,7 @@ class StepTwoFragment : FragmentStep() {
                 period = periodLiveData.value
                 type = typeLiveData.value.toString()
 
+                Log.d(TAG, "category: $category")
                 val code =
                     binding.stepTwoFullLayout.phoneNumber.countryCode.selectedCountryCodeWithPlus
                 val phoneNumber = phoneLiveData.value.toString()

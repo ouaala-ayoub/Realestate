@@ -83,6 +83,7 @@
     <string name="send">SEND</string>
     <string name="no_user">No user</string>
     <string name="logout">Logout</string>
+    <string name="sign_up">Sign up</string>
     <string name="verify">Verify</string>
     <string name="verification_code">Verification code</string>
     <string name="add_additional_data_name">Add additional data (name,....)</string>
@@ -133,10 +134,10 @@
     <string name="has_parking">Parking</string>
     <string name="elevator">Elevator</string>
     <string name="security">Security</string>
-    <string name="number_of_floors">Number of floors</string>
-    <string name="number_of_rooms">Number of rooms</string>
-    <string name="number_of_bathrooms">Number of bathrooms</string>
-    <string name="floor_number">Floor Number</string>
+    <string name="number_of_floors">N° of floors</string>
+    <string name="number_of_rooms">N° of rooms</string>
+    <string name="number_of_bathrooms">N° of bathrooms</string>
+    <string name="floor_number">Floor N°</string>
     <string name="space">Space</string>
     <string name="max_string">Media selection limit exceeded</string>
     <string name="property_condition">Property Condition (required *)</string>
@@ -195,7 +196,7 @@
     <string name="delete_title">Delete Confirmation</string>
     <string name="delete_message">Are you sure You want to delete This post ?</string>
     <string name="real_estate_instagram">https://www.instagram.com/properties.realestate_/</string>
-    <string name="out_of">Out Of</string>
+    <string name="out_of">Of</string>
     <string name="wanted">Wanted</string>
     <string name="coming_soon">Coming Soon</string>
     <string name="warning_title">Warning</string>

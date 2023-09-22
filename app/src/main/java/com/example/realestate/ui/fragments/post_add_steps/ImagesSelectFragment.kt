@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
@@ -36,14 +37,11 @@ class ImagesSelectFragment : FragmentStep() {
 
     private lateinit var binding: FragmentImagesSelectBinding
     private lateinit var tedImagePicker: TedImagePicker.Builder
-
-    //    private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
-//    private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
-    private val viewModel: ImagesSelectModel by lazy {
-        ImagesSelectModel()
-    }
+    private val viewModel: ImagesSelectModel = ImagesSelectModel()
     private val newImagesAdapter: ImagesSelectAdapter =
         ImagesSelectAdapter(MAX_INPUT_SIZE, viewModel)
+    //    private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
+//    private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +50,7 @@ class ImagesSelectFragment : FragmentStep() {
             .mediaType(MediaType.IMAGE)
             .buttonBackground(R.color.yellow)
             .buttonTextColor(R.color.black)
-            .max(10, getString(R.string.max_string))
+            .max(MAX_INPUT_SIZE, getString(R.string.max_string))
 
 //        permissionRequestLauncher = requestPermissionLauncher(
 //            object : PermissionResult {

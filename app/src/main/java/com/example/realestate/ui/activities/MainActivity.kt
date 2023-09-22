@@ -30,6 +30,7 @@ import com.example.realestate.ui.fragments.HomeFragmentDirections
 import com.example.realestate.ui.viewmodels.CountriesModel
 import com.example.realestate.utils.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -175,6 +176,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_bar_menu, menu)
+
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -266,6 +268,11 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         registerLauncher.launch(userRegisterIntent)
     }
 
+    private fun launchRegisterProcess() {
+        val userRegisterIntent = Intent(this, UserRegisterActivity::class.java)
+        startActivity(userRegisterIntent)
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -288,6 +295,8 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
+
+        val navItem = binding.navView.menu.findItem(R.id.connected_state)
         val view = binding.navView.getHeaderView(0)
         val emailTv = view.findViewById<TextView>(R.id.user_email)
         val imageView = view.findViewById<ImageView>(R.id.user_image)
@@ -295,6 +304,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
         CurrentUser.observe(this, object : OnChanged<User> {
             override fun onChange(data: User?) {
+                Log.d(TAG, "user: ${data?.email}")
                 val imageUri = data?.image
                 if (imageUri != null) {
                     imageView.loadImage(imageUri)
@@ -303,20 +313,20 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                 }
                 if (data != null) {
                     emailTv.text = data.email
+                    navItem.apply {
+                        setTitle(R.string.logout)
+                        setIcon(R.drawable.baseline_logout_24)
+                    }
                 } else {
                     emailTv.text = getString(R.string.no_user)
+                    navItem.apply {
+                        setTitle(R.string.sign_up) // Set text for logged-in state
+                        setIcon(R.drawable.baseline_assignment_ind_24)
+                    }
                 }
             }
 
         })
-
-
-//        handleUser(FirebaseAuth.getInstance().currentUser, emailTv, phoneTv)
-//        FirebaseAuth.getInstance().currentUser
-//
-//        FirebaseAuth.getInstance().addAuthStateListener { auth ->
-//            handleUser(auth.currentUser, emailTv, phoneTv)
-//        }
 
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -336,31 +346,18 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
                 R.id.instagram -> {
                     openInstagramPage(getString(R.string.real_estate_instagram))
                 }
-                R.id.logout -> {
-                    logout()
+                R.id.connected_state -> {
+                    if (CurrentUser.isConnected()) {
+                        logout()
+                    } else {
+                        launchRegisterProcess()
+                    }
                 }
             }
             true
         }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    private fun handleUser(
-        user: FirebaseUser?,
-        emailTv: TextView,
-        phoneTv: TextView
-    ) {
-
-        if (user != null) {
-
-            emailTv.text = user.email
-            phoneTv.defineField(user.phoneNumber)
-
-        } else {
-            emailTv.text = getString(R.string.no_user)
-            phoneTv.text = "_"
-        }
     }
 
     private fun handleDrawerLayout(drawerLayout: DrawerLayout) {

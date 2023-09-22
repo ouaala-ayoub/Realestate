@@ -140,35 +140,11 @@ class FilterActivity : AppCompatActivity() {
                         val adapter = setUpCountriesAndHandleSearch(countries)
 
                         binding.countryTextField.isEnabled = true
+                        binding.cityTextField.isEnabled = true
+                        binding.areaTextField.isEnabled = true
 
                         adapter.setOnItemClickListener { selectedItem ->
                             val name = selectedItem.name
-//                            Glide.with(this)
-//                                .load(selectedItem.image)
-//                                .transform(CenterCrop(), RoundedCorners(10.dpToPx(resources)))
-//                                .into(object : CustomTarget<Drawable>() {
-//                                    override fun onResourceReady(
-//                                        resource: Drawable,
-//                                        transition: Transition<in Drawable>?
-//                                    ) {
-//                                        val scaledBitmap = Bitmap.createScaledBitmap(
-//                                            resource.toBitmap(),
-//                                            48.dpToPx(resources),
-//                                            48.dpToPx(resources),
-//                                            false
-//                                        )
-//
-//                                        // Convert the scaled bitmap to a Drawable
-//                                        val scaledDrawable = BitmapDrawable(resources, scaledBitmap)
-//
-//                                        // Set the scaled drawable as the start icon drawable
-//                                        binding.countryTextField.startIconDrawable = scaledDrawable
-//                                    }
-//
-//                                    override fun onLoadCleared(placeholder: Drawable?) {
-//                                        // Called when the image is no longer needed
-//                                    }
-//                                })
 
                             if (!name.isNullOrEmpty()) {
                                 searchParams?.setCountry(name)
@@ -183,7 +159,6 @@ class FilterActivity : AppCompatActivity() {
 
 
                             binding.cityEditText.text.clear()
-                            binding.cityTextField.isEnabled = false
                         }
 
 //                        setOnItemClickListener { _, view, i, _ ->
@@ -200,8 +175,6 @@ class FilterActivity : AppCompatActivity() {
             citiesToShow.observe(this@FilterActivity) { cities ->
                 Log.d(TAG, "citiesToShow: $cities")
                 binding.cityEditText.apply {
-                    binding.cityTextField.isVisible = !cities.isNullOrEmpty()
-                    binding.cityTextField.isEnabled = !cities.isNullOrEmpty()
                     val adapter = setUpAndHandleSearch(cities, object : OnSelected {
                         override fun onSelected(selectedItem: Editable?) {
                             if (!selectedItem.isNullOrEmpty()) {
@@ -218,14 +191,11 @@ class FilterActivity : AppCompatActivity() {
                         adapter.filter.filter(null)
 //                            getStreets(selectedCity.toString())
                         binding.areaEditText.text.clear()
-                        binding.areaTextField.isEnabled = false
                     }
                 }
             }
             streets.observe(this@FilterActivity) { streets ->
                 binding.areaEditText.apply {
-                    binding.areaTextField.isVisible = !streets.isNullOrEmpty()
-                    binding.cityTextField.isEnabled = !streets.isNullOrEmpty()
 
                     val adapter = setUpAndHandleSearch(streets, object : OnSelected {
                         override fun onSelected(selectedItem: Editable?) {

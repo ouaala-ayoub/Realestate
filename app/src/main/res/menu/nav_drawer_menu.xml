@@ -22,7 +22,6 @@
         android:title="@string/instagram" />
 
     <item
-        android:id="@+id/logout"
-        android:icon="@drawable/baseline_logout_24"
-        android:title="@string/logout" />
+        android:id="@+id/connected_state"
+        android:title="" />
 </menu>

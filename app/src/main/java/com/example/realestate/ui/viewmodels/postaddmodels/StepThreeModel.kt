@@ -12,12 +12,11 @@ import com.example.realestate.data.models.MessageResponse
 import com.example.realestate.data.models.PostWithoutId
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
-import com.example.realestate.utils.RandomGenerator
-import com.example.realestate.utils.getFileExtensionFromUri
-import com.example.realestate.utils.handleApiRequest
+import com.example.realestate.utils.*
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
+import retrofit2.Response
 
 class StepThreeModel(
     private val repository: PostsRepository,
@@ -136,7 +135,28 @@ class StepThreeModel(
                 if (urlsList.size == fullSize) {
                     post.media = urlsList
                     Log.d(TAG, "post: $post")
-                    handleApiRequest(repository.addPost(post), _loading, _requestResponse, TAG)
+                    handleApiRequest(
+                        repository.addPost(post),
+                        _loading,
+                        null,
+                        TAG,
+                        object : AdditionalCode<MessageResponse> {
+                            override fun onResponse(responseBody: Response<MessageResponse>) {
+                                if (responseBody.isSuccessful) {
+                                    _requestResponse.postValue(responseBody.body())
+                                    Log.d(TAG, "onResponse: ${responseBody.body()}")
+                                } else {
+                                    val error =
+                                        getError(TAG, responseBody.errorBody(), responseBody.code())
+                                    _requestResponse.postValue(MessageResponse(error?.message))
+                                }
+                            }
+
+                            override fun onFailure() {
+                                _requestResponse.postValue(MessageResponse(message = "Unexpected Error"))
+                            }
+
+                        })
                 }
 
             }
@@ -159,7 +179,7 @@ class StepThreeModel(
         city: String?,
         description: String?
     ): Boolean {
-        val isValidCountry = !country.isNullOrEmpty()
+        val isValidCountry = Countries.get()?.find { data -> data.name == country } != null
         val isValidCity = !city.isNullOrEmpty()
         val isValidDescription = !description.isNullOrEmpty()
 

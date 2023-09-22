@@ -33,9 +33,6 @@ class AddInfoFragment : Fragment() {
     private val addInfoModel: AddInfoModel by lazy {
         AddInfoModel(UsersRepository(Retrofit.getInstance()))
     }
-    private val tokenId: String by lazy {
-        args.tokenId
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

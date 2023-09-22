@@ -4,10 +4,15 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
+import com.example.realestate.R
 import com.example.realestate.data.models.FragmentStep
 import com.example.realestate.data.models.PostWithoutId
 import com.example.realestate.databinding.ActivityAddPostBinding
+import com.example.realestate.databinding.TabElementBinding
 import com.example.realestate.ui.adapters.FragmentsAdapter
 import com.example.realestate.ui.fragments.post_add_steps.DetailsStepFragment
 import com.example.realestate.ui.fragments.post_add_steps.ImagesSelectFragment
@@ -15,6 +20,7 @@ import com.example.realestate.ui.fragments.post_add_steps.StepThreeFragment
 import com.example.realestate.ui.fragments.post_add_steps.StepTwoFragment
 import com.example.realestate.ui.viewmodels.postaddmodels.AddPostModel
 import com.example.realestate.utils.showLeaveDialog
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class AddPostActivity : AppCompatActivity() {
@@ -88,12 +94,53 @@ class AddPostActivity : AppCompatActivity() {
 
 
     private fun setViewPager() {
+        //change color of selected tab
+        val customTabSelectedListener = object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                // Change the text color of the selected tab
+                val tabNumber = tab?.view?.findViewById<TextView>(R.id.tabNumber)
+                tabNumber?.setTextColor(
+                    ContextCompat.getColor(
+                        this@AddPostActivity,
+                        R.color.yellow
+                    )
+                )
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                // Change the text color of the unselected tab
+                val tabNumber = tab?.view?.findViewById<TextView>(R.id.tabNumber)
+                tabNumber?.setTextColor(
+                    ContextCompat.getColor(
+                        this@AddPostActivity,
+                        R.color.colorText
+                    )
+                )
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                // Handle tab reselection if needed
+            }
+        }
+        binding.progressTabBar.addOnTabSelectedListener(customTabSelectedListener)
         binding.fragmentsViewPager.apply {
             offscreenPageLimit = 1
             adapter = fragmentsAdapter
-            TabLayoutMediator(binding.progressTabBar, this, true) { tab, _ ->
-                tab.view.isClickable = false
-            }.attach()
+            val tabMediator =
+                TabLayoutMediator(binding.progressTabBar, this, true) { tab, position ->
+                    val tabBinding = TabElementBinding.inflate(layoutInflater)
+                    tabBinding.tabNumber.text =
+                        (position + 1).toString() // Set the tab number dynamically
+                    Log.d(
+                        TAG,
+                        "tabBinding is selected $position: ${tabBinding.tabNumber.isSelected}"
+                    )
+                    tab.apply {
+                        customView = tabBinding.root
+                        view.isClickable = false
+                    }
+                }
+            tabMediator.attach()
             isUserInputEnabled = false
         }
     }

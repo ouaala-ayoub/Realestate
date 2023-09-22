@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
@@ -38,21 +40,11 @@ class EmailVerificationFragment : Fragment() {
     ) { res ->
         viewModel.onSignInResult(res, object : Task {
             override fun onSuccess(user: FirebaseUser?) {
-                Log.d(TAG, "user: ${user?.email}")
                 user?.getIdToken(false)?.addOnCompleteListener { task ->
                     val tokenId = task.result.token
                     if (tokenId != null) {
-                        Log.i(TAG, "tokenId: $tokenId")
                         viewModel.login(tokenId)
-                        viewModel.user.observe(viewLifecycleOwner) { user ->
-                            Log.i(TAG, "user: $user")
-                            if (user != null) {
-                                CurrentUser.set(user)
-                                goToAddData(user.id!!, tokenId)
-                            } else
-                                onFail(getString(R.string.error))
 
-                        }
                     } else {
                         onFail(getString(R.string.error))
                     }
@@ -65,22 +57,6 @@ class EmailVerificationFragment : Fragment() {
             }
         })
 
-    }
-
-    private fun goToAddData(userId: String, tokenId: String) {
-        val action =
-            EmailVerificationFragmentDirections.actionEmailVerificationFragmentToAddInfoFragment2(
-                userId, tokenId
-            )
-        findNavController().navigate(action)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
-    fun onFail(message: String) {
-        requireContext().toast(message, Toast.LENGTH_SHORT)
     }
 
     override fun onCreateView(
@@ -97,4 +73,29 @@ class EmailVerificationFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.user.observe(viewLifecycleOwner) { user ->
+            if (user != null) {
+                CurrentUser.set(user)
+                goToAddData(user.id!!)
+            } else
+                onFail(getString(R.string.error))
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            binding.emailVerificationProgressbar.isVisible = loading
+        }
+    }
+
+    private fun goToAddData(userId: String) {
+        val action =
+            EmailVerificationFragmentDirections.actionEmailVerificationFragmentToAddInfoFragment2(
+                userId
+            )
+        findNavController().navigate(action)
+    }
+    fun onFail(message: String) {
+        requireContext().toast(message, Toast.LENGTH_SHORT)
+    }
 }

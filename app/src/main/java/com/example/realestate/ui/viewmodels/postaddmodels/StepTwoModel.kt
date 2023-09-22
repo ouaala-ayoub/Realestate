@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.example.realestate.data.models.ContactType
 import com.example.realestate.data.models.Type
 import com.example.realestate.data.repositories.StaticDataRepository
+import com.example.realestate.utils.Categories
 import com.example.realestate.utils.handleApiRequest
 
 class StepTwoModel(private val staticDataRepository: StaticDataRepository) : ViewModel() {
@@ -16,23 +17,8 @@ class StepTwoModel(private val staticDataRepository: StaticDataRepository) : Vie
     }
 
     //get from data source
-    private val _categories = MutableLiveData<List<String>?>()
     private val _isLoading = MutableLiveData<Boolean>()
-    val categories: LiveData<List<String>?>
-        get() = _categories
 
-    init {
-        getCategories()
-    }
-
-    private fun getCategories() {
-        handleApiRequest(
-            staticDataRepository.getCategories(),
-            _isLoading,
-            _categories,
-            TAG
-        )
-    }
 
     val mutableLiveDataWrapper = MutableLiveDataWrapper()
     private val _isValidData = MediatorLiveData(false).apply {
@@ -57,7 +43,7 @@ class StepTwoModel(private val staticDataRepository: StaticDataRepository) : Vie
         phoneNumber: String?,
         type: String?
     ): Boolean {
-        val isValidCategory = !category.isNullOrEmpty()
+        val isValidCategory = Categories.get()?.contains(category) ?: false
         val isValidPrice = !price.isNullOrEmpty()
         val isValidPeriod = !period.isNullOrEmpty() || type != Type.RENT.value
         val isValidPhoneNumber = !phoneNumber.isNullOrEmpty()

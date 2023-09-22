@@ -254,32 +254,33 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 if (data != null) {
                     Countries.set(data)
                     postsAdapter.setCountriesData(data)
-                    val countries = data.map { element -> element.name }.toMutableList().also {
-                        it.add(0, getString(R.string.all))
+                    val countries = data.toMutableList().also {
+                        it.add(0, CountriesDataItem(name = getString(R.string.all)))
                     }
                     binding.countryEditText.apply {
+
+                        val adapter = setUpCountriesAndHandleSearch(countries)
+
+
                         isEnabled = data.isNotEmpty()
-                        val elementToShow = countries[0]!!
-                        setText(elementToShow)
-                        setSelection(elementToShow.length)
+                        val elementToShow = countries[0]
+                        setText(elementToShow.name, false)
+                        setSelection(elementToShow.name!!.length)
+                        adapter.filter.filter(null)
 
-                        countryAdapter = setUpAndHandleSearch(countries)
-                        setOnItemClickListener { _, view, _, _ ->
-                            val tv = view as TextView
-                            val query = tv.text.toString()
-                            countryAdapter?.filter?.filter(null)
+                        adapter.setOnItemClickListener { selectedItem ->
+                            val name = selectedItem.name
+                            binding.countryTextField.isEnabled = true
 
-                            if (query.isNotEmpty()) {
-                                if (query == getString(R.string.all)) {
-                                    searchParams.setCountry(null)
-                                } else {
-                                    Log.i(TAG, "data: $data")
-                                    searchParams.setCountry(query)
-//                                    searchParams.location?.country?.code = data[i - 1].code
-                                }
-                            } else
+                            if (!name.isNullOrEmpty()) {
+                                searchParams.setCountry(name)
+                                setText(name.toString(), false)
+                                setSelection(name.length)
+                                adapter.filter.filter(null)
+                                dismissDropDown()
+                            } else {
                                 searchParams.setCountry(null)
-
+                            }
                             viewModel.getPosts(searchParams, "countryEditText changed")
                         }
                     }
@@ -287,32 +288,20 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
             }
             viewModel.liked.observe(viewLifecycleOwner) { message ->
-                if (message == null)
-                    requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
-                else {
-                    requestTheUser()
-                }
+                Log.d(TAG, "liked: $message")
+                message?.apply { requestTheUser() }
             }
 
             viewModel.unliked.observe(viewLifecycleOwner) { message ->
-                if (message == null)
-                    requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
-                else {
-                    requestTheUser()
-                }
+                Log.d(TAG, "unliked: $message")
+                message?.apply { requestTheUser() }
             }
 
             viewModel.user.observe(viewLifecycleOwner) { user ->
                 Log.d(TAG, "user: $user")
-                if (user != null) {
-                    if (!CurrentUser.isConnected()) {
-                        CurrentUser.set(user)
-                    }
-//                    user.likes = listOf()
+                CurrentUser.set(user)
+                if (user != null)
                     postsAdapter.setLiked(user.likes)
-                } else {
-                    requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
-                }
             }
 
             //handle error message

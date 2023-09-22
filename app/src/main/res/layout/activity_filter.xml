@@ -124,10 +124,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
                 android:enabled="false"
-                android:hint="@string/city"
-                android:visibility="gone">
+                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
+                android:hint="@string/city">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/cityEditText"
@@ -145,10 +144,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
                 android:enabled="false"
-                android:hint="@string/street"
-                android:visibility="gone">
+                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
+                android:hint="@string/street">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/areaEditText"

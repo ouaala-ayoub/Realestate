@@ -1,6 +1,7 @@
 package com.example.realestate.data.remote.network
 
 import com.example.realestate.data.models.*
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -98,7 +99,7 @@ interface RetrofitService {
     ): Call<MessageResponse>
 
     @POST("login")
-    fun login(@Header("Authorization") token: String): Call<User>
+    fun login(@Header("Authorization") token: String): Call<ResponseBody>
 
     @GET("users/{id}/likes")
     fun getLikedPosts(@Path("id") userId: String): Call<List<PostWithOwnerId>>
