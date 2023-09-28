@@ -285,7 +285,7 @@
                         android:layout_margin="5dp"
                         android:layout_weight="1"
                         android:backgroundTint="@color/call_color_state"
-                        android:text="@string/message"
+                        android:text="@string/whatsapp"
                         android:textColor="@color/colorBackground"
                         app:icon="@drawable/icon"
                         app:iconGravity="start"

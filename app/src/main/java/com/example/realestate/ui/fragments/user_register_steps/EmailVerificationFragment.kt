@@ -76,6 +76,7 @@ class EmailVerificationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.user.observe(viewLifecycleOwner) { user ->
+            Log.d(TAG, "user: $user")
             if (user != null) {
                 CurrentUser.set(user)
                 goToAddData(user.id!!)

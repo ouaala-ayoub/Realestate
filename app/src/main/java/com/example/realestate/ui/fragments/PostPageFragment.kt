@@ -213,10 +213,15 @@ class PostPageFragment : Fragment() {
                             bathrooms?.apply { map["Number of bathrooms"] = this.toString() }
                             floors?.apply {
                                 floorNumber?.apply {
-                                    map["Floor Info"] = "Floor n° $floorNumber in $floors"
+                                    map["Floor Info"] = "Floor n° $floorNumber out f $floors"
                                 }
                             }
-                            space?.apply { map["Space"] = "$this m²" }
+                            space?.apply {
+                                val footValue =
+                                    formatDecimal(squareMeterToSquareFoot(this.toDouble()), 2)
+                                map["Space"] =
+                                    "$this m² = $footValue foot²"
+                            }
                         }
 
                         detailsAdapter.setFeatures(map)

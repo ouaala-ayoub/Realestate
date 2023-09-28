@@ -350,7 +350,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 binding.shimmerFrameLayout.hideShimmer()
                 categoriesChipGroup.apply {
                     val list =
-                        categories.capitalizeFirstLetter().sortedByDescending { it.length }
+                        categories.sortedByDescending { it.length }
 
                     val categoriesToShow = list.sortToAdd()
 
@@ -376,7 +376,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
                                 Log.d(TAG, "selectedCategory: $newSelectedOption")
 
-                                searchParams.category = newSelectedOption.lowerFirstLetter()
+                                searchParams.category = newSelectedOption
                             }
                             viewModel.getPosts(
                                 searchParams,

@@ -83,7 +83,7 @@ interface RetrofitService {
     @GET("users/{id}")
     fun getUserById(@Path("id") userId: String): Call<User>
 
-    @GET("auth")
+    @POST("auth")
     fun getAuth(): Call<User>
 
     @POST("users")
@@ -99,7 +99,7 @@ interface RetrofitService {
     ): Call<MessageResponse>
 
     @POST("login")
-    fun login(@Header("Authorization") token: String): Call<ResponseBody>
+    fun login(@Header("Authorization") token: String): Call<User?>
 
     @GET("users/{id}/likes")
     fun getLikedPosts(@Path("id") userId: String): Call<List<PostWithOwnerId>>

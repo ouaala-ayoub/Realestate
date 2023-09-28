@@ -5,15 +5,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.realestate.R
 import com.example.realestate.data.models.ImagesMedia
+import com.example.realestate.databinding.AddMoreLayoutBinding
 import com.example.realestate.databinding.SingleImagePickedBinding
 import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
 import com.example.realestate.utils.loadImageUri
 import com.example.realestate.utils.swap
 
-class ImagesSelectAdapter(val imagesNumber: Int, val viewModel: ImagesSelectModel) :
-    RecyclerView.Adapter<ImagesSelectAdapter.ImagesSelectHolder>() {
+class ImagesSelectAdapter(
+    val imagesNumber: Int,
+    val viewModel: ImagesSelectModel,
+    private val onAddMoreClicked: AddMoreClicked
+) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val TAG = "ImagesSelectAdapter"
@@ -23,6 +29,11 @@ class ImagesSelectAdapter(val imagesNumber: Int, val viewModel: ImagesSelectMode
 
     fun setImagesList(list: List<Uri?>) {
         imagesList.uriList = list.toMutableList()
+        if (imagesList.uriList.isNotEmpty())
+            imagesList.uriList.add(null)
+        else
+            imagesList.uriList.remove(null)
+        Log.d(TAG, "setImagesList: ${imagesList.uriList}")
         notifyDataSetChanged()
     }
 
@@ -32,6 +43,15 @@ class ImagesSelectAdapter(val imagesNumber: Int, val viewModel: ImagesSelectMode
             result.swap(imagesList.selectedPosition, 0)
 
         return result
+    }
+
+    inner class AddMoreHolder(private val binding: AddMoreLayoutBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind() {
+            binding.addMoreButton.setOnClickListener {
+                onAddMoreClicked.onClicked()
+            }
+        }
     }
 
     inner class ImagesSelectHolder(private val binding: SingleImagePickedBinding) :
@@ -102,20 +122,57 @@ class ImagesSelectAdapter(val imagesNumber: Int, val viewModel: ImagesSelectMode
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ImagesSelectAdapter.ImagesSelectHolder {
+    ): ViewHolder {
 
-        return ImagesSelectHolder(
-            SingleImagePickedBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+        return when (viewType) {
+            ViewType.NORMAL.ordinal -> ImagesSelectHolder(
+                SingleImagePickedBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
             )
-        )
+            else -> {
+                AddMoreHolder(
+                    AddMoreLayoutBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                )
+            }
+        }
+
+
     }
 
     override fun getItemCount() = imagesList.uriList.size
 
-    override fun onBindViewHolder(holder: ImagesSelectHolder, position: Int) {
-        holder.bind(position)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        when (holder.itemViewType) {
+            ViewType.NORMAL.ordinal -> {
+                val myHolder = holder as ImagesSelectHolder
+                myHolder.bind(position)
+            }
+            else -> {
+                val myHolder = holder as AddMoreHolder
+                myHolder.bind()
+            }
+        }
     }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (imagesList.uriList[position] != null)
+            ViewType.NORMAL.ordinal
+        else
+            ViewType.ADD_MORE.ordinal
+    }
+}
+
+enum class ViewType {
+    NORMAL, ADD_MORE
+}
+
+interface AddMoreClicked {
+    fun onClicked()
 }

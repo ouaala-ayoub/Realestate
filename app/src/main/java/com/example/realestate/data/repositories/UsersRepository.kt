@@ -2,7 +2,9 @@ package com.example.realestate.data.repositories
 
 import com.example.realestate.data.models.AdditionalInfo
 import com.example.realestate.data.models.PhoneNumber
+import com.example.realestate.data.models.User
 import com.example.realestate.data.remote.network.RetrofitService
+import retrofit2.Call
 
 class UsersRepository(private val retrofitService: RetrofitService) {
 

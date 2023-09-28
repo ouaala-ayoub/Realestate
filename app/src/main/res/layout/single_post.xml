@@ -176,7 +176,7 @@
                 <TextView
                     android:id="@+id/post_location"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center|start"
                     android:orientation="horizontal"
                     android:padding="10dp"

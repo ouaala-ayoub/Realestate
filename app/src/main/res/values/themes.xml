@@ -23,8 +23,7 @@
     </style>
 
     <style name="AppTheme" parent="Theme.RealEstate">
-        <item name="materialButtonStyle">@style/OutlinedButtonStyle
-        </item>
+        <item name="materialButtonStyle">@style/OutlinedButtonStyle</item>
     </style>
 
     <style name="CustomToolbarStyle" parent="Widget.MaterialComponents.Toolbar">

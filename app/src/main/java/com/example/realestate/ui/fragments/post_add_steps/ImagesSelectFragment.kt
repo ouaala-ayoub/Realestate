@@ -20,6 +20,7 @@ import com.example.realestate.R
 import com.example.realestate.data.models.FragmentStep
 import com.example.realestate.databinding.FragmentImagesSelectBinding
 import com.example.realestate.ui.activities.AddPostActivity
+import com.example.realestate.ui.adapters.AddMoreClicked
 import com.example.realestate.ui.adapters.ImagesSelectAdapter
 import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
 import com.example.realestate.utils.*
@@ -39,7 +40,12 @@ class ImagesSelectFragment : FragmentStep() {
     private lateinit var tedImagePicker: TedImagePicker.Builder
     private val viewModel: ImagesSelectModel = ImagesSelectModel()
     private val newImagesAdapter: ImagesSelectAdapter =
-        ImagesSelectAdapter(MAX_INPUT_SIZE, viewModel)
+        ImagesSelectAdapter(MAX_INPUT_SIZE, viewModel, object : AddMoreClicked {
+            override fun onClicked() {
+                launchImagePick()
+            }
+
+        })
     //    private lateinit var permissionRequestLauncher: ActivityResultLauncher<String>
 //    private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
 
@@ -153,24 +159,28 @@ class ImagesSelectFragment : FragmentStep() {
 //                }
 //            }, listOf(permission))
 
-            val startUri = newImagesAdapter.getSelectedUris()
-            if (startUri.size < newImagesAdapter.imagesNumber) {
-
-                tedImagePicker
-                    .selectedUri(startUri)
-                    .startMultiImage { uriList ->
-                        val urisToUpload = uriList.filter { uri -> isValidMedia(uri) }
-                        if (urisToUpload.size != uriList.size) {
-                            showWarningDialog()
-                        }
-                        viewModel.setImagesUri(urisToUpload.toMutableList())
-                    }
-            } else {
-                requireContext().toast(getString(R.string.max_string), Toast.LENGTH_SHORT)
-            }
+            launchImagePick()
         }
 
         return binding.root
+    }
+
+    private fun launchImagePick() {
+        val startUri = newImagesAdapter.getSelectedUris()
+        if (startUri.size < newImagesAdapter.imagesNumber) {
+
+            tedImagePicker
+                .selectedUri(startUri)
+                .startMultiImage { uriList ->
+                    val urisToUpload = uriList.filter { uri -> isValidMedia(uri) }
+                    if (urisToUpload.size != uriList.size) {
+                        showWarningDialog()
+                    }
+                    viewModel.setImagesUri(urisToUpload.toMutableList())
+                }
+        } else {
+            requireContext().toast(getString(R.string.max_string), Toast.LENGTH_SHORT)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

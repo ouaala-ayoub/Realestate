@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">Real Estate</string>
+    <string name="app_name">www.properties.realestate</string>
     <string name="real_estate">realEstate.app</string>
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
 
     <!-- main activity -->
     <string name="rent">Rent</string>
-    <string name="sell">For sale</string>
+    <string name="sell">Forsale</string>
 
     <!--dialog-->
     <string name="Yes">Yes</string>
@@ -30,7 +30,7 @@
     <!--bottom navigation menu-->
     <string name="home">Home</string>
     <string name="liked">Liked</string>
-    <string name="add_a_post">New Post</string>
+    <string name="add_a_post">@string/post_advert</string>
 
     <!--    permission-->
     <string name="permission_required">Permission required</string>
@@ -201,4 +201,6 @@
     <string name="coming_soon">Coming Soon</string>
     <string name="warning_title">Warning</string>
     <string name="join_date">On realestatefy since %1$s</string>
+    <string name="add_more">Add more</string>
+    <string name="post_advert">Post advert</string>
 </resources>

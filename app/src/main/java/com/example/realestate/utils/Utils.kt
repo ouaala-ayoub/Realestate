@@ -234,7 +234,7 @@ fun <T> handleApiRequest(
     loadingLiveData: MutableLiveData<Boolean>?,
     dataLiveData: MutableLiveData<T?>? = null,
     TAG: String,
-    additionalCode: AdditionalCode<T>? = null, function: String=""
+    additionalCode: AdditionalCode<T>? = null, function: String = ""
 ) {
     loadingLiveData?.postValue(true)
 
@@ -849,8 +849,8 @@ fun getValueOrDefault(value: String?): String {
 
 fun squareMeterToSquareFoot(meter: Double) = meter * 10.7633911105
 fun squareFeetToSquareMeters(squareFeet: Double) = squareFeet * 0.092903
-fun formatDecimal(value: Double): String {
-    return String.format(Locale.US, "%.3f", value)
+fun formatDecimal(value: Double, afterComma: Int = 3): String {
+    return String.format(Locale.US, "%.${afterComma}f", value)
 }
 
 fun ViewGroup.initialiseCategoryButtons(
@@ -860,7 +860,7 @@ fun ViewGroup.initialiseCategoryButtons(
 ): RadioButton? {
     val selected = children.find { view ->
         val selected = view as RadioButton
-        selected.text.toString().lowerFirstLetter() == category
+        selected.text.toString() == category
     } as RadioButton?
 
     if (lastSelected != selected)

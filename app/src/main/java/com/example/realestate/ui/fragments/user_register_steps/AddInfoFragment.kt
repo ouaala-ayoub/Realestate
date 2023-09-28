@@ -30,9 +30,9 @@ class AddInfoFragment : Fragment() {
     private val userId: String by lazy {
         args.userId
     }
-    private val addInfoModel: AddInfoModel by lazy {
+    private val addInfoModel: AddInfoModel =
         AddInfoModel(UsersRepository(Retrofit.getInstance()))
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,21 +60,13 @@ class AddInfoFragment : Fragment() {
         binding.apply {
 
             //all by default
-            addInfoModel.apply {
-                user.observe(viewLifecycleOwner) { user ->
-                    if (user != null) {
-                        user.name?.apply {
-                            nameEditText.setText(this)
-                        }
-//                        updateCommMethod(user.communicationMethod)
-                    }
-                }
-            }
-
-
             nameEditText.doOnTextChanged { name, _, _, _ ->
                 addInfoModel.updateName(name.toString())
             }
+
+            //default value
+            val user = CurrentUser.get()
+            user?.name.apply { nameEditText.setText(this) }
 
 //            radioGroup.setOnCheckedChangeListener { _, checkedId ->
 //                val selectedMethod = when (checkedId) {

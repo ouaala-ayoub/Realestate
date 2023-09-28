@@ -59,25 +59,8 @@ open class LoginModel(private val repository: UsersRepository) : ViewModel() {
         handleApiRequest(
             repository.login(token),
             _isLoading,
-            null,
-            TAG,
-            object : AdditionalCode<ResponseBody> {
-                override fun onResponse(responseBody: Response<ResponseBody>) {
-
-                    if (responseBody.isSuccessful) {
-                        //get the auth on login success
-                        getAuth()
-                    } else {
-                        _user.postValue(null)
-                    }
-
-                }
-
-                override fun onFailure() {
-                    _user.postValue(null)
-                }
-
-            }
+            _user,
+            TAG
         )
     }
 }

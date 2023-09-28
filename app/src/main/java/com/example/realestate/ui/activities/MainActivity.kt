@@ -1,16 +1,18 @@
 package com.example.realestate.ui.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -26,13 +28,14 @@ import com.example.realestate.data.models.SearchParams
 import com.example.realestate.data.models.User
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.ActivityMainBinding
+import com.example.realestate.databinding.ToolBarBinding
 import com.example.realestate.ui.fragments.HomeFragmentDirections
 import com.example.realestate.ui.viewmodels.CountriesModel
 import com.example.realestate.utils.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
+import com.google.android.material.internal.ToolbarUtils
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+
 
 class MainActivity : AppCompatActivity(), ActivityResultListener {
 
@@ -99,7 +102,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
         override fun onResultFailed() {}
 
     })
-    val registerForPostAddLauncher = registerAnd(object : SelectionResult {
+    private val registerForPostAddLauncher = registerAnd(object : SelectionResult {
         override fun onResultOk(data: Intent) {
             findNavController(R.id.fragment_container).navigate(R.id.addPostActivity)
         }
@@ -140,11 +143,23 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
         })
 
+    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        val customViewTest = ToolBarBinding.inflate(layoutInflater, binding.root, false)
+        supportActionBar?.apply {
+            setDisplayShowTitleEnabled(false)
+            customView = customViewTest.root
+            setDisplayShowCustomEnabled(true)
+
+            customViewTest.appIcon.setOnClickListener {
+                openTheWebsite(getString(R.string.real_estate_website))
+            }
+
+        }
 
         val navHost =
             supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
