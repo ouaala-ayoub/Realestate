@@ -28,7 +28,8 @@ class LikedFragment : Fragment() {
         private const val TAG = "LikedFragment"
     }
 
-    private lateinit var binding: FragmentSavedBinding
+    private var _binding: FragmentSavedBinding? = null
+    private val binding get()=_binding!!
     private val viewModel: LikedViewModel by lazy {
         LikedViewModel(UsersRepository(Retrofit.getInstance()))
     }
@@ -40,11 +41,10 @@ class LikedFragment : Fragment() {
                 }
 
                 override fun onDeleteClickedListener(postId: String) {
-                    val userId = CurrentUser.prefs.get()
+                    val userId = CurrentUser.get()?.id
                     userId?.apply {
                         viewModel.apply {
                             deleteFromFavourites(postId)
-
                         }
                     }
                 }
@@ -56,7 +56,7 @@ class LikedFragment : Fragment() {
         Log.i(TAG, "created liked fragment")
         super.onCreate(savedInstanceState)
         //get user saved posts
-        val userId = CurrentUser.prefs.get()
+        val userId = CurrentUser.get()?.id
         userId?.apply {
             viewModel.getLikedPosts(this)
         }
@@ -66,7 +66,7 @@ class LikedFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentSavedBinding.inflate(inflater, container, false)
+        _binding = FragmentSavedBinding.inflate(inflater, container, false)
 
         binding.savedRv.apply {
             adapter = likedAdapter
@@ -84,7 +84,7 @@ class LikedFragment : Fragment() {
                 if (message == null)
                     requireContext().toast(getString(R.string.error), Toast.LENGTH_SHORT)
                 else {
-                    val userId = CurrentUser.prefs.get()
+                    val userId = CurrentUser.get()?.id
                     userId?.apply {
                         viewModel.getLikedPosts(this)
                     }
@@ -119,6 +119,11 @@ class LikedFragment : Fragment() {
     private fun openPostFragment(postId: String) {
         val action = LikedFragmentDirections.actionSavedFragmentToPostNav(postId)
         findNavController().navigate(action)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

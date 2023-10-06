@@ -1,8 +1,5 @@
 package com.example.realestate.ui.fragments.post_add_steps
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,10 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.R
 import com.example.realestate.data.models.*
@@ -22,12 +17,8 @@ import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
 import com.example.realestate.databinding.FragmentStepThreeBinding
 import com.example.realestate.ui.activities.AddPostActivity
-import com.example.realestate.ui.activities.MainActivity
 import com.example.realestate.ui.viewmodels.postaddmodels.StepThreeModel
 import com.example.realestate.utils.*
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.material.snackbar.Snackbar
 
 class StepThreeFragment : FragmentStep() {
 
@@ -35,7 +26,8 @@ class StepThreeFragment : FragmentStep() {
         private const val TAG = "StepThreeFragment"
     }
 
-    private lateinit var binding: FragmentStepThreeBinding
+    private var _binding: FragmentStepThreeBinding? = null
+    private val binding get() = _binding!!
     private lateinit var activity: AddPostActivity
     private var countriesData: CountriesData? = null
 
@@ -84,7 +76,7 @@ class StepThreeFragment : FragmentStep() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentStepThreeBinding.inflate(inflater, container, false)
+        _binding = FragmentStepThreeBinding.inflate(inflater, container, false)
 
 
 //        binding.getLocation.setOnClickListener {
@@ -337,5 +329,9 @@ class StepThreeFragment : FragmentStep() {
 
             }
         }
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

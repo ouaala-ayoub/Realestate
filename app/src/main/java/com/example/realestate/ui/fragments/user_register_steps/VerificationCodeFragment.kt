@@ -1,7 +1,6 @@
 package com.example.realestate.ui.fragments.user_register_steps
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -36,7 +34,8 @@ class VerificationCodeFragment : Fragment() {
     }
 
     private lateinit var smsVerifyCatcher: SmsVerifyCatcher
-    private lateinit var binding: FragmentVerificationCodeBinding
+    private var _binding: FragmentVerificationCodeBinding? = null
+    private val binding get() = _binding!!
     private val args: VerificationCodeFragmentArgs by navArgs()
     private val verificationModel: VerificationCodeModel by lazy {
         VerificationCodeModel(UsersRepository(Retrofit.getInstance()))
@@ -50,7 +49,7 @@ class VerificationCodeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentVerificationCodeBinding.inflate(inflater, container, false)
+        _binding = FragmentVerificationCodeBinding.inflate(inflater, container, false)
         requireActivity().disableBackButton(viewLifecycleOwner)
 
         verificationModel.apply {
@@ -85,7 +84,7 @@ class VerificationCodeFragment : Fragment() {
                 object : Task {
                     override fun onSuccess(user: FirebaseUser?) {
 
-                        val userId = CurrentUser.prefs.get()
+                        val userId = CurrentUser.get()?.id
                         if (userId != null) {
                             val phoneNumber = user?.phoneNumber
                             Log.d(TAG, "phoneNumber: $phoneNumber")
@@ -184,6 +183,10 @@ class VerificationCodeFragment : Fragment() {
 //        smsVerifyCatcher.onStop()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     private fun finishActivity() {
         val resultIntent = requireActivity().intent
         resultIntent.putExtra(

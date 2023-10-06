@@ -11,7 +11,7 @@ class Countries {
         private const val TAG = "Countries"
         private var liveData: MutableLiveData<CountriesData?> = MutableLiveData<CountriesData?>()
 
-        private fun requestCategories() {
+        fun requestCategories() {
             handleApiRequest(
                 Retrofit.getInstance().getAllCountries(),
                 loadingLiveData = null,

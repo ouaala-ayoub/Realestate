@@ -1,7 +1,6 @@
 package com.example.realestate.ui.fragments.post_add_steps
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +25,8 @@ class DetailsStepFragment : FragmentStep() {
     }
 
     private var isConverting: Boolean = false
-    private lateinit var binding: FragmentDetailsStepBinding
+    private var _binding: FragmentDetailsStepBinding?=null
+    private val binding get() = _binding!!
     private val viewModel: DetailsStepViewModel by lazy {
         DetailsStepViewModel()
     }
@@ -35,7 +35,7 @@ class DetailsStepFragment : FragmentStep() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentDetailsStepBinding.inflate(inflater, container, false)
+        _binding = FragmentDetailsStepBinding.inflate(inflater, container, false)
         // Set the ViewModel variable in the layout to the ViewModel instance
 
         binding.apply {
@@ -127,6 +127,11 @@ class DetailsStepFragment : FragmentStep() {
         super.onResume()
         val lastState = viewModel.validationLiveData.value!!
         (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(lastState)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun updateValue(

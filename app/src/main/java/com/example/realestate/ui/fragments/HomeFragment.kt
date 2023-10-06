@@ -7,15 +7,12 @@ import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.SearchView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.realestate.R
@@ -45,7 +42,8 @@ class HomeFragment : Fragment(), ActivityResultListener {
     private var firstTime = true
     private var recyclerViewState: Parcelable? = null
     private var countryAdapter: ArrayAdapter<String?>? = null
-    private lateinit var binding: FragmentHomeModifiedBinding
+    private var _binding: FragmentHomeModifiedBinding? = null
+    private val binding get() = _binding!!
     private lateinit var postsAdapter: PostsAdapter
     private lateinit var searchParams: SearchParams
     private var selectedOption: RadioButton? = null
@@ -104,8 +102,8 @@ class HomeFragment : Fragment(), ActivityResultListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        binding = FragmentHomeModifiedBinding.inflate(inflater, container, false)
+        val startTime = System.nanoTime()
+        _binding = FragmentHomeModifiedBinding.inflate(inflater, container, false)
 
         //back button handling
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -167,6 +165,9 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 if (viewModel.categoriesList.value.isNullOrEmpty()) {
                     viewModel.getCategories()
                 }
+                if ((requireActivity() as MainActivity).countriesModel.countries.value.isNullOrEmpty()) {
+                    (requireActivity() as MainActivity).countriesModel.getCountries()
+                }
             }
 
             //disable swipe refresh if not on top
@@ -194,6 +195,9 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
             }
         }
+        val endTime = System.nanoTime()
+        val elapsedTime = (endTime - startTime) / 1000000
+        Log.d(TAG, "onCreateView function took $elapsedTime ms to execute")
 
         return binding.root
     }
@@ -617,6 +621,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
         super.onDestroyView()
         recyclerViewState =
             binding.postRv.getRecyclerView().layoutManager?.onSaveInstanceState()
+        _binding = null
     }
 
     private fun initialiseTypeChips(type: String?) {

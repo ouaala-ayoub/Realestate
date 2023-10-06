@@ -15,7 +15,6 @@ import com.example.realestate.databinding.FragmentStepTwoBinding
 import com.example.realestate.ui.activities.AddPostActivity
 import com.example.realestate.ui.viewmodels.postaddmodels.StepTwoModel
 import com.example.realestate.utils.*
-import com.hbb20.CountryCodePicker.OnCountryChangeListener
 
 class StepTwoFragment : FragmentStep() {
 
@@ -23,7 +22,8 @@ class StepTwoFragment : FragmentStep() {
         private const val TAG = "StepTwoFragment"
     }
 
-    private lateinit var binding: FragmentStepTwoBinding
+    private var _binding: FragmentStepTwoBinding? = null
+    private val binding get() = _binding!!
     private val stepTwoModel: StepTwoModel by lazy {
         StepTwoModel(StaticDataRepository(Retrofit.getInstance()))
     }
@@ -33,7 +33,7 @@ class StepTwoFragment : FragmentStep() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentStepTwoBinding.inflate(inflater, container, false)
+        _binding = FragmentStepTwoBinding.inflate(inflater, container, false)
 
         binding.stepTwoFullLayout.periodRg.setOnCheckedChangeListener { radioGroup, id ->
             val button = radioGroup.findViewById<RadioButton>(id)
@@ -177,5 +177,9 @@ class StepTwoFragment : FragmentStep() {
 
     override fun onBackClicked(viewPager: ViewPager2) {
         viewPager.currentItem--
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

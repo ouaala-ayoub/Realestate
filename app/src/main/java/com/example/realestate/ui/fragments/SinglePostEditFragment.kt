@@ -31,13 +31,15 @@ class SinglePostEditFragment : Fragment() {
     }
 
     private var isConverting: Boolean = false
-    private lateinit var binding: FragmentSinglePostEditBinding
+    private var _binding: FragmentSinglePostEditBinding?=null
+    private val binding get() = _binding!!
     private lateinit var viewModel: SinglePostEditViewModel
     private val retrofit = Retrofit.getInstance()
     private val args: SinglePostEditFragmentArgs by navArgs()
     private lateinit var post: PostWithOwnerId
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val startTime = System.nanoTime()
         super.onCreate(savedInstanceState)
         post = args.post
         viewModel =
@@ -49,25 +51,37 @@ class SinglePostEditFragment : Fragment() {
                 it.getAllCities()
             }
         Log.d(TAG, "post: $post")
+        val endTime = System.nanoTime()
+        val elapsedTime = (endTime - startTime) / 1000000
+        Log.d(TAG, "onCreate function took $elapsedTime ms to execute")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentSinglePostEditBinding.inflate(inflater, container, false)
-
+        val startTime = System.nanoTime()
+        _binding = FragmentSinglePostEditBinding.inflate(inflater, container, false)
+        val endTime = System.nanoTime()
+        val elapsedTime = (endTime - startTime) / 1000000
+        Log.d(TAG, "onCreateView inflating function took $elapsedTime ms to execute ")
         setUpViews()
+
+
+
         initialiseViews(post)
+
 
         binding.update.setOnClickListener {
             update()
         }
 
+
         return binding.root
     }
 
     private fun update() {
+        val startTime = System.nanoTime()
         post.apply {
             viewModel.apply {
                 type = typeLd.value.toString()
@@ -108,9 +122,13 @@ class SinglePostEditFragment : Fragment() {
             }
         }
         viewModel.updatePost(post.id!!, post)
+        val endTime = System.nanoTime()
+        val elapsedTime = (endTime - startTime) / 1000000
+        Log.d(TAG, "update function took $elapsedTime ms to execute")
     }
 
     private fun initialiseViews(post: PostWithOwnerId) {
+        val startTime = System.nanoTime()
         binding.apply {
             //type chips
             when (post.type) {
@@ -204,9 +222,13 @@ class SinglePostEditFragment : Fragment() {
             }
 
         }
+        val endTime = System.nanoTime()
+        val elapsedTime = (endTime - startTime) / 1000000
+        Log.d(TAG, "initialiseViews function took $elapsedTime ms to execute")
     }
 
     private fun setUpViews() {
+        val startTime = System.nanoTime()
         binding.apply {
             viewModel.apply {
 
@@ -375,10 +397,13 @@ class SinglePostEditFragment : Fragment() {
             }
 
         }
-
+        val endTime = System.nanoTime()
+        val elapsedTime = (endTime - startTime) / 1000000
+        Log.d(TAG, "setUpViews function took $elapsedTime ms to execute")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val startTime = System.nanoTime()
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.apply {
@@ -418,8 +443,15 @@ class SinglePostEditFragment : Fragment() {
                 binding.update.isEnabled = isValid
             }
         }
+        val endTime = System.nanoTime()
+        val elapsedTime = (endTime - startTime) / 1000000
+        Log.d(TAG, "onViewCreated function took $elapsedTime ms to execute")
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     private fun updateValue(
         sourceText: CharSequence?,
         targetInput: TextInputEditText,

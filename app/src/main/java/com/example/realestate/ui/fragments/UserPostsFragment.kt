@@ -29,7 +29,8 @@ class UserPostsFragment : Fragment() {
         private const val TAG = "UserPostsFragment"
     }
 
-    private lateinit var binding: FragmentUserPostsBinding
+    private var _binding: FragmentUserPostsBinding? = null
+    private val binding get() = _binding!!
     private val postsAdapter = PostsAdapter(object : OnPostClickListener {
         override fun onClicked(post: PostWithOwnerId): Nothing? {
             navigateToPostEdit(post)
@@ -78,7 +79,7 @@ class UserPostsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentUserPostsBinding.inflate(inflater, container, false)
+        _binding = FragmentUserPostsBinding.inflate(inflater, container, false)
         binding.apply {
             userPostsRv.apply {
                 adapter = postsAdapter
@@ -158,6 +159,10 @@ class UserPostsFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     private fun navigateToPostEdit(post: PostWithOwnerId) {
         val action =
             UserPostsFragmentDirections.actionUserPostsFragmentToSinglePostEditFragment(post)

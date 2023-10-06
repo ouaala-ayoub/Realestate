@@ -25,7 +25,8 @@ class AddInfoFragment : Fragment() {
         private const val TAG = "AddInfoFragment"
     }
 
-    private lateinit var binding: FragmentAddInfoBinding
+    private var _binding: FragmentAddInfoBinding?=null
+    private val binding get() = _binding!!
     private val args: AddInfoFragmentArgs by navArgs()
     private val userId: String by lazy {
         args.userId
@@ -44,7 +45,7 @@ class AddInfoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentAddInfoBinding.inflate(inflater, container, false)
+       _binding = FragmentAddInfoBinding.inflate(inflater, container, false)
 
         //imitate back button from activity behaviour
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -140,5 +141,9 @@ class AddInfoFragment : Fragment() {
 //                e.isEnabled = !loading
 //            }
         }
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

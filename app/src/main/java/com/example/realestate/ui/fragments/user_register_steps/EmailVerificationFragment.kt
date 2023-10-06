@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.realestate.R
 import com.example.realestate.data.models.CurrentUser
@@ -27,7 +26,8 @@ class EmailVerificationFragment : Fragment() {
         private const val TAG = "EmailVerificationFragment"
     }
 
-    private lateinit var binding: FragmentEmailVerificationBinding
+    private var _binding: FragmentEmailVerificationBinding?=null
+    private val binding get() = _binding!!
     private val viewModel: EmailVerificationModel by lazy {
         EmailVerificationModel(
             UsersRepository(
@@ -64,7 +64,7 @@ class EmailVerificationFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentEmailVerificationBinding.inflate(inflater, container, false)
+        _binding = FragmentEmailVerificationBinding.inflate(inflater, container, false)
 
         binding.signInGoogle.setOnClickListener {
             viewModel.launchGmailAuth(signInLauncher)
@@ -87,6 +87,10 @@ class EmailVerificationFragment : Fragment() {
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.emailVerificationProgressbar.isVisible = loading
         }
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun goToAddData(userId: String) {

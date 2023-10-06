@@ -29,7 +29,8 @@ class ReportFragment : Fragment() {
         private const val TAG = "ReportFragment"
     }
 
-    private lateinit var binding: FragmentReportBinding
+    private var _binding: FragmentReportBinding?=null
+    private val binding get() = _binding!!
     private lateinit var reportModel: ReportModel
     private val args: PostNavArgs by navArgs()
     private val postId: String by lazy {
@@ -52,7 +53,7 @@ class ReportFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentReportBinding.inflate(inflater, container, false)
+        _binding = FragmentReportBinding.inflate(inflater, container, false)
 
         Log.d(TAG, "postId: $postId")
 
@@ -148,6 +149,10 @@ class ReportFragment : Fragment() {
 
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     private fun blockUi(loading: Boolean) {
         binding.apply {
             reasonsContainer.forEach { view ->

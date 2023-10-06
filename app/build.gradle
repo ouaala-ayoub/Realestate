@@ -10,6 +10,15 @@ android {
     namespace 'com.example.realestate'
     compileSdk 33
 
+    lintOptions {
+        // Enable or disable specific rules
+        disable 'UnusedResources'
+        enable 'RtlHardcoded'
+
+        // Set severity levels (error, warning, info, ignore)
+        check 'NewApi', 'Error'
+    }
+
     defaultConfig {
         applicationId "com.example.realestate"
         minSdk 24
@@ -49,6 +58,9 @@ android {
 }
 
 dependencies {
+
+    //test memory leaks
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
 
     //image picker
     implementation 'io.github.ParkSangGwon:tedimagepicker:1.4.2'

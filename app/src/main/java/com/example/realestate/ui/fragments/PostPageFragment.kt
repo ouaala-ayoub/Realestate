@@ -20,9 +20,7 @@ import com.eudycontreras.boneslibrary.extensions.disableSkeletonLoading
 import com.eudycontreras.boneslibrary.extensions.enableSkeletonLoading
 import com.example.realestate.PostNavArgs
 import com.example.realestate.R
-import com.example.realestate.data.models.ContactType
-import com.example.realestate.data.models.CurrentUser
-import com.example.realestate.data.models.Type
+import com.example.realestate.data.models.*
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.UsersRepository
@@ -42,7 +40,8 @@ class PostPageFragment : Fragment() {
         private const val TAG = "PostPageFragment"
     }
 
-    private lateinit var binding: FragmentPostPageBinding
+    private var _binding: FragmentPostPageBinding?=null
+    private val binding get() = _binding!!
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private lateinit var phoneNumber: String
     private lateinit var loginLauncher: ActivityResultLauncher<Intent>
@@ -115,7 +114,7 @@ class PostPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentPostPageBinding.inflate(inflater, container, false)
+        _binding = FragmentPostPageBinding.inflate(inflater, container, false)
 
         binding.reportButton.setOnClickListener {
 
@@ -131,18 +130,24 @@ class PostPageFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
         }
 
-
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         postPageModel.apply {
+
+
             post.observe(viewLifecycleOwner) { post ->
+                Log.d(TAG, "post: $post")
 
                 if (post != null) {
-                    Log.d(TAG, "post: $post")
+
+                    likes.observe(viewLifecycleOwner) { likes ->
+                        binding.numberOfLikes.text = formatNumberWithSpaces(likes)
+                        CurrentUser.getAuth()
+                    }
 
                     val contact = post.contact
                     val owner = post.owner
@@ -163,12 +168,33 @@ class PostPageFragment : Fragment() {
                         categoryTypeRv.defineField(
                             getString(
                                 R.string.category_type,
-                                post.category.upperFirstLetter(),
-                                post.type.upperFirstLetter()
+                                post.category,
+                                post.type
                             )
                         )
 
-                        numberOfLikes.text = formatNumberWithSpaces(post.likes)
+                        setLikes(post.likes)
+                        //Likes
+                        CurrentUser.observe(viewLifecycleOwner, object : OnChanged<User> {
+                            override fun onChange(data: User?) {
+                                val isChecked = data?.likes?.contains(post.id) == true
+                                addToFav.isChecked = isChecked
+                                addToFav.isEnabled = CurrentUser.isConnected()
+
+
+                            }
+
+                        })
+                        addToFav.setOnClickListener {
+                            val isChecked = CurrentUser.get()?.likes?.contains(post.id) == true
+                            if (CurrentUser.isConnected()) {
+                                if (isChecked) {
+                                    unlike(postId)
+                                } else {
+                                    like(postId)
+                                }
+                            }
+                        }
 
                         //handle price
                         when (post.type) {
@@ -300,6 +326,8 @@ class PostPageFragment : Fragment() {
         }
     }
 
+
+
     private fun handleUnsupportedAction() {
         requireContext().toast(
             getString(R.string.no_call_msg),
@@ -356,5 +384,9 @@ class PostPageFragment : Fragment() {
             putExtra(Intent.EXTRA_TEXT, deepLink)
         }
         startActivity(Intent.createChooser(shareIntent, "Share using"))
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

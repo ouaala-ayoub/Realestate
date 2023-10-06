@@ -1,8 +1,6 @@
 package com.example.realestate.ui.fragments.post_add_steps
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -10,10 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realestate.R
@@ -24,7 +19,6 @@ import com.example.realestate.ui.adapters.AddMoreClicked
 import com.example.realestate.ui.adapters.ImagesSelectAdapter
 import com.example.realestate.ui.viewmodels.postaddmodels.ImagesSelectModel
 import com.example.realestate.utils.*
-import com.google.android.material.snackbar.Snackbar
 import gun0912.tedimagepicker.builder.TedImagePicker
 import gun0912.tedimagepicker.builder.type.MediaType
 import java.util.concurrent.TimeUnit
@@ -36,7 +30,8 @@ class ImagesSelectFragment : FragmentStep() {
         private const val NUM_OF_COLUMNS = 3
     }
 
-    private lateinit var binding: FragmentImagesSelectBinding
+    private var _binding: FragmentImagesSelectBinding?=null
+    private val binding get() = _binding!!
     private lateinit var tedImagePicker: TedImagePicker.Builder
     private val viewModel: ImagesSelectModel = ImagesSelectModel()
     private val newImagesAdapter: ImagesSelectAdapter =
@@ -130,7 +125,7 @@ class ImagesSelectFragment : FragmentStep() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentImagesSelectBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentImagesSelectBinding.inflate(layoutInflater, container, false)
 
 
         binding.imagesRv.apply {
@@ -238,6 +233,10 @@ class ImagesSelectFragment : FragmentStep() {
         }
 
         return false // Media is invalid
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
 

@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.realestate.data.models.CountriesData
 import com.example.realestate.data.repositories.StaticDataRepository
-import com.example.realestate.ui.viewmodels.postaddmodels.StepThreeModel
 import com.example.realestate.utils.handleApiRequest
 
 open class CountriesModel(private val staticDataRepository: StaticDataRepository) : ViewModel() {
@@ -23,7 +22,7 @@ open class CountriesModel(private val staticDataRepository: StaticDataRepository
     val countries: LiveData<CountriesData?>
         get() = getCountries()
 
-    private fun getCountries(): MutableLiveData<CountriesData?> {
+    fun getCountries(): MutableLiveData<CountriesData?> {
         handleApiRequest(staticDataRepository.getCountries(), null, _countries, TAG)
         return _countries
     }
