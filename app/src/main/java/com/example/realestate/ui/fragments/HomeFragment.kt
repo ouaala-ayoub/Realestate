@@ -8,10 +8,8 @@ import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.SearchView
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.ViewCompat
-import androidx.core.view.children
-import androidx.core.view.forEach
-import androidx.core.view.isVisible
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater
+import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,13 +36,14 @@ class HomeFragment : Fragment(), ActivityResultListener {
         var count = 0
     }
 
+    private lateinit var asyncInflater: AsyncLayoutInflater
     private var isUserClick = false
     private var firstTime = true
     private var recyclerViewState: Parcelable? = null
     private var countryAdapter: ArrayAdapter<String?>? = null
     private var _binding: FragmentHomeModifiedBinding? = null
     private val binding get() = _binding!!
-    private lateinit var postsAdapter: PostsAdapter
+    private var postsAdapter: PostsAdapter? = null
     private lateinit var searchParams: SearchParams
     private var selectedOption: RadioButton? = null
     private var selectedChipId: Int = -1
@@ -79,23 +78,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
         activity.setActivityResultListener(this)
 
 
-        postsAdapter = PostsAdapter(
-            object : OnPostClickListener {
-                override fun onClick(postId: String): Nothing? {
-                    goToPostFragment(postId)
-                    return super.onClick(postId)
-                }
-            },
-            object : OnAddToFavClicked {
-                override fun onChecked(postId: String) {
-                    viewModel.unlike(postId)
-                }
-
-                override fun onUnChecked(postId: String) {
-                    viewModel.like(postId)
-                }
-            }
-        )
     }
 
     override fun onCreateView(
@@ -103,8 +85,8 @@ class HomeFragment : Fragment(), ActivityResultListener {
         savedInstanceState: Bundle?
     ): View {
         val startTime = System.nanoTime()
-        _binding = FragmentHomeModifiedBinding.inflate(inflater, container, false)
-
+        val dummyView = inflater.inflate(R.layout.loading_screen, container, false)
+        asyncInflater = AsyncLayoutInflater(requireContext())
         //back button handling
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -135,110 +117,97 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
 
             })
+        postsAdapter = PostsAdapter(
+            object : OnPostClickListener {
+                override fun onClick(postId: String): Nothing? {
+                    goToPostFragment(postId)
+                    return super.onClick(postId)
+                }
+            },
+            object : OnAddToFavClicked {
+                override fun onChecked(postId: String) {
+                    viewModel.unlike(postId)
+                }
 
-
-//        val countryPicker = binding.countryPicker
+                override fun onUnChecked(postId: String) {
+                    viewModel.like(postId)
+                }
+            }
+        )
         searchParams.location?.country =
             CountriesDataItem(
 //                name = countryPicker.selectedCountryName,
 //                code = countryPicker.selectedCountryNameCode
             )
 
-        binding.apply {
+        asyncInflater.inflate(R.layout.fragment_home_modified, null) { inflatedView, _, _ ->
+            _binding = FragmentHomeModifiedBinding.bind(inflatedView)
+            if (view != null) {
+                binding.apply {
 
-            selectedChipId = binding.all.id
-            handleChips()
+                    selectedChipId = binding.all.id
+                    handleChips()
 
-            //default selected chip
+                    //default selected chip
 //            binding.all.performClick()
 
-            handleSearch()
+                    handleSearch()
 
-            //handle swipe gesture
-            swipeRefreshLayout.setOnRefreshListener {
-                searchParams = SearchParams()
-                refreshEveryView()
-                viewModel.getPosts(
-                    searchParams,
-                    source = "swipeRefreshLayout.setOnRefreshListener",
-                )
-                if (viewModel.categoriesList.value.isNullOrEmpty()) {
-                    viewModel.getCategories()
-                }
-                if ((requireActivity() as MainActivity).countriesModel.countries.value.isNullOrEmpty()) {
-                    (requireActivity() as MainActivity).countriesModel.getCountries()
-                }
-            }
-
-            //disable swipe refresh if not on top
-            scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-                val isAtTop = scrollY == 0
-                val contentHeight = scrollView.getChildAt(0).height
-                val scrollViewHeight = scrollView.height
-                val isAtBottom = scrollY >= contentHeight - scrollViewHeight
-
-                swipeRefreshLayout.isEnabled =
-                    isAtTop && !postRv.canScrollVertically(-1)
-
-                if (isAtBottom) {
-                    // Reached the bottom of the ScrollView
-                    if (viewModel.isProgressBarTurning.value != true && viewModel.shouldVeil.value != true) {
+                    //handle swipe gesture
+                    swipeRefreshLayout.setOnRefreshListener {
+                        searchParams = SearchParams()
+                        refreshEveryView()
                         viewModel.getPosts(
                             searchParams,
-                            "onScrollStateChanged",
-                            shouldVeil = false,
-                            override = false
+                            source = "swipeRefreshLayout.setOnRefreshListener",
                         )
+                        if (viewModel.categoriesList.value.isNullOrEmpty()) {
+                            viewModel.getCategories()
+                        }
+                        if ((requireActivity() as MainActivity).countriesModel.countries.value.isNullOrEmpty()) {
+                            (requireActivity() as MainActivity).countriesModel.getCountries()
+                        }
                     }
 
+                    //disable swipe refresh if not on top
+                    scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+                        val isAtTop = scrollY == 0
+                        val contentHeight = scrollView.getChildAt(0).height
+                        val scrollViewHeight = scrollView.height
+                        val isAtBottom = scrollY >= contentHeight - scrollViewHeight
+
+                        swipeRefreshLayout.isEnabled =
+                            isAtTop && !postRv.canScrollVertically(-1)
+
+                        if (isAtBottom) {
+                            // Reached the bottom of the ScrollView
+                            if (viewModel.isProgressBarTurning.value != true && viewModel.shouldVeil.value != true) {
+                                viewModel.getPosts(
+                                    searchParams,
+                                    "onScrollStateChanged",
+                                    shouldVeil = false,
+                                    override = false
+                                )
+                            }
+
+                        }
+
+                    }
+                }
+                (dummyView as ViewGroup).apply {
+                    removeAllViews()
+                    addView(binding.root)
                 }
 
-            }
-        }
-        val endTime = System.nanoTime()
-        val elapsedTime = (endTime - startTime) / 1000000
-        Log.d(TAG, "onCreateView function took $elapsedTime ms to execute")
-
-        return binding.root
-    }
-
-    private fun refreshEveryView() {
-        binding.apply {
-            //default button
-            if (selectedChipId != -1) {
-                //unselect last selected chip
-                val previousChip = requireActivity().findViewById<Chip>(selectedChipId)
-                previousChip.apply {
-                    isChecked = false
-                    isEnabled = true
-                }
-                //select all chip
-                selectedChipId = binding.all.id
-                binding.all.apply {
-                    isChecked = true
-                    isEnabled = false
-                }
-            }
-
-            //back to all countries
-            //TODO maybe to change to the country auto detected
-            if (countryEditText.text.toString().isNotEmpty()) {
-                countryEditText.setText(countryAdapter?.getItem(0), false)
-                countryAdapter?.filter?.filter(null)
-            }
-
-            //clear selection
-            categoriesChipGroup.forEach { view ->
-                val radioButton = view as RadioButton
-                radioButton.isChecked = false
+                handleLogic()
             }
 
         }
+
+        return dummyView
     }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun handleLogic() {
         binding.postRv.apply {
             setAdapter(postsAdapter)
             setLayoutManager(LinearLayoutManager(requireContext()))
@@ -257,7 +226,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
                 if (data != null) {
                     Countries.set(data)
-                    postsAdapter.setCountriesData(data)
+                    postsAdapter?.setCountriesData(data)
                     val countries = data.toMutableList().also {
                         it.add(0, CountriesDataItem(name = getString(R.string.all)))
                     }
@@ -305,7 +274,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 Log.d(TAG, "user: $user")
                 CurrentUser.set(user)
                 if (user != null)
-                    postsAdapter.setLiked(user.likes)
+                    postsAdapter?.setLiked(user.likes)
             }
 
             //handle error message
@@ -415,7 +384,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
 //                    recyclerViewState =
 //                        binding.postRv.getRecyclerView().layoutManager?.onSaveInstanceState()
-                    postsAdapter.setPostsList(posts)
+                    postsAdapter?.setPostsList(posts)
                     binding.postRv.getRecyclerView().layoutManager?.onRestoreInstanceState(
                         recyclerViewState
                     )
@@ -424,6 +393,47 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
             }
         }
+    }
+
+    private fun refreshEveryView() {
+        binding.apply {
+            //default button
+            if (selectedChipId != -1) {
+                //unselect last selected chip
+                val previousChip = requireActivity().findViewById<Chip>(selectedChipId)
+                previousChip.apply {
+                    isChecked = false
+                    isEnabled = true
+                }
+                //select all chip
+                selectedChipId = binding.all.id
+                binding.all.apply {
+                    isChecked = true
+                    isEnabled = false
+                }
+            }
+
+            //back to all countries
+            //TODO maybe to change to the country auto detected
+            if (countryEditText.text.toString().isNotEmpty()) {
+                countryEditText.setText(countryAdapter?.getItem(0), false)
+                countryAdapter?.filter?.filter(null)
+            }
+
+            //clear selection
+            if (!viewModel.categoriesList.value.isNullOrEmpty()) {
+                categoriesChipGroup.forEach { view ->
+                    val radioButton = view as RadioButton
+                    radioButton.isChecked = false
+                }
+            }
+        }
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
 
     }
 
@@ -541,10 +551,6 @@ class HomeFragment : Fragment(), ActivityResultListener {
             viewModel.getPosts(searchParams, source = "onChipClicked")
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     private fun handleChips() {
 
         for (chip in binding.chips.children) {
@@ -619,9 +625,21 @@ class HomeFragment : Fragment(), ActivityResultListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        recyclerViewState =
-            binding.postRv.getRecyclerView().layoutManager?.onSaveInstanceState()
+        if (_binding != null) {
+            recyclerViewState =
+                binding.postRv.getRecyclerView().layoutManager?.onSaveInstanceState()
+        }
+
+        postsAdapter = null
+        selectedOption = null
+
+        //TODO fix this dark theme bug
         _binding = null
+    }
+
+    override fun onStop() {
+        super.onStop()
+        firstTime = true
     }
 
     private fun initialiseTypeChips(type: String?) {
@@ -644,8 +662,5 @@ class HomeFragment : Fragment(), ActivityResultListener {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        firstTime = true
-    }
+
 }

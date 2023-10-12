@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragments.SinglePostEditFragment">
+
+    <Button
+        android:id="@+id/update"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="@string/update"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/post_edit_progress_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
+
+<!--    <androidx.core.widget.NestedScrollView-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:fillViewport="true"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/update"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.5"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
+
+
+<!--        &lt;!&ndash;            <include&ndash;&gt;-->
+<!--        &lt;!&ndash;                android:id="@+id/step_two_layout"&ndash;&gt;-->
+<!--        &lt;!&ndash;                layout="@layout/step_two_layout" />&ndash;&gt;-->
+
+<!--        &lt;!&ndash;            <include&ndash;&gt;-->
+<!--        &lt;!&ndash;                android:id="@+id/step_three_layout"&ndash;&gt;-->
+<!--        &lt;!&ndash;                layout="@layout/step_three_layout" />&ndash;&gt;-->
+
+<!--        &lt;!&ndash;            <include android:id="@+id/details_layout"&ndash;&gt;-->
+<!--        &lt;!&ndash;                android:visibility="gone"&ndash;&gt;-->
+<!--        &lt;!&ndash;                layout="@layout/details_layout"/>&ndash;&gt;-->
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/linear_layout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="10dp"-->
+<!--            android:gravity="center"-->
+<!--            android:orientation="vertical">-->
+
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="10dp"-->
+<!--                android:orientation="horizontal">-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_marginStart="10dp"-->
+<!--                    android:layout_marginEnd="10dp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:text="@string/type"-->
+<!--                    android:textColor="@color/yellow"-->
+<!--                    android:textSize="18sp"-->
+<!--                    android:textStyle="bold" />-->
+
+<!--                <com.google.android.material.chip.ChipGroup-->
+<!--                    android:id="@+id/chips"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintHorizontal_bias="0.5"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:selectionRequired="true"-->
+<!--                    app:singleSelection="true">-->
+
+<!--                    <com.google.android.material.chip.Chip-->
+<!--                        android:id="@+id/rent"-->
+<!--                        style="@style/ChipStyle"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_margin="2dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:checkable="true"-->
+<!--                        android:elevation="2dp"-->
+<!--                        android:gravity="center"-->
+<!--                        android:text="@string/rent"-->
+<!--                        android:textAlignment="center" />-->
+
+<!--                    <com.google.android.material.chip.Chip-->
+<!--                        android:id="@+id/for_sell"-->
+<!--                        style="@style/ChipStyle"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_margin="2dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:checkable="true"-->
+<!--                        android:elevation="2dp"-->
+<!--                        android:gravity="center"-->
+<!--                        android:text="@string/sell"-->
+<!--                        android:textAlignment="center" />-->
+
+
+<!--                </com.google.android.material.chip.ChipGroup>-->
+<!--            </LinearLayout>-->
+
+<!--            &lt;!&ndash;            <com.google.android.material.textfield.TextInputLayout&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:id="@+id/categoryTextField"&ndash;&gt;-->
+<!--            &lt;!&ndash;                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_width="match_parent"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_height="wrap_content"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_marginBottom="10dp"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:hint="@string/category"&ndash;&gt;-->
+<!--            &lt;!&ndash;                app:helperText="@string/required"&ndash;&gt;-->
+<!--            &lt;!&ndash;                app:helperTextTextColor="@color/red">&ndash;&gt;-->
+
+<!--            &lt;!&ndash;                <com.google.android.material.textfield.MaterialAutoCompleteTextView&ndash;&gt;-->
+<!--            &lt;!&ndash;                    android:id="@+id/categoryEditText"&ndash;&gt;-->
+<!--            &lt;!&ndash;                    android:layout_width="match_parent"&ndash;&gt;-->
+<!--            &lt;!&ndash;                    android:layout_height="wrap_content"&ndash;&gt;-->
+<!--            &lt;!&ndash;                    android:inputType="text"&ndash;&gt;-->
+<!--            &lt;!&ndash;                    android:lines="1"&ndash;&gt;-->
+<!--            &lt;!&ndash;                    android:textStyle="bold" />&ndash;&gt;-->
+<!--            &lt;!&ndash;            </com.google.android.material.textfield.TextInputLayout>&ndash;&gt;-->
+
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/priceTextField"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="10dp"-->
+<!--                android:hint="@string/price_et"-->
+<!--                app:helperText="@string/required"-->
+<!--                app:helperTextTextColor="@color/red">-->
+
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/priceEditText"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="number"-->
+<!--                    android:lines="1"-->
+<!--                    android:textStyle="bold" />-->
+
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="start"-->
+<!--                android:layout_marginStart="10dp"-->
+<!--                android:layout_marginEnd="0dp"-->
+<!--                android:text="@string/period"-->
+<!--                android:textColor="@color/yellow"-->
+<!--                android:textSize="18sp"-->
+<!--                android:textStyle="bold" />-->
+
+<!--            <RadioGroup-->
+<!--                android:id="@+id/period_rg"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:checkedButton="@id/none"-->
+<!--                android:orientation="horizontal">-->
+
+<!--                <RadioButton-->
+<!--                    android:id="@+id/daily"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="@string/daily" />-->
+
+<!--                <RadioButton-->
+<!--                    android:id="@+id/monthly"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="@string/monthly" />-->
+
+<!--                <RadioButton-->
+<!--                    android:id="@+id/yearly"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="@string/yearly" />-->
+
+<!--            </RadioGroup>-->
+
+<!--&lt;!&ndash;            <include&ndash;&gt;-->
+<!--&lt;!&ndash;                android:id="@+id/phone_number"&ndash;&gt;-->
+<!--&lt;!&ndash;                layout="@layout/phone_number_layout" />&ndash;&gt;-->
+
+<!--&lt;!&ndash;            <LinearLayout&ndash;&gt;-->
+<!--&lt;!&ndash;                android:id="@+id/type"&ndash;&gt;-->
+<!--&lt;!&ndash;                android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                android:layout_height="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                android:orientation="horizontal">&ndash;&gt;-->
+
+<!--&lt;!&ndash;                <CheckBox&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:id="@+id/whatsapp"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_width="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_weight="1"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:drawableTint="@color/green_whatsapp"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:drawableStart="@drawable/icon" />&ndash;&gt;-->
+
+<!--&lt;!&ndash;                <CheckBox&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:id="@+id/call"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_width="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_weight="1"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:drawableTint="@color/colorText"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:drawableStart="@drawable/baseline_call_24"/>&ndash;&gt;-->
+
+
+<!--&lt;!&ndash;            </LinearLayout>&ndash;&gt;-->
+
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/countryTextField"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:layout_marginBottom="10dp"-->
+<!--                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"-->
+<!--                android:hint="@string/country"-->
+<!--                app:helperText="@string/required"-->
+<!--                app:helperTextTextColor="@color/red">-->
+
+<!--                <com.google.android.material.textfield.MaterialAutoCompleteTextView-->
+<!--                    android:id="@+id/countryEditText"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="text"-->
+<!--                    android:lines="1"-->
+<!--                    android:textStyle="bold" />-->
+
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/cityTextField"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="10dp"-->
+<!--                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"-->
+<!--                android:hint="@string/city"-->
+<!--                app:helperText="@string/required"-->
+<!--                app:helperTextTextColor="@color/red">-->
+
+<!--                <com.google.android.material.textfield.MaterialAutoCompleteTextView-->
+<!--                    android:id="@+id/cityEditText"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="text"-->
+<!--                    android:lines="1"-->
+<!--                    android:textStyle="bold" />-->
+
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/streetTextField"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"-->
+<!--                android:layout_marginBottom="10dp"-->
+<!--                android:hint="@string/street">-->
+
+<!--                <com.google.android.material.textfield.MaterialAutoCompleteTextView-->
+<!--                    android:id="@+id/streetEditText"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="text"-->
+<!--                    android:lines="1"-->
+<!--                    android:textStyle="bold" />-->
+
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--            &lt;!&ndash;            <TextView&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:id="@+id/textView4"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_width="match_parent"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_height="wrap_content"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:gravity="center"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:text="@string/or"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:textSize="16sp"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:textStyle="bold" />&ndash;&gt;-->
+
+<!--            &lt;!&ndash;            <Button&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:id="@+id/get_location"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_width="match_parent"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_height="wrap_content"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_marginTop="5dp"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_marginBottom="5dp"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:text="@string/automatically_get_location"&ndash;&gt;-->
+<!--            &lt;!&ndash;                app:icon="@drawable/baseline_location_on_24" />&ndash;&gt;-->
+
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/descriptionTextField"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="10dp"-->
+<!--                android:hint="@string/add_description"-->
+<!--                app:helperText="@string/required"-->
+<!--                app:helperTextTextColor="@color/red">-->
+
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/descriptionEditText"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:gravity="top"-->
+<!--                    android:lines="5"-->
+<!--                    android:textStyle="bold" />-->
+
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--&lt;!&ndash;            <include&ndash;&gt;-->
+<!--&lt;!&ndash;                android:id="@+id/details_layout"&ndash;&gt;-->
+<!--&lt;!&ndash;                layout="@layout/details_layout"&ndash;&gt;-->
+<!--&lt;!&ndash;                android:visibility="gone" />&ndash;&gt;-->
+
+<!--        </LinearLayout>-->
+<!--    </androidx.core.widget.NestedScrollView>-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,6 +19,7 @@ import com.example.realestate.data.models.PostWithOwnerId
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.databinding.FragmentUserPostsBinding
+import com.example.realestate.ui.adapters.PostEditAdapter
 import com.example.realestate.ui.adapters.PostsAdapter
 import com.example.realestate.ui.viewmodels.UserPostsViewModel
 import com.example.realestate.utils.*
@@ -31,55 +32,66 @@ class UserPostsFragment : Fragment() {
 
     private var _binding: FragmentUserPostsBinding? = null
     private val binding get() = _binding!!
-    private val postsAdapter = PostsAdapter(object : OnPostClickListener {
-        override fun onClicked(post: PostWithOwnerId): Nothing? {
-            navigateToPostEdit(post)
-            return super.onClicked(post)
+    private val onChanged = object : OnChanged<CountriesData> {
+        override fun onChange(data: CountriesData?) {
+            postsAdapter?.setCountriesData(data)
         }
-
-        override fun onDeleteClicked(postId: String, position: Int): Nothing? {
-            val dialog = makeDialog(
-                requireContext(),
-                object : OnDialogClicked {
-                    override fun onPositiveButtonClicked() {
-                        viewModel.deletePost(postId, position)
-                    }
-
-                    override fun onNegativeButtonClicked() {}
-
-                },
-                getString(R.string.delete_title),
-                getString(R.string.delete_message),
-                negativeText = getString(R.string.No),
-                positiveText = getString(R.string.Yes)
-            )
-
-            dialog.apply {
-                show()
-                separateButtonsBy(15)
-            }
-
-
-            return super.onDeleteClicked(postId, position)
-        }
-
-        override fun setOutOfOrder(postId: String, position: Int, outOfOrder: Boolean): Nothing? {
-            viewModel.setOutOfOrder(postId, position, outOfOrder)
-            return super.setOutOfOrder(postId, position, outOfOrder)
-        }
-
-    }, isEdit = true)
+    }
     private var viewModel: UserPostsViewModel =
         UserPostsViewModel(PostsRepository(Retrofit.getInstance())).also {
-            val userId = CurrentUser.get()?.id!!
-            it.getUserPosts(userId)
+            CurrentUser.get()?.apply {
+                it.getUserPosts(this.id!!)
+            }
         }
+    private var postsAdapter: PostEditAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentUserPostsBinding.inflate(inflater, container, false)
+        postsAdapter = PostEditAdapter(object : OnPostClickListener {
+            override fun onClicked(post: PostWithOwnerId): Nothing? {
+                navigateToPostEdit(post)
+                return super.onClicked(post)
+            }
+
+            override fun onDeleteClicked(postId: String, position: Int): Nothing? {
+                val dialog = makeDialog(
+                    requireContext(),
+                    object : OnDialogClicked {
+                        override fun onPositiveButtonClicked() {
+                            viewModel.deletePost(postId, position)
+                        }
+
+                        override fun onNegativeButtonClicked() {}
+
+                    },
+                    getString(R.string.delete_title),
+                    getString(R.string.delete_message),
+                    negativeText = getString(R.string.No),
+                    positiveText = getString(R.string.Yes)
+                )
+
+                dialog.apply {
+                    show()
+                    separateButtonsBy(15)
+                }
+
+
+                return super.onDeleteClicked(postId, position)
+            }
+
+            override fun setOutOfOrder(
+                postId: String,
+                position: Int,
+                outOfOrder: Boolean
+            ): Nothing? {
+                viewModel.setOutOfOrder(postId, position, outOfOrder)
+                return super.setOutOfOrder(postId, position, outOfOrder)
+            }
+
+        })
         binding.apply {
             userPostsRv.apply {
                 adapter = postsAdapter
@@ -100,17 +112,23 @@ class UserPostsFragment : Fragment() {
                 }
 
                 fun filter(query: String?) {
-                    postsAdapter.filter.filter(query.orEmpty())
+                    postsAdapter?.filter?.filter(query.orEmpty())
                 }
             })
 
-            swipeRefresh.setOnRefreshListener {
-                val userId = CurrentUser.get()?.id!!
-                viewModel.getUserPosts(userId)
+            swipeRefreshUserPosts.setOnRefreshListener {
+                getUserPosts()
             }
         }
 
         return binding.root
+    }
+
+    private fun getUserPosts() {
+        CurrentUser.get()?.apply {
+            viewModel.getUserPosts(this.id!!)
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -120,7 +138,6 @@ class UserPostsFragment : Fragment() {
                 it.observeLiveDataList(object : OnChanged<Int> {
                     override fun onChange(data: Int?) {
                         Log.i(TAG, "deleted element at position : $data")
-//                        setIsEmpty(posts.value.isNullOrEmpty())
                         deleteElementAt(data!!)
                     }
                 })
@@ -134,18 +151,15 @@ class UserPostsFragment : Fragment() {
                     }
                 })
             }
-            Countries.observe(viewLifecycleOwner, object : OnChanged<CountriesData> {
-                override fun onChange(data: CountriesData?) {
-                    postsAdapter.setCountriesData(data)
-                }
-            })
-            posts.observe(viewLifecycleOwner) { posts ->
+            Countries.observe(this@UserPostsFragment, onChanged)
+            posts.observe(this@UserPostsFragment) { posts ->
+                Log.d(TAG, "posts: $posts")
                 if (posts != null) {
-                    binding.swipeRefresh.isRefreshing = false
+                    binding.swipeRefreshUserPosts.isRefreshing = false
                     setDeletedList(posts.size)
                     setOutOfOrderSet(posts.size)
                     setIsEmpty(posts.isEmpty())
-                    postsAdapter.setPostsList(posts)
+                    postsAdapter?.setPostsList(posts)
                 } else {
                     requireActivity().doOnFail()
                 }
@@ -161,8 +175,11 @@ class UserPostsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        postsAdapter = null
         _binding = null
+        Countries.remove(onChanged)
     }
+
     private fun navigateToPostEdit(post: PostWithOwnerId) {
         val action =
             UserPostsFragmentDirections.actionUserPostsFragmentToSinglePostEditFragment(post)

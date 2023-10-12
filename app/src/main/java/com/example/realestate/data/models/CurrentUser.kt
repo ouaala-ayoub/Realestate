@@ -10,9 +10,9 @@ import com.example.realestate.utils.handleApiRequest
 class CurrentUser {
     companion object {
         private var liveData: MutableLiveData<User?> = MutableLiveData<User?>()
-        private const val name = "user"
-        private const val keyRes = R.string.cookie_token
-        val prefs = PrefsCRUD(name, keyRes)
+//        private const val name = "user"
+//        private const val keyRes = R.string.cookie_token
+//        val prefs = PrefsCRUD(name, keyRes)
 
         fun getAuth(){
             handleApiRequest(Retrofit.getInstance().getAuth(), null, liveData, TAG)
@@ -25,7 +25,7 @@ class CurrentUser {
 
         fun logout() {
             liveData.postValue(null)
-            prefs.delete()
+//            prefs.delete()
         }
 
         fun observe(lifecycleOwner: LifecycleOwner, onChanged: OnChanged<User>) {

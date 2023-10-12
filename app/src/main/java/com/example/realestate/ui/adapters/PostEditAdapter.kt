@@ -1,6 +1,5 @@
 package com.example.realestate.ui.adapters
 
-import android.content.pm.ApplicationInfo
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,36 +11,28 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.realestate.R
-import com.example.realestate.data.models.*
-import com.example.realestate.databinding.SinglePostBinding
+import com.example.realestate.data.models.CountriesData
+import com.example.realestate.data.models.PostStatus
+import com.example.realestate.data.models.PostWithOwnerId
+import com.example.realestate.data.models.Type
+import com.example.realestate.databinding.SinglePostEditBinding
 import com.example.realestate.utils.*
 
-class PostsAdapter(
-
-
+class PostEditAdapter(
     private val postClickListener: OnPostClickListener,
-    private val addToFavClicked: OnAddToFavClicked? = null,
+) : RecyclerView.Adapter<PostEditAdapter.PostEditHolder>(), Filterable {
 
-    ) : RecyclerView.Adapter<PostsAdapter.PostHolder>(), Filterable {
     companion object {
-        const val TAG = "PostAdapter"
+        const val TAG = "PostEditAdapter"
     }
 
     private var postsList: MutableList<PostWithOwnerId> = mutableListOf()
     private var filteredList: List<PostWithOwnerId> = postsList
-
-    //    private var postsList: MutableList<PostWithOwnerId> = mutableListOf()
-//    private var postsListFull: MutableList<PostWithOwnerId> = postsList
-    private var favourites: MutableList<String> = mutableListOf()
     private var countriesData: CountriesData? = null
+
     fun setPostsList(list: List<PostWithOwnerId>) {
         postsList = list.toMutableList()
         filteredList = postsList
-        notifyDataSetChanged()
-    }
-
-    fun setLiked(list: List<String>) {
-        favourites = list.toMutableList()
         notifyDataSetChanged()
     }
 
@@ -50,73 +41,55 @@ class PostsAdapter(
         notifyDataSetChanged()
     }
 
-    inner class PostHolder(private val binding: SinglePostBinding) :
+    inner class PostEditHolder(private val binding: SinglePostEditBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
         private val detailsShortAdapter = DetailsShortAdapter()
         fun bind(position: Int) {
             val currentPost = filteredList[position]
             val context = binding.root.context
-            val isChecked = currentPost.id in favourites
             val countryData =
                 countriesData?.find { country -> country.name == currentPost.location.country }
+            val price = formatNumberWithCommas(currentPost.price.toDouble())
 
             binding.apply {
-
-
-                postWhole.setOnClickListener {
-                    postClickListener.onClick(currentPost.id!!)
-                }
-
-                //load the first image if nothing found load first media
-                val firstImage =
-                    currentPost.media.find { image ->
-                        getMediaType(
-                            image,
-                            TAG
-                        ) == MediaType.IMAGE
+                postWhole.apply {
+                    setOnClickListener {
+                        postClickListener.onClicked(currentPost)
                     }
-
-                if (firstImage != null) {
-                    postImage.loadImage(firstImage)
-                } else {
-                    if (currentPost.media.isNotEmpty()) {
-                        postImage.loadImage(currentPost.media[0])
+                    // Handle long press to show the menu
+                    setOnLongClickListener {
+                        showPopUpMenu(moreIcon, position)
+                        true
                     }
                 }
 
+                approveStatusTv.text = currentPost.status
+                moreIcon.setOnClickListener {
+                    showPopUpMenu(it, position)
+                }
+                if (currentPost.media.isNotEmpty()) {
+                    postImage.loadImage(currentPost.media[0])
+                }
                 outOfOrder.isVisible = currentPost.status == PostStatus.OUT_OF_ORDER.value
-
-                postInfo.apply {
-                    defineField(
-                        context.getString(
-                            R.string.category_type,
-                            currentPost.category.upperFirstLetter(),
-                            currentPost.type.upperFirstLetter()
-                        )
-                    )
-                }
-                when (currentPost.type) {
+                val priceToShow = when (currentPost.type) {
                     Type.RENT.value -> {
-                        val toShow = context.getString(
+                        context.getString(
                             R.string.price_rent,
                             formatNumberWithCommas(currentPost.price.toDouble()),
                             currentPost.period
                         )
-                        postPrice.defineField(
-                            toShow
-                        )
                     }
                     else -> {
-                        val toShow = context.getString(
+                        context.getString(
                             R.string.price,
                             formatNumberWithCommas(currentPost.price.toDouble())
                         )
-                        postPrice.defineField(
-                            toShow
-                        )
                     }
                 }
+                postPrice.defineField(
+                    priceToShow
+                )
+
                 currentPost.location.apply {
                     countryFlag.loadImage(countryData?.image)
                     postLocation.text =
@@ -127,29 +100,6 @@ class PostsAdapter(
                             area,
                         )
                 }
-
-                //favourites button
-
-                addToFav.isChecked = isChecked
-                addToFav.setOnClickListener {
-
-                    val userConnected = CurrentUser.isConnected()
-//                    val userId = CurrentUser.prefs.get()
-                    val postId = currentPost.id!!
-
-                    if (userConnected) {
-                        if (isChecked) {
-                            addToFavClicked?.onChecked(postId)
-                        } else {
-                            addToFavClicked?.onUnChecked(postId)
-                        }
-
-                    } else {
-                        addToFav.isEnabled = false
-                    }
-
-                }
-
 
                 val features = currentPost.features
                 if (features != null) {
@@ -174,9 +124,9 @@ class PostsAdapter(
                     R.id.action_set_out_of_order -> {
                         // Handle edit action
                         // You can implement your edit logic here
-                        Log.d(TAG, "action_set_out_of_order")
+                        Log.d(PostsAdapter.TAG, "action_set_out_of_order")
                         if (currentPost.status == PostStatus.OUT_OF_ORDER.value || currentPost.status == PostStatus.APPROVED.value) {
-                            Log.d(TAG, "status valid : yes")
+                            Log.d(PostsAdapter.TAG, "status valid : yes")
                             postClickListener.setOutOfOrder(
                                 currentPost.id!!,
                                 position,
@@ -190,7 +140,7 @@ class PostsAdapter(
                     R.id.action_delete -> {
                         // Handle delete action
                         // You can implement your delete logic here
-                        Log.d(TAG, "action_delete")
+                        Log.d(PostsAdapter.TAG, "action_delete")
                         postClickListener.onDeleteClicked(currentPost.id!!, position)
                         true
                     }
@@ -200,22 +150,19 @@ class PostsAdapter(
 
             popupMenu.show()
         }
-
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostHolder {
-        return PostHolder(
-            SinglePostBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostEditHolder {
+        return PostEditHolder(
+            SinglePostEditBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
 
     override fun getItemCount() = filteredList.size
 
-    override fun onBindViewHolder(holder: PostHolder, position: Int) {
+    override fun onBindViewHolder(holder: PostEditHolder, position: Int) {
         holder.bind(position)
     }
 

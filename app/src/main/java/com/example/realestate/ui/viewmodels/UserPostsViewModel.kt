@@ -1,5 +1,6 @@
 package com.example.realestate.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -75,13 +76,14 @@ class UserPostsViewModel(private val repository: PostsRepository) : ViewModel() 
     fun setOutOfOrder(position: Int) {
         val list = _posts.value
         val current = list?.get(position)
+        Log.d(TAG, "current: ${current?.status}")
         current?.apply {
-            when (current.status) {
+            status = when (status) {
                 PostStatus.APPROVED.value -> {
-                    current.status = PostStatus.OUT_OF_ORDER.value
+                    PostStatus.OUT_OF_ORDER.value
                 }
                 PostStatus.OUT_OF_ORDER.value -> {
-                    current.status = PostStatus.APPROVED.value
+                    PostStatus.APPROVED.value
                 }
                 else -> {
                     return

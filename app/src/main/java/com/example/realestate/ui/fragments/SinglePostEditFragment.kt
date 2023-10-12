@@ -2,7 +2,6 @@ package com.example.realestate.ui.fragments
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,19 +9,24 @@ import android.widget.CheckBox
 import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.realestate.R
 import com.example.realestate.data.models.*
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.PostsRepository
 import com.example.realestate.data.repositories.StaticDataRepository
+import com.example.realestate.databinding.DetailsLayoutBinding
 import com.example.realestate.databinding.FragmentSinglePostEditBinding
 import com.example.realestate.ui.viewmodels.SinglePostEditViewModel
 import com.example.realestate.utils.*
 import com.google.android.material.textfield.TextInputEditText
+
 
 class SinglePostEditFragment : Fragment() {
 
@@ -31,12 +35,32 @@ class SinglePostEditFragment : Fragment() {
     }
 
     private var isConverting: Boolean = false
-    private var _binding: FragmentSinglePostEditBinding?=null
+    private var _binding: FragmentSinglePostEditBinding? = null
     private val binding get() = _binding!!
+    private var _detailsBinding: DetailsLayoutBinding? = null
+    private val detailsBinding get() = _detailsBinding!!
     private lateinit var viewModel: SinglePostEditViewModel
     private val retrofit = Retrofit.getInstance()
     private val args: SinglePostEditFragmentArgs by navArgs()
     private lateinit var post: PostWithOwnerId
+    private val onChanged = object : OnChanged<CountriesData> {
+        override fun onChange(data: CountriesData?) {
+            data?.apply {
+                val countries = map { data -> data.name }
+                binding.countryEditText.apply {
+                    val adapter = setUpAndHandleSearch(countries)
+                    updateLiveData(viewModel.mutableCountry)
+                    setOnItemClickListener { _, view, _, _ ->
+                        val text = (view as TextView).text
+                        adapter.filter.filter(null)
+                        viewModel.getCities(text.toString())
+                        binding.cityEditText.text.clear()
+                    }
+                }
+            }
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val startTime = System.nanoTime()
@@ -60,24 +84,37 @@ class SinglePostEditFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val startTime = System.nanoTime()
-        _binding = FragmentSinglePostEditBinding.inflate(inflater, container, false)
-        val endTime = System.nanoTime()
-        val elapsedTime = (endTime - startTime) / 1000000
-        Log.d(TAG, "onCreateView inflating function took $elapsedTime ms to execute ")
-        setUpViews()
+        val dummyView = inflater.inflate(R.layout.loading_screen, container, false)
+        val asyncInflater = AsyncLayoutInflater(requireContext())
 
+        asyncInflater.inflate(
+            R.layout.fragment_single_post_edit, null
+        ) { inflatedView, _, _ ->
+            _binding = FragmentSinglePostEditBinding.bind(inflatedView)
 
+            if (view != null) {
+                setUpViews()
+                initialiseViews(post)
 
-        initialiseViews(post)
-
-
-        binding.update.setOnClickListener {
-            update()
+                binding.update.setOnClickListener {
+                    update()
+                }
+                (dummyView as ViewGroup).apply {
+                    removeAllViews()
+                    addView(binding.root)
+                }
+                handleViewModelLogic()
+            }
         }
 
+        return dummyView
+    }
 
-        return binding.root
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _detailsBinding = null
+        _binding = null
+        Countries.remove(onChanged)
     }
 
     private fun update() {
@@ -121,6 +158,7 @@ class SinglePostEditFragment : Fragment() {
 
             }
         }
+        Log.d(TAG, "update post $post")
         viewModel.updatePost(post.id!!, post)
         val endTime = System.nanoTime()
         val elapsedTime = (endTime - startTime) / 1000000
@@ -170,6 +208,11 @@ class SinglePostEditFragment : Fragment() {
                 countryCode.setCountryForPhoneCode(phoneCode)
             }
 
+            whatsapp.isChecked =
+                post.contact.type == ContactType.WHATSAPP.value || post.contact.type == ContactType.Both.value
+
+            call.isChecked =
+                post.contact.type == ContactType.CALL.value || post.contact.type == ContactType.Both.value
 
             //country
             countryEditText.setText(post.location.country)
@@ -183,7 +226,7 @@ class SinglePostEditFragment : Fragment() {
             descriptionEditText.setText(post.description)
 
             if (extras.contains(post.category)) {
-                detailsLayout.apply {
+                detailsBinding.apply {
 
                     //propriety
                     proprietyConditionRg.forEach { view ->
@@ -242,23 +285,6 @@ class SinglePostEditFragment : Fragment() {
                     }
                 }
 
-                //category
-//                Categories.observe(viewLifecycleOwner, object : OnChanged<List<String>?> {
-//                    override fun onChange(data: List<String>?) {
-//                        categoryEditText.apply {
-//                            data?.apply {
-//                                val adapter = setUpAndHandleSearch(data)
-//                                updateLiveData(mutableCategory)
-//                                setOnItemClickListener { _, _, _, _ ->
-//                                    adapter.filter.filter(null)
-//                                }
-//                            }
-//
-//                        }
-//                    }
-//                })
-
-
                 //price
                 priceEditText.addTextChangedListener(
                     NumberTextWatcher(
@@ -290,24 +316,8 @@ class SinglePostEditFragment : Fragment() {
                 }
 
                 //country
-                Countries.observe(viewLifecycleOwner, object : OnChanged<CountriesData> {
-                    override fun onChange(data: CountriesData?) {
-                        data?.apply {
-                            val countries = map { data -> data.name }
-                            countryEditText.apply {
-                                val adapter = setUpAndHandleSearch(countries)
-                                updateLiveData(mutableCountry)
-                                setOnItemClickListener { _, view, _, _ ->
-                                    val text = (view as TextView).text
-                                    adapter.filter.filter(null)
-                                    getCities(text.toString())
-                                    cityEditText.text.clear()
-                                }
-                            }
-                        }
-                    }
+                Countries.observe(viewLifecycleOwner, onChanged)
 
-                })
 
                 cities.observe(viewLifecycleOwner) { cities ->
                     Log.i(TAG, "cities: $cities")
@@ -336,7 +346,9 @@ class SinglePostEditFragment : Fragment() {
                 descriptionEditText.updateLiveData(mutableDescription)
 
                 if (extras.contains(post.category)) {
-                    detailsLayout.apply {
+                    _detailsBinding =
+                        DetailsLayoutBinding.inflate(layoutInflater, binding.linearLayout, true)
+                    detailsBinding.apply {
 
                         //condition
                         proprietyConditionRg.setOnCheckedChangeListener { radioGroup, _ ->
@@ -402,10 +414,7 @@ class SinglePostEditFragment : Fragment() {
         Log.d(TAG, "setUpViews function took $elapsedTime ms to execute")
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val startTime = System.nanoTime()
-        super.onViewCreated(view, savedInstanceState)
-
+    private fun handleViewModelLogic() {
         viewModel.apply {
 
             //response handling
@@ -443,15 +452,8 @@ class SinglePostEditFragment : Fragment() {
                 binding.update.isEnabled = isValid
             }
         }
-        val endTime = System.nanoTime()
-        val elapsedTime = (endTime - startTime) / 1000000
-        Log.d(TAG, "onViewCreated function took $elapsedTime ms to execute")
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
     private fun updateValue(
         sourceText: CharSequence?,
         targetInput: TextInputEditText,

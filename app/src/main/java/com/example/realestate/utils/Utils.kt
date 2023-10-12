@@ -110,7 +110,7 @@ interface OnPostClickListener {
     fun onClick(postId: String) = null
     fun onClicked(post: PostWithOwnerId) = null
     fun onDeleteClicked(postId: String, position: Int) = null
-    fun setOutOfOrder(postId: String, position: Int, outOfOrder: Boolean) = null
+    fun setOutOfOrder( postId: String, position: Int,outOfOrder: Boolean) = null
 }
 
 interface OnAddToFavClicked {
@@ -301,6 +301,8 @@ fun ImageView.loadImage(imageName: String?, errorImage: Int = R.drawable.baselin
         .placeholder(circularProgressBar(context))
         .error(errorImage)
         .into(this)
+
+
 }
 
 fun ImageView.loadSvg(imageUrl: String, errorImage: Int = R.drawable.baseline_broken_image_24) {

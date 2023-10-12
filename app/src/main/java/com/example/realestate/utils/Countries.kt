@@ -34,5 +34,11 @@ class Countries {
                 onChanged.onChange(countries)
             }
         }
+
+        fun remove(onChanged: OnChanged<CountriesData>) {
+            liveData.removeObserver { countries ->
+                onChanged.onChange(countries)
+            }
+        }
     }
 }

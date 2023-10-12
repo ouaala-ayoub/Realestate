@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_userPostsFragment_to_singlePostEditFragment"
             app:destination="@id/singlePostEditFragment" />
+        <action
+            android:id="@+id/action_userPostsFragment_to_singleEditPostFragment"
+            app:destination="@id/singleEditPostFragment" />
     </fragment>
     <fragment
         android:id="@+id/singlePostEditFragment"
@@ -22,5 +25,14 @@
         <argument
             android:name="post"
             app:argType="com.example.realestate.data.models.PostWithOwnerId" />
+    </fragment>
+    <fragment
+        android:id="@+id/singleEditPostFragment"
+        android:name="com.example.realestate.ui.fragments.SingleEditPostFragment"
+        android:label="fragment_single_edit_post"
+        tools:layout="@layout/fragment_single_edit_post" >
+        <argument
+            android:name="postId"
+            app:argType="string" />
     </fragment>
 </navigation>

@@ -2,6 +2,7 @@ package com.example.realestate
 
 import android.app.Application
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
@@ -16,7 +17,8 @@ class RealEstateApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
+        //apply dark theme
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         appContext = applicationContext
         //firebase initialisation
         FirebaseApp.initializeApp(this)

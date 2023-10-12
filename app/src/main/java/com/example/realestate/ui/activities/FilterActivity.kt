@@ -11,9 +11,11 @@ import android.text.Editable
 import android.util.Log
 import android.view.RoundedCorner
 import android.view.View
+import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.children
 import androidx.core.view.forEach
@@ -23,6 +25,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.example.realestate.R
 import com.example.realestate.data.models.*
 import com.example.realestate.data.remote.network.Retrofit
 import com.example.realestate.data.repositories.StaticDataRepository
@@ -45,121 +48,141 @@ class FilterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityFilterBinding.inflate(layoutInflater)
-        filterModel = FilterModel(StaticDataRepository(Retrofit.getInstance())).apply {
-//            getAllCities()
-        }
-
+        val dummyView = layoutInflater.inflate(R.layout.loading_screen, null, false)
+        val asyncInflater = AsyncLayoutInflater(this)
+        filterModel = FilterModel(StaticDataRepository(Retrofit.getInstance()))
         searchParams = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra("search_params", SearchParams::class.java)
         } else {
             intent.getParcelableExtra("search_params")
         }
-        Log.i(TAG, "params: $searchParams")
 
-        binding.features.proprietyDetailsCg.forEach { view ->
-            val checkBox = view as CheckBox
+        asyncInflater.inflate(R.layout.activity_filter, null){ inflatedView, _, _ ->
 
-            checkBox.setOnClickListener {
-                val feature = checkBox.text.toString()
-                if (searchParams?.features == null) {
-                    searchParams?.apply {
-                        initialiseFeatures()
-                        addFeature(feature)
+            binding = ActivityFilterBinding.bind(inflatedView)
+
+            binding.features.proprietyDetailsCg.forEach { view ->
+                val checkBox = view as CheckBox
+
+                checkBox.setOnClickListener {
+                    val feature = checkBox.text.toString()
+                    if (searchParams?.features == null) {
+                        searchParams?.apply {
+                            initialiseFeatures()
+                            addFeature(feature)
+                        }
+                    } else if (searchParams?.features?.contains(feature) == true) {
+                        searchParams?.deletedFeature(feature)
+                    } else {
+                        searchParams?.addFeature(feature)
                     }
-                } else if (searchParams?.features?.contains(feature) == true) {
-                    searchParams?.deletedFeature(feature)
-                } else {
-                    searchParams?.addFeature(feature)
+                    Log.d(TAG, "searchParams?.features: ${searchParams?.features}")
                 }
-                Log.d(TAG, "searchParams?.features: ${searchParams?.features}")
             }
-        }
 
-        binding.priceFilterRg.setOnCheckedChangeListener { _, checkedId ->
-            searchParams?.price = when (checkedId) {
-                binding.up.id -> {
-                    PriceFilter.UP
+            binding.priceFilterRg.setOnCheckedChangeListener { _, checkedId ->
+                searchParams?.price = when (checkedId) {
+                    binding.up.id -> {
+                        PriceFilter.UP
+                    }
+                    binding.down.id -> {
+                        PriceFilter.DOWN
+                    }
+                    else -> PriceFilter.NONE
                 }
-                binding.down.id -> {
-                    PriceFilter.DOWN
-                }
-                else -> PriceFilter.NONE
             }
-        }
 
-        filterModel.apply {
-            categoriesList.observe(this@FilterActivity) { categories ->
-                Log.i(TAG, "categories: $categories")
-                categories?.apply {
-                    val categoriesToShow = this.sorted()
-                    binding.categoryEditText.apply {
-                        binding.categoryTextField.isEnabled = true
-                        val adapter = setUpAndHandleSearch(categoriesToShow, object : OnSelected {
-                            override fun onSelected(selectedItem: Editable?) {
-                                val item = selectedItem.toString()
-                                if (categories.contains(item))
-                                    searchParams?.category = item
+            binding.search.setOnClickListener {
+                //set the condition
+                val button =
+                    findViewById<RadioButton>(binding.proprietyConditionRg.checkedRadioButtonId)
 
-                                binding.apply {
-                                    val show = extras.contains(item)
-                                    proprietyCdTv.isVisible = show
-                                    proprietyConditionRg.isVisible = show
-                                    extrasTv.isVisible = show
-                                    features.root.isVisible = show
+                button?.apply {
+                    searchParams?.condition = text.toString()
+                }
+
+                intent.putExtra("search_params", searchParams)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            }
+
+            (dummyView as ViewGroup).apply {
+                removeAllViews()
+                addView(binding.root)
+            }
+
+            filterModel.apply {
+                categoriesList.observe(this@FilterActivity) { categories ->
+                    Log.i(TAG, "categories: $categories")
+                    categories?.apply {
+                        val categoriesToShow = this.sorted()
+                        binding.categoryEditText.apply {
+                            binding.categoryTextField.isEnabled = true
+                            val adapter = setUpAndHandleSearch(categoriesToShow, object : OnSelected {
+                                override fun onSelected(selectedItem: Editable?) {
+                                    val item = selectedItem.toString()
+                                    if (categories.contains(item))
+                                        searchParams?.category = item
+
+                                    binding.apply {
+                                        val show = extras.contains(item)
+                                        proprietyCdTv.isVisible = show
+                                        proprietyConditionRg.isVisible = show
+                                        extrasTv.isVisible = show
+                                        features.root.isVisible = show
+                                    }
+
                                 }
 
+                            })
+                            searchParams?.category?.apply {
+                                setText(this)
+                                adapter.filter.filter(null)
+                                binding.categoryEditText.setSelection(this.length)
                             }
-
-                        })
-                        searchParams?.category?.apply {
-                            setText(this)
-                            adapter.filter.filter(null)
-                            binding.categoryEditText.setSelection(this.length)
-                        }
-                        setOnItemClickListener { _, _, _, _ ->
-                            adapter.filter.filter(null)
-                            hideKeyboard()
+                            setOnItemClickListener { _, _, _, _ ->
+                                adapter.filter.filter(null)
+                                hideKeyboard()
+                            }
                         }
                     }
                 }
-            }
 
-            countries.observe(this@FilterActivity) { countries ->
+                countries.observe(this@FilterActivity) { countries ->
 
-                countries?.apply {
-                    //Initialise country data
-                    searchParams?.location?.country?.name?.apply {
-                        binding.countryEditText.setText(this)
-                        binding.countryEditText.setSelection(this.length)
-                        getCities(this)
-                    }
-
-                    binding.countryEditText.apply {
-
-                        val adapter = setUpCountriesAndHandleSearch(countries)
-
-                        binding.countryTextField.isEnabled = true
-                        binding.cityTextField.isEnabled = true
-                        binding.areaTextField.isEnabled = true
-
-                        adapter.setOnItemClickListener { selectedItem ->
-                            val name = selectedItem.name
-
-                            if (!name.isNullOrEmpty()) {
-                                searchParams?.setCountry(name)
-                                setText(name.toString(), false)
-                                setSelection(name.length)
-                                adapter.filter.filter(null)
-                                dismissDropDown()
-                                getCities(name)
-                            } else {
-                                searchParams?.setCountry(null)
-                            }
-
-
-                            binding.cityEditText.text.clear()
+                    countries?.apply {
+                        //Initialise country data
+                        searchParams?.location?.country?.name?.apply {
+                            binding.countryEditText.setText(this)
+                            binding.countryEditText.setSelection(this.length)
+                            getCities(this)
                         }
+
+                        binding.countryEditText.apply {
+
+                            val adapter = setUpCountriesAndHandleSearch(countries)
+
+                            binding.countryTextField.isEnabled = true
+                            binding.cityTextField.isEnabled = true
+                            binding.areaTextField.isEnabled = true
+
+                            adapter.setOnItemClickListener { selectedItem ->
+                                val name = selectedItem.name
+
+                                if (!name.isNullOrEmpty()) {
+                                    searchParams?.setCountry(name)
+                                    setText(name.toString(), false)
+                                    setSelection(name.length)
+                                    adapter.filter.filter(null)
+                                    dismissDropDown()
+                                    getCities(name)
+                                } else {
+                                    searchParams?.setCountry(null)
+                                }
+
+
+                                binding.cityEditText.text.clear()
+                            }
 
 //                        setOnItemClickListener { _, view, i, _ ->
 //
@@ -167,71 +190,58 @@ class FilterActivity : AppCompatActivity() {
 //
 //
 //                        }
+                        }
                     }
+
                 }
 
-            }
-
-            citiesToShow.observe(this@FilterActivity) { cities ->
-                Log.d(TAG, "citiesToShow: $cities")
-                binding.cityEditText.apply {
-                    val adapter = setUpAndHandleSearch(cities, object : OnSelected {
-                        override fun onSelected(selectedItem: Editable?) {
-                            if (!selectedItem.isNullOrEmpty()) {
-                                searchParams?.setCity(selectedItem.toString())
-                            } else {
-                                searchParams?.setCity(null)
+                citiesToShow.observe(this@FilterActivity) { cities ->
+                    Log.d(TAG, "citiesToShow: $cities")
+                    binding.cityEditText.apply {
+                        val adapter = setUpAndHandleSearch(cities, object : OnSelected {
+                            override fun onSelected(selectedItem: Editable?) {
+                                if (!selectedItem.isNullOrEmpty()) {
+                                    searchParams?.setCity(selectedItem.toString())
+                                } else {
+                                    searchParams?.setCity(null)
+                                }
                             }
-                        }
-                    })
+                        })
 
-                    setOnItemClickListener { _, view, _, _ ->
-                        val selectedCity = (view as TextView).text
-                        Log.i(TAG, "onItemSelected: $selectedCity")
-                        adapter.filter.filter(null)
+                        setOnItemClickListener { _, view, _, _ ->
+                            val selectedCity = (view as TextView).text
+                            Log.i(TAG, "onItemSelected: $selectedCity")
+                            adapter.filter.filter(null)
 //                            getStreets(selectedCity.toString())
-                        binding.areaEditText.text.clear()
-                    }
-                }
-            }
-            streets.observe(this@FilterActivity) { streets ->
-                binding.areaEditText.apply {
-
-                    val adapter = setUpAndHandleSearch(streets, object : OnSelected {
-                        override fun onSelected(selectedItem: Editable?) {
-                            if (!selectedItem.isNullOrEmpty()) {
-                                searchParams?.setArea(selectedItem.toString())
-                            } else {
-                                searchParams?.setArea(null)
-                            }
+                            binding.areaEditText.text.clear()
                         }
-                    })
-                    setOnItemClickListener { _, _, _, _ ->
-                        adapter.filter.filter(null)
                     }
                 }
+                streets.observe(this@FilterActivity) { streets ->
+                    binding.areaEditText.apply {
+
+                        val adapter = setUpAndHandleSearch(streets, object : OnSelected {
+                            override fun onSelected(selectedItem: Editable?) {
+                                if (!selectedItem.isNullOrEmpty()) {
+                                    searchParams?.setArea(selectedItem.toString())
+                                } else {
+                                    searchParams?.setArea(null)
+                                }
+                            }
+                        })
+                        setOnItemClickListener { _, _, _, _ ->
+                            adapter.filter.filter(null)
+                        }
+                    }
+                }
+                searchParams?.apply {
+                    initialiseViews(this)
+                }
             }
-            searchParams?.apply {
-                initialiseViews(this)
-            }
+
         }
 
-
-        binding.search.setOnClickListener {
-            //set the condition
-            val button =
-                findViewById<RadioButton>(binding.proprietyConditionRg.checkedRadioButtonId)
-
-            button?.apply {
-                searchParams?.condition = text.toString()
-            }
-
-            intent.putExtra("search_params", searchParams)
-            setResult(Activity.RESULT_OK, intent)
-            finish()
-        }
-
-        setContentView(binding.root)
+        setContentView(dummyView)
     }
 
     private fun initialiseViews(searchParams: SearchParams) {

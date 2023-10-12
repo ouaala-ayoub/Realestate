@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         val customViewTest = ToolBarBinding.inflate(layoutInflater, binding.root, false)
         supportActionBar?.apply {
@@ -290,7 +290,6 @@ class MainActivity : AppCompatActivity(), ActivityResultListener {
 
     override fun onResume() {
         super.onResume()
-
 
         // Manually set the selected item in the bottom navigation view based on the current destination
         val navDestination = findNavController(R.id.fragment_container).currentDestination

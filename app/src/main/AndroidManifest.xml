@@ -28,18 +28,11 @@
             android:exported="false" />
         <activity
             android:name=".ui.activities.PostEditActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".ui.activities.PhoneAddActivity"
             android:exported="false" />
-
-        <service
-            android:name=".data.remote.broadcast.MyNavigationService"
-            android:foregroundServiceType="location">
-
-            <!-- Any inner elements would go here. -->
-        </service>
-
         <activity
             android:name=".ui.activities.UserRegisterActivity"
             android:exported="false"
@@ -54,6 +47,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.activities.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
