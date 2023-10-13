@@ -62,6 +62,15 @@ class PostEditAdapter(
                         true
                     }
                 }
+                postInfo.apply {
+                    defineField(
+                        context.getString(
+                            R.string.category_type,
+                            currentPost.category.upperFirstLetter(),
+                            currentPost.type.upperFirstLetter()
+                        )
+                    )
+                }
 
                 approveStatusTv.text = currentPost.status
                 moreIcon.setOnClickListener {

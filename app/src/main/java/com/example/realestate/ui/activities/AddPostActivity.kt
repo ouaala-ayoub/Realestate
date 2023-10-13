@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import com.example.realestate.R
 import com.example.realestate.data.models.FragmentStep
@@ -52,44 +54,54 @@ class AddPostActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityAddPostBinding.inflate(layoutInflater)
-        val viewPager = binding.fragmentsViewPager
+        val dummyView = layoutInflater.inflate(R.layout.loading_screen, null, false)
+        val asyncInflater = AsyncLayoutInflater(this)
 
-        //handle back button
-        onBackPressedDispatcher.addCallback(
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (viewPager.currentItem == 0) {
-                        showLeaveDialog(this@AddPostActivity)
-                    } else {
-                        fragmentsAdapter.onBackClicked(viewPager)
+        asyncInflater.inflate(R.layout.activity_add_post, null) { inflatedView, _, _ ->
+            binding = ActivityAddPostBinding.bind(inflatedView)
+            val viewPager = binding.fragmentsViewPager
+
+            //handle back button
+            onBackPressedDispatcher.addCallback(
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        if (viewPager.currentItem == 0) {
+                            showLeaveDialog(this@AddPostActivity)
+                        } else {
+                            fragmentsAdapter.onBackClicked(viewPager)
+                        }
                     }
                 }
-            }
-        )
+            )
+            //setting up the view pager with progressTabBar
+            setViewPager()
 
-
-        //setting up the view pager with progressTabBar
-        setViewPager()
-
-        //handling next and back buttons
-        binding.apply {
-            back.setOnClickListener {
-                fragmentsAdapter.onBackClicked(viewPager)
+            //handling next and back buttons
+            binding.apply {
+                back.setOnClickListener {
+                    fragmentsAdapter.onBackClicked(viewPager)
+                }
+                next.setOnClickListener {
+                    fragmentsAdapter.onNextClicked(viewPager)
+                }
             }
-            next.setOnClickListener {
-                fragmentsAdapter.onNextClicked(viewPager)
+
+            (dummyView as ViewGroup).apply {
+                removeAllViews()
+                addView(binding.root)
             }
+
+            addPostModel.isValidData.observe(this) { isValidData ->
+                binding.next.isEnabled = isValidData
+            }
+            addPostModel.isBackEnabled.observe(this) { isBackEnabled ->
+                binding.back.isEnabled = isBackEnabled
+            }
+
         }
 
-        addPostModel.isValidData.observe(this) { isValidData ->
-            binding.next.isEnabled = isValidData
-        }
-        addPostModel.isBackEnabled.observe(this) { isBackEnabled ->
-            binding.back.isEnabled = isBackEnabled
-        }
 
-        setContentView(binding.root)
+        setContentView(dummyView)
     }
 
 
