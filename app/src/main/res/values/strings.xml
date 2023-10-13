@@ -69,7 +69,7 @@
     <string name="placeholder_description">Real estate is defined as the land and any permanent structures, like a home, or improvements attached to the land, whether natural or man-made.</string>
     <string name="country">Choose a Country</string>
     <string name="city">Cities</string>
-    <string name="street">Area</string>
+    <string name="street">Area Name</string>
     <string name="error">Unexpected Error</string>
     <string name="wrong_code">Wrong verification code</string>
     <string name="finish_dialog_title">Last Step</string>
@@ -134,10 +134,10 @@
     <string name="has_parking">Parking</string>
     <string name="elevator">Elevator</string>
     <string name="security">Security</string>
-    <string name="number_of_floors">N° of floors</string>
-    <string name="number_of_rooms">N° of rooms</string>
-    <string name="number_of_bathrooms">N° of bathrooms</string>
-    <string name="floor_number">Floor N°</string>
+    <string name="number_of_floors">Floors in the building</string>
+    <string name="number_of_rooms">Number of rooms</string>
+    <string name="number_of_bathrooms">Number of elevators</string>
+    <string name="floor_number">Floor Number</string>
     <string name="space">Space</string>
     <string name="max_string">Media selection limit exceeded</string>
     <string name="property_condition">Property Condition (required *)</string>
@@ -196,11 +196,12 @@
     <string name="delete_title">Delete Confirmation</string>
     <string name="delete_message">Are you sure You want to delete This post ?</string>
     <string name="real_estate_instagram">https://www.instagram.com/properties.realestate_/</string>
-    <string name="out_of">Of</string>
+    <string name="out_of">Out of</string>
     <string name="wanted">Wanted</string>
     <string name="coming_soon">Coming Soon</string>
     <string name="warning_title">Warning</string>
     <string name="join_date">On realestatefy since %1$s</string>
     <string name="add_more">Add more</string>
     <string name="post_advert">Post advert</string>
+    <string name="latest_news">Latest news</string>
 </resources>

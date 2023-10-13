@@ -143,9 +143,9 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24"
                 android:layout_margin="10dp"
-                android:hint="@string/country">
+                android:hint="@string/country"
+                app:endIconDrawable="@drawable/baseline_arrow_drop_down_24">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/countryEditText"
@@ -172,103 +172,126 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="@string/choose_a_category"
-                    android:textColor="@color/yellow"
-                    android:textSize="16sp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="@string/latest_news"
+            android:textColor="@color/yellow"
+            android:textSize="18sp" />
 
-                <com.facebook.shimmer.ShimmerFrameLayout
-                    android:id="@+id/shimmer_frame_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+        <com.skydoves.androidveil.VeilRecyclerFrameView
+            android:id="@+id/news_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:veilFrame_baseAlpha="0.6"
+            app:veilFrame_baseColor="@color/skeleton_color"
+            app:veilFrame_highlightAlpha="1.0"
+            app:veilFrame_highlightColor="@color/skeleton_color"
+            app:veilFrame_layout="@layout/single_post_veilled"
+            app:veilFrame_radius="8dp"
+            app:veilFrame_shimmerEnable="true"
+            app:veilFrame_veiled="true" />
 
 
-                    <GridLayout
-                        android:id="@+id/categories_chip_group"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:columnCount="2">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/choose_a_category"
+        android:textColor="@color/yellow"
+        android:textSize="16sp" />
 
-                    </GridLayout>
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
 
-                </com.facebook.shimmer.ShimmerFrameLayout>
+        <GridLayout
+            android:id="@+id/categories_chip_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:columnCount="2">
 
-                <TextView
-                    android:id="@+id/categories_message"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.5" />
+        </GridLayout>
 
-                <SearchView
-                    android:id="@+id/search_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/search_background"
-                    android:iconifiedByDefault="false"
-                    android:queryBackground="@null"
-                    android:queryHint="Search">
 
-                </SearchView>
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/categories_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
 
-                    <TextView
-                        android:id="@+id/posts_message"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.5" />
+    <SearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/search_background"
+        android:iconifiedByDefault="false"
+        android:queryBackground="@null"
+        android:queryHint="Search">
 
-                    <com.skydoves.androidveil.VeilRecyclerFrameView
-                        android:id="@+id/post_rv"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="5dp"
-                        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:veilFrame_baseAlpha="0.6"
-                        app:veilFrame_baseColor="@color/skeleton_color"
-                        app:veilFrame_highlightAlpha="1.0"
-                        app:veilFrame_highlightColor="@color/skeleton_color"
-                        app:veilFrame_layout="@layout/single_post_veilled"
-                        app:veilFrame_radius="8dp"
-                        app:veilFrame_shimmerEnable="true"
-                        app:veilFrame_veiled="true" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+    </SearchView>
 
-            </LinearLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        </androidx.core.widget.NestedScrollView>
+        <TextView
+            android:id="@+id/posts_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5" />
 
+        <com.skydoves.androidveil.VeilRecyclerFrameView
+            android:id="@+id/post_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:veilFrame_baseAlpha="0.6"
+            app:veilFrame_baseColor="@color/skeleton_color"
+            app:veilFrame_highlightAlpha="1.0"
+            app:veilFrame_highlightColor="@color/skeleton_color"
+            app:veilFrame_layout="@layout/single_post_veilled"
+            app:veilFrame_radius="8dp"
+            app:veilFrame_shimmerEnable="true"
+            app:veilFrame_veiled="true" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout></androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

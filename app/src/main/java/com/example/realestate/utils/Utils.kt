@@ -949,8 +949,8 @@ fun getDetailIcon(key: String, context: Context): Drawable? {
         "Number Of rooms" -> {
             R.drawable.baseline_bed_24
         }
-        "Number of bathrooms" -> {
-            R.drawable.baseline_bathroom_24
+        "Number of elevators" -> {
+            R.drawable.elevator_svgrepo_com
         }
         "Floor Info" -> {
             R.drawable.skyscraper_svgrepo_com

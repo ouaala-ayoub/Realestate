@@ -1,6 +1,7 @@
 package com.example.realestate.ui.fragments.post_add_steps
 
 import android.os.Bundle
+import android.provider.MediaStore.Audio.Radio
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -97,12 +98,6 @@ class StepTwoFragment : FragmentStep() {
 
         stepTwoModel.isValidData.observe(viewLifecycleOwner) { isValidData ->
             //update the state of the next button
-            Log.d(TAG, "isValidData : $isValidData")
-            Log.d(
-                TAG,
-                "contactTypeLiveData : ${stepTwoModel.liveDataWrapper.contactTypeLiveData.value}"
-            )
-            Log.d(TAG, "phoneLiveData : ${stepTwoModel.liveDataWrapper.phoneLiveData.value}")
             (requireActivity() as AddPostActivity).addPostModel.updateIsValidData(isValidData)
         }
 
@@ -132,11 +127,11 @@ class StepTwoFragment : FragmentStep() {
 
             wrapper._typeLiveData.apply {
                 value = typeDefault
-                rent.setOnClickListener {
-                    value = Type.RENT.value
-                }
-                forSell.setOnClickListener {
-                    value = Type.BUY.value
+
+                typeRg.setOnCheckedChangeListener { radioGroup, id ->
+                    val text = radioGroup.findViewById<RadioButton>(id).text.toString()
+                    Log.d(TAG, "text: $text")
+                    value = text
                 }
             }
 
@@ -178,6 +173,7 @@ class StepTwoFragment : FragmentStep() {
     override fun onBackClicked(viewPager: ViewPager2) {
         viewPager.currentItem--
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

@@ -163,44 +163,6 @@ class PostsAdapter(
             }
         }
 
-        private fun showPopUpMenu(anchor: View, position: Int) {
-            val currentPost = filteredList[position]
-            val popupMenu = PopupMenu(anchor.context, anchor)
-            popupMenu.menuInflater.inflate(R.menu.post_long_click_menu, popupMenu.menu)
-
-            // Set click listeners for menu items
-            popupMenu.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.action_set_out_of_order -> {
-                        // Handle edit action
-                        // You can implement your edit logic here
-                        Log.d(TAG, "action_set_out_of_order")
-                        if (currentPost.status == PostStatus.OUT_OF_ORDER.value || currentPost.status == PostStatus.APPROVED.value) {
-                            Log.d(TAG, "status valid : yes")
-                            postClickListener.setOutOfOrder(
-                                currentPost.id!!,
-                                position,
-                                currentPost.status == PostStatus.OUT_OF_ORDER.value
-                            )
-                        }
-
-
-                        true
-                    }
-                    R.id.action_delete -> {
-                        // Handle delete action
-                        // You can implement your delete logic here
-                        Log.d(TAG, "action_delete")
-                        postClickListener.onDeleteClicked(currentPost.id!!, position)
-                        true
-                    }
-                    else -> false
-                }
-            }
-
-            popupMenu.show()
-        }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostHolder {

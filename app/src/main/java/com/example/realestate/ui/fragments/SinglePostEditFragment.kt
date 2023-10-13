@@ -149,7 +149,7 @@ class SinglePostEditFragment : Fragment() {
                     features = featuresLd.value
                     condition = conditionLd.value
                     rooms = roomsLd.value?.toDoubleOrNull()
-                    bathrooms = bathroomsLd.value?.toDoubleOrNull()
+                    elevators = elevatorsLd.value?.toDoubleOrNull()
                     floors = floorsLd.value?.toDoubleOrNull()
                     floorNumber = floorNumberLd.value?.toDoubleOrNull()
                     space = spaceLd.value?.toDoubleOrNull()
@@ -241,7 +241,7 @@ class SinglePostEditFragment : Fragment() {
                     numberOfRoomsEditText.setText(post.rooms.toString())
 
                     //number of bathrooms
-                    numberOfBathroomsEditText.setText(post.bathrooms.toString())
+                    numberOfElevatorsEditText.setText(post.elevators.toString())
 
                     //floor number
                     floorInfo.floorNumberEditText.setText(post.floorNumber.toString())
@@ -363,7 +363,7 @@ class SinglePostEditFragment : Fragment() {
                         numberOfRoomsEditText.updateLiveData(mutableRooms)
 
                         //bathrooms
-                        numberOfBathroomsEditText.updateLiveData(mutableBathrooms)
+                        numberOfElevatorsEditText.updateLiveData(mutableElevators)
 
                         //floor number
                         floorInfo.floorNumberEditText.updateLiveData(mutableFloorNumber)

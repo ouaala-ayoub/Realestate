@@ -13,6 +13,7 @@ import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView.Orientation
 import com.example.realestate.R
 import com.example.realestate.data.models.*
 import com.example.realestate.data.remote.network.Retrofit
@@ -23,6 +24,7 @@ import com.example.realestate.databinding.ChipVeilledBinding
 import com.example.realestate.databinding.FragmentHomeModifiedBinding
 import com.example.realestate.ui.activities.ActivityWanted
 import com.example.realestate.ui.activities.MainActivity
+import com.example.realestate.ui.adapters.NewsAdapter
 import com.example.realestate.ui.adapters.PostsAdapter
 import com.example.realestate.ui.viewmodels.HomeViewModel
 import com.example.realestate.utils.*
@@ -44,6 +46,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
     private var _binding: FragmentHomeModifiedBinding? = null
     private val binding get() = _binding!!
     private var postsAdapter: PostsAdapter? = null
+    private var newsAdapter: NewsAdapter? = null
     private lateinit var searchParams: SearchParams
     private var selectedOption: RadioButton? = null
     private var selectedChipId: Int = -1
@@ -57,6 +60,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
             it.apply {
                 getCategories()
                 getPosts(source = "lazy")
+                getNews()
 
                 if (!CurrentUser.isConnected())
                     getAuth()
@@ -134,6 +138,7 @@ class HomeFragment : Fragment(), ActivityResultListener {
                 }
             }
         )
+        newsAdapter = NewsAdapter()
         searchParams.location?.country =
             CountriesDataItem(
 //                name = countryPicker.selectedCountryName,
@@ -212,6 +217,18 @@ class HomeFragment : Fragment(), ActivityResultListener {
             setAdapter(postsAdapter)
             setLayoutManager(LinearLayoutManager(requireContext()))
             addVeiledItems(10)
+        }
+        binding.newsRv.apply {
+            setAdapter(newsAdapter)
+            setLayoutManager(
+                LinearLayoutManager(
+                    requireContext(),
+                    LinearLayoutManager.HORIZONTAL,
+                    false
+                )
+            )
+            addVeiledItems(1)
+            veil()
         }
         binding.categoriesChipGroup.addVeilElements(10)
         binding.shimmerFrameLayout.startShimmer()
@@ -316,7 +333,14 @@ class HomeFragment : Fragment(), ActivityResultListener {
 //                }
             }
 
-
+            viewModel.news.observe(viewLifecycleOwner) { newsElement ->
+                Log.d(TAG, "newsElement: $newsElement")
+                newsElement?.apply {
+                    val list = listOf(newsElement)
+                    binding.newsRv.unVeil()
+                    newsAdapter?.setNewsList(list)
+                }
+            }
 
             viewModel.categoriesList.observe(viewLifecycleOwner) { categories ->
                 if (categories == null) return@observe

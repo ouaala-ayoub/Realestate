@@ -67,8 +67,8 @@ class DetailsStepFragment : FragmentStep() {
                     setNumberOfRooms(text.toString())
                 }
 
-                detailsFullLayout.numberOfBathroomsEditText.doOnTextChanged { text, _, _, _ ->
-                    setNumberOfBathrooms(text.toString())
+                detailsFullLayout.numberOfElevatorsEditText.doOnTextChanged { text, _, _, _ ->
+                    setNumberOfElevators(text.toString())
                 }
 
                 detailsFullLayout.floorInfo.floorNumberEditText.doOnTextChanged { text, _, _, _ ->
@@ -110,7 +110,7 @@ class DetailsStepFragment : FragmentStep() {
                 features = featuresLiveData.value
                 condition = propertyState.value
                 rooms = numberOfRooms.value
-                bathrooms = numberOfBathrooms.value
+                elevators = numberOfElevators.value
                 floors = numberOfFloors.value
                 floorNumber = floorNumberLiveData.value
                 space = spaceLiveData.value

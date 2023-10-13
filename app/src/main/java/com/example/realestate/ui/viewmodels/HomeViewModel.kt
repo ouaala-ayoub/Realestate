@@ -28,6 +28,8 @@ class HomeViewModel(
     var currentPage = MutableLiveData("1")
     private val _user = MutableLiveData<User?>()
     private val _categoriesList = MutableLiveData<List<String>?>()
+    //TODO NewsElement list not single element
+    private val _news = MutableLiveData<NewsElement?>()
     private val _postsList = MutableLiveData(mutableListOf<PostWithOwnerId>())
     private val _isLoading = MutableLiveData<Boolean>()
     private val _shouldVeil = MutableLiveData<Boolean>()
@@ -47,6 +49,8 @@ class HomeViewModel(
         get() = _postsList
     val categoriesList: LiveData<List<String>?>
         get() = _categoriesList
+    val news: LiveData<NewsElement?>
+        get() = _news
     val postsMessage: LiveData<String>
         get() = _postsMessage
     val categoriesMessage: LiveData<String>
@@ -58,6 +62,9 @@ class HomeViewModel(
 
     // no filters by default
 
+    fun getNews(){
+        handleApiRequest(staticDataRepository.getNews(), _isLoading, _news, TAG)
+    }
     fun getPosts(
         searchParams: SearchParams = SearchParams(),
         source: String,

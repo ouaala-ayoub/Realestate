@@ -236,10 +236,10 @@ class PostPageFragment : Fragment() {
                                 map["Property Condition"] = this
                             }
                             rooms?.apply { map["Number Of rooms"] = this.toString() }
-                            bathrooms?.apply { map["Number of bathrooms"] = this.toString() }
+                            elevators?.apply { map["Number of elevators"] = this.toString() }
                             floors?.apply {
                                 floorNumber?.apply {
-                                    map["Floor Info"] = "Floor n° $floorNumber out f $floors"
+                                    map["Floor Info"] = "Floor n° $floorNumber out of $floors"
                                 }
                             }
                             space?.apply {

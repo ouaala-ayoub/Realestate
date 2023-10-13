@@ -7,6 +7,12 @@ import retrofit2.http.*
 
 interface RetrofitService {
 
+//    @GET("news")
+//    fun getNews(): Call<List<NewsElement>>
+
+    @GET("news")
+    fun getNews(): Call<NewsElement>
+
     //locations
     @GET("countries")
     fun getAllCountries(): Call<CountriesData>

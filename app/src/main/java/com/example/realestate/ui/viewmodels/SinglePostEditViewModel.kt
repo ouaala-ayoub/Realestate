@@ -25,7 +25,7 @@ class SinglePostEditViewModel(
     val mutableCondition = MutableLiveData<String?>(post.type)
     val mutableType = MutableLiveData<String>(post.condition)
     val mutableRooms = MutableLiveData(post.rooms.toString())
-    val mutableBathrooms = MutableLiveData(post.bathrooms.toString())
+    val mutableElevators = MutableLiveData(post.elevators.toString())
     val mutableFloors = MutableLiveData(post.floors.toString())
     val mutableFloorNumber = MutableLiveData(post.floorNumber.toString())
     private val mutableSpace = MutableLiveData(post.space.toString())
@@ -45,7 +45,7 @@ class SinglePostEditViewModel(
         addSource(mutableFeatures) { updateValidity() }
         addSource(mutableCondition) { updateValidity() }
         addSource(mutableRooms) { updateValidity() }
-        addSource(mutableBathrooms) { updateValidity() }
+        addSource(mutableElevators) { updateValidity() }
         addSource(mutableFloors) { updateValidity() }
         addSource(mutableFloorNumber) { updateValidity() }
         addSource(mutableSpace) { updateValidity() }
@@ -78,7 +78,7 @@ class SinglePostEditViewModel(
         val isValidDetails = !mutableFeatures.value.isNullOrEmpty() &&
                 !mutableCondition.value.isNullOrBlank() &&
                 !mutableRooms.value.isNullOrBlank() &&
-                !mutableBathrooms.value.isNullOrBlank() &&
+                !mutableElevators.value.isNullOrBlank() &&
                 !mutableFloors.value.isNullOrBlank() &&
                 !mutableFloorNumber.value.isNullOrBlank() &&
                 !mutableSpace.value.isNullOrBlank()
@@ -106,7 +106,7 @@ class SinglePostEditViewModel(
     val typeLd: LiveData<String> = mutableType
     val conditionLd: LiveData<String?> = mutableCondition
     val roomsLd: LiveData<String> = mutableRooms
-    val bathroomsLd: LiveData<String> = mutableBathrooms
+    val elevatorsLd: LiveData<String> = mutableElevators
     val floorsLd: LiveData<String> = mutableFloors
     val floorNumberLd: LiveData<String> = mutableFloorNumber
     val spaceLd: LiveData<String?> = mutableSpace
@@ -157,7 +157,7 @@ class SinglePostEditViewModel(
     fun clearAllDetails() {
         mutableCondition.postValue(null)
         mutableRooms.postValue(null)
-        mutableBathrooms.postValue(null)
+        mutableElevators.postValue(null)
         mutableFloors.postValue(null)
         mutableFloorNumber.postValue(null)
         mutableSpace.postValue(null)

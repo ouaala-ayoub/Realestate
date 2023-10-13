@@ -7,7 +7,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object Retrofit {
-    private const val BASE_URL = "https://realestatefy.vercel.app/api/"
+    const val BASE_URL = "https://realestatefy.vercel.app/api/"
+    const val WEBSITE_BASE_URL = "https://realestatefy.vercel.app/"
     private var retrofitService: RetrofitService? = null
 
 

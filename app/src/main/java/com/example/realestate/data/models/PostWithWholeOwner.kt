@@ -18,7 +18,7 @@ data class PostWithWholeOwner(
     @SerializedName("features") var features: MutableList<String>? = null,
     @SerializedName("condition") var condition: String? = null,
     @SerializedName("rooms") var rooms: Number? = null,
-    @SerializedName("bathrooms") var bathrooms: Number? = null,
+    @SerializedName("elevators") var elevators: Number? = null,
     @SerializedName("floors") var floors: Number? = null,
     @SerializedName("floorNumber") var floorNumber: Number? = null,
     @SerializedName("space") var space: Number? = null

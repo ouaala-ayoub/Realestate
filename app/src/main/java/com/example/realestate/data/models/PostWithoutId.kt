@@ -15,7 +15,7 @@ data class PostWithoutId(
     @SerializedName("features") var features: MutableList<String>? = null,
     @SerializedName("condition") var condition: String? = null,
     @SerializedName("rooms") var rooms: String? = null,
-    @SerializedName("bathrooms") var bathrooms: String? = null,
+    @SerializedName("elevators") var elevators: String? = null,
     @SerializedName("floors") var floors: String? = null,
     @SerializedName("floorNumber") var floorNumber: String? = null,
     @SerializedName("space") var space: String? = null

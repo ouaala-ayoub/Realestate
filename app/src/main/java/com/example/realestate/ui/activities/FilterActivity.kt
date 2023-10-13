@@ -40,7 +40,6 @@ class FilterActivity : AppCompatActivity() {
         private const val TAG = "FilterActivity"
     }
 
-    private var selectedChipId = -1
     private lateinit var binding: ActivityFilterBinding
     private lateinit var filterModel: FilterModel
     private var searchParams: SearchParams? = null
@@ -57,7 +56,7 @@ class FilterActivity : AppCompatActivity() {
             intent.getParcelableExtra("search_params")
         }
 
-        asyncInflater.inflate(R.layout.activity_filter, null){ inflatedView, _, _ ->
+        asyncInflater.inflate(R.layout.activity_filter, null) { inflatedView, _, _ ->
 
             binding = ActivityFilterBinding.bind(inflatedView)
 
@@ -118,23 +117,24 @@ class FilterActivity : AppCompatActivity() {
                         val categoriesToShow = this.sorted()
                         binding.categoryEditText.apply {
                             binding.categoryTextField.isEnabled = true
-                            val adapter = setUpAndHandleSearch(categoriesToShow, object : OnSelected {
-                                override fun onSelected(selectedItem: Editable?) {
-                                    val item = selectedItem.toString()
-                                    if (categories.contains(item))
-                                        searchParams?.category = item
+                            val adapter =
+                                setUpAndHandleSearch(categoriesToShow, object : OnSelected {
+                                    override fun onSelected(selectedItem: Editable?) {
+                                        val item = selectedItem.toString()
+                                        if (categories.contains(item))
+                                            searchParams?.category = item
 
-                                    binding.apply {
-                                        val show = extras.contains(item)
-                                        proprietyCdTv.isVisible = show
-                                        proprietyConditionRg.isVisible = show
-                                        extrasTv.isVisible = show
-                                        features.root.isVisible = show
+                                        binding.apply {
+                                            val show = extras.contains(item)
+                                            proprietyCdTv.isVisible = show
+                                            proprietyConditionRg.isVisible = show
+                                            extrasTv.isVisible = show
+                                            features.root.isVisible = show
+                                        }
+
                                     }
 
-                                }
-
-                            })
+                                })
                             searchParams?.category?.apply {
                                 setText(this)
                                 adapter.filter.filter(null)
@@ -249,10 +249,10 @@ class FilterActivity : AppCompatActivity() {
             handleChips()
             when (searchParams.type) {
                 Type.RENT.value -> {
-                    binding.rent.performClick()
+                    binding.rentRb.performClick()
                 }
                 Type.BUY.value -> {
-                    binding.buy.performClick()
+                    binding.buyRb.performClick()
                 }
                 null -> {
                     binding.all.performClick()
@@ -279,46 +279,19 @@ class FilterActivity : AppCompatActivity() {
         }
     }
 
-    private fun onChipClicked(view: View) {
-        val chipId = view.id
-
-        // Unselect previously selected chip if any
-        if (selectedChipId != -1) {
-            val previousChip = findViewById<Chip>(selectedChipId)
-            previousChip.isChecked = false
-            previousChip.isEnabled = true
-        }
-
-        // Update selected chip
-        val chip = view as Chip
-        chip.isChecked = true
-        chip.isEnabled = false
-        selectedChipId = chipId
-
-        // Perform actions based on the selected chip
-        when (chipId) {
-            binding.all.id -> {
-                searchParams?.type = null
-            }
-            binding.rent.id -> {
-                searchParams?.type = Type.RENT.value
-            }
-            binding.buy.id -> {
-                searchParams?.type = Type.BUY.value
-            }
-        }
-    }
-
     private fun handleChips() {
 
-        for (chip in binding.chips.children) {
-            chip.setOnClickListener {
-                if (selectedChipId == chip.id) {
-                    // Chip is already selected, do nothing
-                    chip.isEnabled = false
-                    return@setOnClickListener
+        binding.typeRg.setOnCheckedChangeListener { radioGroup, id ->
+            when (id) {
+                binding.all.id -> {
+                    searchParams?.type = null
                 }
-                onChipClicked(it)
+                binding.rentRb.id -> {
+                    searchParams?.type = Type.RENT.value
+                }
+                binding.buyRb.id -> {
+                    searchParams?.type = Type.BUY.value
+                }
             }
         }
     }
